@@ -4,7 +4,7 @@
     android:id="@+id/NvDrawer"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".com.hirak.assistere_doit.do_it_main_screen">
+    tools:context="io.blockchainsociety.syng.webview">
 
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -15,7 +15,8 @@
         <android.support.v7.widget.Toolbar
             style="@style/ToolbarCointainer"
             app:title="Trust Davis"
-            android:layout_width="fill_parent">
+            android:layout_width="fill_parent"
+            android:id="@+id/myToolbar">
 
             <ImageButton
                 style="@style/ToolbarIcon"

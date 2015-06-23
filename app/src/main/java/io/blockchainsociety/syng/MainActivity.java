@@ -121,6 +121,7 @@ public class MainActivity extends BaseActivity {
         consoleText = (TextView) findViewById(R.id.console_log);
         consoleText.setMovementMethod(new ScrollingMovementMethod());
         consoleText.setText(EthereumService.consoleLog);
+        ComponentName myService = startService(new Intent(this, EthereumService.class));
         doBindService();
     }
 

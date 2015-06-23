@@ -7,16 +7,24 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
+import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
 public class webview extends BaseActivity implements ObservableScrollViewCallbacks {
 
+    ObservableWebView webView;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.dapp);
+        setContentView(R.layout.webview);
+
+        webView = (ObservableWebView) findViewById(R.id.webView);
+        webView.setScrollViewCallbacks(this);
+        webView.loadUrl("http://trustdavis.meteor.com/");
+
+        setSupportActionBar(toolbar);
     }
 
 

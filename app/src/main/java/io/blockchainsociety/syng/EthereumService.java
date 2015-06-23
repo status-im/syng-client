@@ -161,8 +161,12 @@ public class EthereumService extends Service {
 
         private void addMessage(String message) {
 
+            int messageLength = message.length();
+            int logLength = consoleLog.length();
+            if (logLength + messageLength > 10000) {
+                consoleLog = consoleLog.substring(5000);
+            }
             consoleLog += message + "\n";
-            //sendConsole(null);
         }
 
         @Override
@@ -222,13 +226,12 @@ public class EthereumService extends Service {
         @Override
         public void onVMTraceCreated(String transactionHash, String trace) {
 
-            addMessage("Trace created: " +  " - ");
+            addMessage("Trace created: " + " - ");
         }
     }
 
     @Override
     public void onCreate() {
-
 
         logger.error("onCreate called");
         // Start up the thread running the service.  Note that we create a
@@ -263,7 +266,7 @@ public class EthereumService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
 
-        return messenger.getBinder();
+        return messenger != null ? messenger.getBinder() : null;
     }
 
     @Override
