@@ -90,16 +90,16 @@
     <orderEntry type="library" exported="" name="json-io-2.4.1" level="project" />
     <orderEntry type="library" exported="" name="jackson-mapper-asl-1.9.13" level="project" />
     <orderEntry type="library" exported="" name="floatingactionbutton-1.9.0" level="project" />
-    <orderEntry type="library" exported="" name="dagger-producers-2.0-beta" level="project" />
     <orderEntry type="library" exported="" name="ormlite-android-4.48" level="project" />
+    <orderEntry type="library" exported="" name="dagger-producers-2.0-beta" level="project" />
     <orderEntry type="library" exported="" name="antlr4-4.2.2" level="project" />
     <orderEntry type="library" exported="" name="jackson-core-2.5.1" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
     <orderEntry type="library" exported="" name="commons-pool-1.5.4" level="project" />
     <orderEntry type="library" exported="" name="support-v4-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.5.1" level="project" />
-    <orderEntry type="library" exported="" name="jsonrpc2-base-1.36" level="project" />
     <orderEntry type="library" exported="" name="log4j-1.2.17" level="project" />
+    <orderEntry type="library" exported="" name="jsonrpc2-base-1.36" level="project" />
     <orderEntry type="library" exported="" name="circleimageview-1.3.0" level="project" />
     <orderEntry type="library" exported="" name="leveldb-0.7" level="project" />
     <orderEntry type="library" exported="" name="dagger-2.1-SNAPSHOT" level="project" />
@@ -112,12 +112,12 @@
     <orderEntry type="library" exported="" name="appcompat-v7-22.2.0" level="project" />
     <orderEntry type="library" exported="" name="logback-android-core-1.1.1-3" level="project" />
     <orderEntry type="library" exported="" name="java-util-1.8.0" level="project" />
-    <orderEntry type="library" exported="" name="javax.annotation-10.0-b28" level="project" />
     <orderEntry type="library" exported="" name="json-smart-1.3.1" level="project" />
+    <orderEntry type="library" exported="" name="javax.annotation-10.0-b28" level="project" />
     <orderEntry type="library" exported="" name="antlr-runtime-3.5.2" level="project" />
     <orderEntry type="library" exported="" name="jackson-annotations-2.5.0" level="project" />
-    <orderEntry type="library" exported="" name="dagger-compiler-2.0" level="project" />
     <orderEntry type="library" exported="" name="core-1.51.0.0" level="project" />
+    <orderEntry type="library" exported="" name="dagger-compiler-2.0" level="project" />
     <orderEntry type="library" exported="" name="commons-collections4-4.0" level="project" />
     <orderEntry type="library" exported="" name="hawtjni-runtime-1.9" level="project" />
     <orderEntry type="library" exported="" name="antlr-denter-1.1" level="project" />
