@@ -1,149 +1,209 @@
 package io.blockchainsociety.syng;
 
-import android.app.Activity;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.Gravity;
-import android.view.LayoutInflater;
+import android.os.Handler;
+import android.os.IBinder;
+import android.os.Message;
+import android.os.Messenger;
+import android.os.RemoteException;
+import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.support.v4.widget.DrawerLayout;
-import android.widget.ArrayAdapter;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class MainActivity extends ActionBarActivity
-        implements NavigationDrawerFragment.NavigationDrawerCallbacks {
+public class MainActivity extends BaseActivity {
+
+    /** Messenger for communicating with service. */
+    Messenger ethereumService = null;
+    /** Flag indicating whether we have called bind on the service. */
+    boolean isBound;
+
+    TextView consoleText;
+
+    boolean isPaused = false;
+
+    private Timer timer;
+    private TimerTask timerTask;
 
     /**
-     * Fragment managing the behaviors, interactions and presentation of the navigation drawer.
+     * Handler of incoming messages from service.
      */
-    private NavigationDrawerFragment mNavigationDrawerFragment;
+    class IncomingHandler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case EthereumService.MSG_CONSOLE_LOG:
+                    if (!isPaused) {
+                        consoleText.setText((String) msg.obj);
+                    }
+                    break;
+                default:
+                    super.handleMessage(msg);
+            }
+        }
+    }
 
     /**
-     * Used to store the last screen title. For use in {@link #restoreActionBar()}.
+     * Class for interacting with the main interface of the service.
      */
-    private CharSequence mTitle;
+    private ServiceConnection mConnection = new ServiceConnection() {
+
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            // This is called when the connection with the service has been
+            // established, giving us the service object we can use to
+            // interact with the service.  We are communicating with our
+            // service through an IDL interface, so get a client-side
+            // representation of that from the raw service object.
+            ethereumService = new Messenger(service);
+            Toast.makeText(MainActivity.this, "service attached", Toast.LENGTH_SHORT).show();
+
+            // We want to monitor the service for as long as we are
+            // connected to it.
+            try {
+                Message msg = Message.obtain(null,
+                        EthereumService.MSG_REGISTER_CLIENT);
+                msg.replyTo = messenger;
+                ethereumService.send(msg);
+                if (!EthereumService.isConnected) {
+                    msg = Message.obtain(null, EthereumService.MSG_CONNECT, this.hashCode(), 0);
+                    ethereumService.send(msg);
+                }
+            } catch (RemoteException e) {
+                // In this case the service has crashed before we could even
+                // do anything with it; we can count on soon being
+                // disconnected (and then reconnected if it can be restarted)
+                // so there is no need to do anything here.
+            }
+
+            // As part of the sample, tell the user what happened.
+            Toast.makeText(MainActivity.this, "connected to service", Toast.LENGTH_SHORT).show();
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            // This is called when the connection with the service has been
+            // unexpectedly disconnected -- that is, its process crashed.
+            ethereumService = null;
+            Toast.makeText(MainActivity.this, "service disconnected", Toast.LENGTH_SHORT).show();
+        }
+    };
+
+
+    /**
+     * Target we publish for clients to send messages to IncomingHandler.
+     */
+    final Messenger messenger = new Messenger(new IncomingHandler());
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.main);
 
-        mNavigationDrawerFragment = (NavigationDrawerFragment)
-                getSupportFragmentManager().findFragmentById(R.id.navigation_drawer);
-        mTitle = getTitle();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.BLACK);
+        }
 
-        // Set up the drawer.
-        mNavigationDrawerFragment.setUp(
-                R.id.navigation_drawer,
-                (DrawerLayout) findViewById(R.id.drawer_layout));
+        consoleText = (TextView) findViewById(R.id.console_log);
+        consoleText.setMovementMethod(new ScrollingMovementMethod());
+        consoleText.setText(EthereumService.consoleLog);
+        doBindService();
     }
 
-    @Override
-    public void onNavigationDrawerItemSelected(int position) {
-        // update the main content by replacing fragments
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        fragmentManager.beginTransaction()
-                .replace(R.id.container, PlaceholderFragment.newInstance(position + 1))
-                .commit();
+    void doBindService() {
+        // Establish a connection with the service.  We use an explicit
+        // class name because there is no reason to be able to let other
+        // applications replace our component.
+        bindService(new Intent(MainActivity.this,
+                EthereumService.class), mConnection, Context.BIND_AUTO_CREATE);
+        isBound = true;
+        Toast.makeText(MainActivity.this, "binding to service", Toast.LENGTH_SHORT).show();
     }
 
-    public void onSectionAttached(int number) {
-        switch (number) {
-            case 1:
-                mTitle = getString(R.string.title_section1);
-                break;
-            case 2:
-                mTitle = getString(R.string.title_section2);
-                break;
-            case 3:
-                mTitle = getString(R.string.title_section3);
-                break;
+    void doUnbindService() {
+        if (isBound) {
+            // If we have received the service, and hence registered with
+            // it, then now is the time to unregister.
+            if (ethereumService != null) {
+                try {
+                    Message msg = Message.obtain(null,
+                            EthereumService.MSG_UNREGISTER_CLIENT);
+                    msg.replyTo = messenger;
+                    ethereumService.send(msg);
+                } catch (RemoteException e) {
+                    // There is nothing special we need to do if the service
+                    // has crashed.
+                }
+            }
+
+            // Detach our existing connection.
+            unbindService(mConnection);
+            isBound = false;
+            Toast.makeText(MainActivity.this, "unbinding from service", Toast.LENGTH_SHORT).show();
         }
     }
 
-    public void restoreActionBar() {
-        ActionBar actionBar = getSupportActionBar();
-        actionBar.setNavigationMode(ActionBar.NAVIGATION_MODE_STANDARD);
-        actionBar.setDisplayShowTitleEnabled(true);
-        actionBar.setTitle(mTitle);
+    @Override
+    protected void onPause() {
+
+        super.onPause();
+        isPaused = true;
+        timer.cancel();
     }
 
+    @Override
+    protected void onResume() {
+
+        super.onResume();
+        isPaused = false;
+        try {
+            timer = new Timer();
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            consoleText.setText(EthereumService.consoleLog);
+                        }
+                    });
+                }
+            };
+            timer.schedule(timerTask, 1000, 1000);
+        } catch (IllegalStateException e){
+            android.util.Log.i("Damn", "resume error");
+        }
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+
+        super.onPostCreate(savedInstanceState);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if (!mNavigationDrawerFragment.isDrawerOpen()) {
-            // Only show items in the action bar relevant to this screen
-            // if the drawer is not showing. Otherwise, let the drawer
-            // decide what to show in the action bar.
-            getMenuInflater().inflate(R.menu.main, menu);
-            restoreActionBar();
-            return true;
-        }
+
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
 
         return super.onOptionsItemSelected(item);
+
     }
-
-    /**
-     * A placeholder fragment containing a simple view.
-     */
-    public static class PlaceholderFragment extends Fragment {
-        /**
-         * The fragment argument representing the section number for this
-         * fragment.
-         */
-        private static final String ARG_SECTION_NUMBER = "section_number";
-
-        /**
-         * Returns a new instance of this fragment for the given section
-         * number.
-         */
-        public static PlaceholderFragment newInstance(int sectionNumber) {
-            PlaceholderFragment fragment = new PlaceholderFragment();
-            Bundle args = new Bundle();
-            args.putInt(ARG_SECTION_NUMBER, sectionNumber);
-            fragment.setArguments(args);
-            return fragment;
-        }
-
-        public PlaceholderFragment() {
-        }
-
-        @Override
-        public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                                 Bundle savedInstanceState) {
-            View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-            return rootView;
-        }
-
-        @Override
-        public void onAttach(Activity activity) {
-            super.onAttach(activity);
-            ((MainActivity) activity).onSectionAttached(
-                    getArguments().getInt(ARG_SECTION_NUMBER));
-        }
-    }
-
 }

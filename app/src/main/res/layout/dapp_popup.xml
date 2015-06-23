@@ -1,0 +1,290 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/NvDrawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".com.hirak.assistere_doit.do_it_main_screen">
+
+
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.Toolbar
+            style="@style/ToolbarCointainer"
+            android:title="Trust Davis"
+            android:layout_width="fill_parent">
+
+            <ImageButton
+                style="@style/ToolbarIcon"
+                android:src="@drawable/overflow" />
+
+            <ImageButton
+                style="@style/ToolbarIcon"
+                android:src="@drawable/fav" />
+
+        </android.support.v7.widget.Toolbar>
+
+        <ImageButton
+            style="@style/ToolbarButton" />
+
+        <LinearLayout
+            style="@style/GreedContainer"
+            android:weightSum="1">
+
+
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/webView"
+                style="@style/ToolbarGreen">
+
+                <TextView
+                    style="@style/TextGreen"
+                    android:text="TrustDavis" />
+
+                <ImageButton
+                    style="@style/ButtonGreen" />
+
+            </android.support.v7.widget.Toolbar>
+
+            <LinearLayout
+                style="@style/GreedPanel"
+                android:layout_height="wrap_content">
+
+                <LinearLayout
+                    style="@style/GreedPanelTitle">
+
+                    <TextView
+                        style="@style/GreedPanelTitleText"
+                        android:text="OVERVIEW" />
+
+                </LinearLayout>
+
+                <View style="@style/SeparatorRow" />
+
+                <TableLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    style="@style/GreedPanelTable">
+
+                    <!-- Row 0 with single column -->
+
+                    <TableRow style="@style/RowOne">
+
+                        <View style="@style/SeparatorRow" />
+                        <View style="@style/SeparatorRow" />
+
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowOne">
+
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="Max Liabilities" />
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="USD 0" />
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowTwo">
+
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="Locked Liabilities" />
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="USD 0" />
+                    </TableRow>
+
+                    <!-- Row 0 with single column -->
+
+                    <TableRow style="@style/RowOne">
+
+                        <View style="@style/SeparatorRow" />
+                        <View style="@style/SeparatorRow" />
+
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowOne">
+
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="Insured Trades" />
+                        <TextView
+                            style="@style/TextRow"
+                            android:text=" " />
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowTwo">
+
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="Claims" />
+                        <TextView
+                            style="@style/TextRow"
+                            android:text=" " />
+                    </TableRow>
+
+                    <!-- Row 0 with single column -->
+
+                    <TableRow style="@style/RowOne">
+
+                        <View style="@style/SeparatorRow" />
+                        <View style="@style/SeparatorRow" />
+
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowOne">
+
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="Profit" />
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="USD ?" />
+                    </TableRow>
+
+                </TableLayout>
+
+            </LinearLayout>
+
+            <LinearLayout
+                style="@style/GreedPanel"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="15dp">
+
+                <LinearLayout
+                    style="@style/GreedPanelTitle">
+
+                    <TextView
+                        android:id="@+id/settings"
+                        style="@style/GreedPanelTitleText"
+                        android:text="DEPOSIT" />
+
+                </LinearLayout>
+
+                <View style="@style/SeparatorRow" />
+
+                <TableLayout
+                    xmlns:android="http://schemas.android.com/apk/res/android"
+                    style="@style/GreedPanelTable">
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowTwo">
+
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="Deposit" />
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="USD 10" />
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowTwo">
+
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="Available" />
+                        <TextView
+                            style="@style/TextRow"
+                            android:text="USD 10" />
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow style="@style/RowTwo">
+
+                        <TextView style="@style/TextRow" />
+                        <TextView style="@style/TextRow" />
+                    </TableRow>
+
+                    <!-- Row 1 with 2 columns -->
+
+                    <TableRow
+                        android:id="@+id/tableRow1"
+                        style="@style/RowTwo">
+
+                        <Button
+                            style="@style/GreedPanelButton"
+                            android:text="Deposit" />
+
+                        <Button
+                            style="@style/GreedPanelButton"
+                            android:text="Withdraw" />
+
+                    </TableRow>
+
+                </TableLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            style="@style/Popup_Container">
+
+            <LinearLayout
+                style="@style/Popup_Window">
+
+                <TextView
+                    style="@style/Popup_Window_Title"
+                    android:text="Permission" />
+
+                <TextView
+                    style="@style/Popup_Window_Text"
+                    android:text="TrustDavis would like to use your identity." />
+
+                <RelativeLayout
+                    android:id="@+id/drawer_bg"
+                    style="@style/Drawer">
+
+                    <Spinner
+                        android:id="@+id/popup_spinner"
+                        style="@style/SpinnertDrawer"
+                        tools:listitem="@android:layout/simple_list_item_1"
+                        android:text="Jarrad Hope wgergtytu@asfgtdfg.com" />
+
+
+                    <ImageView
+                        android:id="@+id/imageView"
+                        style="@style/ViewDrawer" />
+
+                </RelativeLayout>
+
+                <View
+                    android:id="@+id/seperator"
+                    style="@style/SeparatorBottomLinks320" />
+
+                <LinearLayout
+                    style="@style/Popup_Buttons">
+
+                    <Button
+                        style="@style/Popup_Button"
+                        android:text="Deny" />
+
+                    <Button
+                        style="@style/Popup_Button_Active"
+                        android:text="Accept" />
+
+                </LinearLayout>
+
+        </LinearLayout>
+
+        </LinearLayout>
+
+    </RelativeLayout>
+
+</android.support.v4.widget.DrawerLayout>

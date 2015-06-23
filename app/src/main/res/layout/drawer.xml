@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawer_layout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/content"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/Container320">
+
+        <RelativeLayout
+            android:id="@+id/addrel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/drawer_bg"
+                style="@style/Drawer320">
+
+                <TextView
+                    android:id="@+id/nv_name"
+                    style="@style/TextDrawer320" />
+
+
+                <Spinner
+                    android:id="@+id/nv_email"
+                    style="@style/SpinnertDrawer320" />
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    style="@style/ViewDrawer320" />
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/search_ll"
+                style="@style/Search320">
+
+                <EditText
+
+                    android:id="@+id/search"
+                    style="@style/TextSearch320"/>
+
+                <ImageView
+                    style="@style/ViewSearch320"/>
+
+            </RelativeLayout>
+
+            <ListView
+                android:id="@+id/drawer_list"
+                style="@style/List320"
+                tools:listitem="@android:layout/simple_list_item_1">
+
+            </ListView>
+
+            <RelativeLayout
+                style="@style/BottomLinks320">
+
+                <TextView
+                    android:id="@+id/settings"
+                    style="@style/TextBottomLinks320"
+                    android:text="SETTINGS" />
+
+                <View
+                    android:id="@+id/seperator"
+                    style="@style/SeparatorBottomLinks320" />
+
+                <TextView
+                    android:id="@+id/help"
+                    style="@style/TextBottomLinks320"
+                    android:layout_below="@+id/seperator"
+                    android:text="HELP" />
+            </RelativeLayout>
+
+        </RelativeLayout>
+    </LinearLayout>
+
+</android.support.v4.widget.DrawerLayout>

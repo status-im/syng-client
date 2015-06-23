@@ -1,0 +1,105 @@
+<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/NvDrawer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".com.hirak.assistere_doit.do_it_main_screen">
+
+    <FrameLayout
+        android:id="@+id/MainContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@drawable/bg">
+
+        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            style="@style/ContainerNet">
+
+            <RelativeLayout
+                android:id="@+id/rella_lay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/console_log"
+                    android:paddingTop="51dp"
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:text=" "
+                    android:alpha="0.8"
+                    android:textColor="#ffffff"
+                    android:textSize="12sp"
+                    android:gravity="bottom"
+                    android:scrollbars="vertical"
+                    android:scrollbarStyle="insideOverlay"
+                    android:scrollbarSize="25dip"
+                    android:scrollbarFadeDuration="0"/>
+
+                <android.support.v7.widget.Toolbar
+                    android:id="@+id/myToolbar"
+                    android:layout_width="match_parent"
+                    android:layout_height="51dp"
+                    android:background="@drawable/fill"
+                    android:theme="@style/MyToolbar">
+
+                </android.support.v7.widget.Toolbar>
+
+                <ImageButton
+                    style="@style/ToolbarButtonWhite" />
+
+                <RelativeLayout
+                    android:id="@+id/dynamic_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_below="@+id/myToolbar">
+
+                    <LinearLayout
+                        android:id="@+id/dynamicContent"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical"
+                        android:paddingBottom="60dp">
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_weight="1.3"
+                            android:src="@drawable/etherum_icon" />
+
+                        <View
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_weight="0.1" />
+
+                        <ImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="0dp"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_weight="0.4"
+                            android:src="@drawable/syngeth_text" />
+                    </LinearLayout>
+
+                    <com.getbase.floatingactionbutton.FloatingActionButton xmlns:fab="http://schemas.android.com/apk/res-auto"
+                        android:id="@+id/pink_icon"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginBottom="7dp"
+                        android:layout_marginEnd="7dp"
+                        android:layout_marginRight="7dp"
+                        fab:fab_colorNormal="#ffffff"
+                        fab:fab_colorPressed="#e9e9e9"
+                        fab:fab_icon="@drawable/add" />
+
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</android.support.v4.widget.DrawerLayout>
