@@ -45,7 +45,7 @@ public class webview extends BaseActivity implements ObservableScrollViewCallbac
                 String output = cm.message() + " -- From line "
                         + cm.lineNumber() + " of "
                         + cm.sourceId();
-                EthereumService.consoleLog += output;
+                MainActivity.consoleLog += output;
                 Log.d("SyngJs", output);
                 return true;
             }

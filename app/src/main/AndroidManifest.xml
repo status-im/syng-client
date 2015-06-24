@@ -23,13 +23,17 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-	<activity android:name=".webview" />
-
+	    <activity android:name=".webview" />
         <service
-            android:name=".EthereumService"
+            android:name="io.blockchainsociety.syng.EthereumService"
             android:enabled="true"
-            android:exported="true" >
+            android:exported="true"
+            android:process=":ethereum_process" >
+            <intent-filter>
+                <action android:name="io.blockchainsociety.syng.EthereumService" />
+            </intent-filter>
         </service>
+
     </application>
 
 </manifest>
