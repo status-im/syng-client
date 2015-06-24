@@ -16,11 +16,8 @@
             style="@style/ToolbarCointainer"
             app:title="Trust Davis"
             android:layout_width="fill_parent"
+            android:background="@color/toolbar"
             android:id="@+id/myToolbar">
-
-            <ImageButton
-                style="@style/ToolbarIcon"
-                android:src="@drawable/overflow" />
 
             <ImageButton
                 style="@style/ToolbarIcon"
@@ -33,9 +30,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/myToolbar" />
-
-        <ImageButton
-            style="@style/ToolbarButton" />
 
     </RelativeLayout>
 

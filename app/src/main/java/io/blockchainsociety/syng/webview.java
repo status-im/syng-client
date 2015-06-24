@@ -5,14 +5,23 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.webkit.ConsoleMessage;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 
 import com.github.ksoichiro.android.observablescrollview.ObservableScrollViewCallbacks;
 import com.github.ksoichiro.android.observablescrollview.ObservableWebView;
 import com.github.ksoichiro.android.observablescrollview.ScrollState;
 
+
 public class webview extends BaseActivity implements ObservableScrollViewCallbacks {
 
     ObservableWebView webView;
+    int lastTop = 0;
+    int previousToLastTop = 0;
+    final int hideStep = 20;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -21,10 +30,28 @@ public class webview extends BaseActivity implements ObservableScrollViewCallbac
         setContentView(R.layout.webview);
 
         webView = (ObservableWebView) findViewById(R.id.webView);
-        webView.setScrollViewCallbacks(this);
-        webView.loadUrl("http://trustdavis.meteor.com/");
+        WebSettings webSettings = webView.getSettings();
+        webSettings.setJavaScriptEnabled(true);
+        webSettings.setDomStorageEnabled(true);
+        webView.setWebViewClient(new WebViewClient() {
+            public boolean shouldOverrideUrlLoading(WebView view, String url) {
+                view.loadUrl(url);
+                return false;
+            }
+        });
+        webView.setWebChromeClient(new WebChromeClient() {
+            public boolean onConsoleMessage(ConsoleMessage cm) {
 
-        setSupportActionBar(toolbar);
+                String output = cm.message() + " -- From line "
+                        + cm.lineNumber() + " of "
+                        + cm.sourceId();
+                EthereumService.consoleLog += output;
+                Log.d("SyngJs", output);
+                return true;
+            }
+        });
+        webView.setScrollViewCallbacks(this);
+        webView.loadUrl("http://trustdavis.meteor.com");
     }
 
 
@@ -78,7 +105,8 @@ public class webview extends BaseActivity implements ObservableScrollViewCallbac
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
 
-        return super.onCreateOptionsMenu(menu);
+        getMenuInflater().inflate(R.menu.webview_menu, menu);
+        return true;
     }
 
     @Override

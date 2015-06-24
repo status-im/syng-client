@@ -90,7 +90,6 @@ public class EthereumService extends Service {
                         logger.error(e.getMessage(), e);
                     }
                 }
-                long duration = ethereumManager.connect(null);
             }
         }, "EthereumConnect", 32768000).start();
     }
@@ -272,7 +271,9 @@ public class EthereumService extends Service {
     @Override
     public void onDestroy() {
 
-        ethereumManager.close();
-        Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+        if (ethereumManager != null) {
+            ethereumManager.close();
+            Toast.makeText(this, "service done", Toast.LENGTH_SHORT).show();
+        }
     }
 }

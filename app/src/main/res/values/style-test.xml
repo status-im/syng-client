@@ -43,14 +43,14 @@
     </style>
 
     <style name="TextDrawer320">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">15dp</item>
-        <item name="android:layout_marginStart">15dp</item>
-        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginLeft">20dp</item>
+        <item name="android:layout_marginStart">20dp</item>
+        <item name="android:layout_marginTop">15dp</item>
         <item name="android:text">Jarrad Hope</item>
         <item name="android:textColor">#ffffff</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">20sp</item>
         <item name="android:shadowColor">#000000</item>
         <item name="android:shadowDy">1.2</item>
         <item name="android:shadowRadius">1.2</item>
@@ -61,15 +61,15 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_marginLeft">15dp</item>
-        <item name="android:layout_marginRight">15dp</item>
-        <item name="android:layout_marginStart">15dp</item>
+        <item name="android:layout_marginLeft">12dp</item>
+        <item name="android:layout_marginStart">12dp</item>
+        <item name="android:layout_marginBottom">10dp</item>
+        <item name="android:layout_marginTop">40dp</item>
         <item name="android:clickable">true</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:textColorHint">#ffffff</item>
-        <item name="android:textSize">24sp</item>
-        <item name="android:layout_marginBottom">5dp</item>
-        <item name="android:layout_marginTop">40dp</item>
+        <item name="android:textSize">20sp</item>
+
     </style>
 
     <style name="ViewDrawer320">
@@ -174,12 +174,12 @@
 
     <!-- Toolbar -->
     <style name="ToolbarCointainer">
+        <item name="android:id">@id/myToolbar</item>
         <item name="android:orientation">horizontal</item>
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">51dp</item>
         <item name="android:theme">@style/MyToolbarWebView</item>
         <item name="android:layout_alignParentEnd">false</item>
-        <item name="android:paddingLeft">50dp</item>
     </style>
 
     <style name="ToolbarButton">

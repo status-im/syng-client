@@ -183,10 +183,17 @@ public class MainActivity extends BaseActivity {
                     });
                 }
             };
-            timer.schedule(timerTask, 1000, 1000);
+            timer.schedule(timerTask, 1000, 5000);
         } catch (IllegalStateException e){
             android.util.Log.i("Damn", "resume error");
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
+        doUnbindService();
     }
 
     @Override

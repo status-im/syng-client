@@ -1,25 +1,45 @@
 package io.blockchainsociety.syng;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
+import android.widget.Spinner;
+import android.widget.TextView;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class BaseActivity extends AppCompatActivity {
 
     Toolbar toolbar;
     public String[] layers;
-    private ActionBarDrawerToggle drawerToggle;
-    String[] nv_items = {"Console", "DAPP", "Item3", "Item4", "Item5", "Item6", "Item7"};
+    protected ActionBarDrawerToggle drawerToggle;
+    ArrayList<String> menuItems = new ArrayList<>(Arrays.asList("Console", "DApps", "EtherEx", "TrustDavis", "Augur"));
+    String[] spinnerItems = {"3WMn9M3uk2CxdGcwp", "L8a9KzyWyfDRnRMCA", "userID3", "userID4"};
+
+    Spinner spinner;
+    EditText search;
+    ListView drawerList;
+
+    protected ArrayAdapter<String> drawerListAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,35 +50,12 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(final int layoutResID) {
 
-        DrawerLayout fullLayout = (DrawerLayout) getLayoutInflater()
-                .inflate(R.layout.drawer, null);
+        DrawerLayout fullLayout = (DrawerLayout) getLayoutInflater().inflate(R.layout.drawer, null);
         LinearLayout actContent= (LinearLayout) fullLayout.findViewById(R.id.content);
 
         DrawerLayout drawerLayout = (DrawerLayout) fullLayout.findViewById(R.id.drawer_layout);
-        ListView drawerList = (ListView) fullLayout.findViewById(R.id.drawer_list);
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, nv_items);
-        drawerList.setAdapter(adapter);
-        adapter.notifyDataSetChanged();
-
-        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
-                if (position == 0) {
-
-                    startActivity(new Intent(BaseActivity.this, MainActivity.class));
-
-                } else if (position == 1) {
-
-                    startActivity(new Intent(BaseActivity.this, webview.class));
-
-                } else if (position == 2) {
-
-                }
-            }
-        });
+        drawerList = (ListView) fullLayout.findViewById(R.id.drawer_list);
+        initDrawer();
 
         toolbar = (Toolbar) getLayoutInflater().inflate(layoutResID, actContent, true).findViewById(R.id.myToolbar);
         if (toolbar != null) {
@@ -67,28 +64,117 @@ public class BaseActivity extends AppCompatActivity {
 
         drawerToggle = new ActionBarDrawerToggle(this, drawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close);
         drawerLayout.setDrawerListener(drawerToggle);
-        /*
-        spinner = (Spinner)findViewById(R.id.nv_email);
-        //spinner.setAdapter(new ArrayAdapter<String>(this, R.layout.text, spinner_items));
+
+        spinner = (Spinner) drawerLayout.findViewById(R.id.nv_email);
+        initSpinner();
+
+        search = (EditText) drawerLayout.findViewById(R.id.search);
+        initSearch();
+
+        super.setContentView(fullLayout);
+    }
+
+    private void initDrawer() {
+
+        drawerListAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, (ArrayList)menuItems.clone());
+        drawerList.setAdapter(drawerListAdapter);
+        drawerListAdapter.notifyDataSetChanged();
+
+        drawerList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String item = parent.getItemAtPosition(position).toString();
+
+                switch(item) {
+                    case "Console":
+                        startActivity(new Intent(BaseActivity.this, MainActivity.class));
+                        break;
+                    case "DApps":
+                        break;
+                    case "EtherEx":
+                        break;
+                    case "TrustDavis":
+                        startActivity(new Intent(BaseActivity.this, webview.class));
+                        break;
+                    case "Augur":
+                        break;
+                }
+            }
+        });
+    }
+
+    private void initSpinner() {
+
+        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, spinnerItems));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                String item = (String) adapterView.getItemAtPosition(i);
-                ((TextView) adapterView.getChildAt(0)).setTextColor(Color.parseColor("#ffffff"));
+                //String item = (String) adapterView.getItemAtPosition(i);
+                if (adapterView != null && adapterView.getChildAt(0) != null) {
+                    ((TextView) adapterView.getChildAt(0)).setTextColor(Color.parseColor("#ffffff"));
+                }
             }
 
             @Override
-
             public void onNothingSelected(AdapterView<?> adapterView) {
 
                 ((TextView) adapterView.getChildAt(0)).setTextColor(Color.parseColor("#ffffff"));
             }
 
         });
-        */
+    }
 
+    private void initSearch() {
 
-        super.setContentView(fullLayout);
+        search.addTextChangedListener(new TextWatcher() {
+
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+                String searchValue = editable.toString();
+                updateAppList(searchValue);
+            }
+        });
+
+        search.setOnKeyListener(new View.OnKeyListener() {
+
+            @Override
+            public boolean onKey(View view, int i, KeyEvent keyEvent) {
+
+                if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+                    InputMethodManager imm = (InputMethodManager)getSystemService(
+                            Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(search.getWindowToken(), 0);
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    protected void updateAppList(String filter) {
+
+        drawerListAdapter.clear();
+        int length = menuItems.size();
+        for (int i = 0; i < length; i++) {
+            String item = menuItems.get(i);
+            if (item.toLowerCase().contains(filter.toLowerCase())) {
+                drawerListAdapter.add(item);
+            }
+        }
+        drawerListAdapter.notifyDataSetChanged();
     }
 
     @Override

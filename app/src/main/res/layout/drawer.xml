@@ -30,7 +30,6 @@
                     android:id="@+id/nv_name"
                     style="@style/TextDrawer320" />
 
-
                 <Spinner
                     android:id="@+id/nv_email"
                     style="@style/SpinnertDrawer320" />
@@ -46,8 +45,8 @@
                 style="@style/Search320">
 
                 <EditText
-
                     android:id="@+id/search"
+                    android:inputType="text"
                     style="@style/TextSearch320"/>
 
                 <ImageView
