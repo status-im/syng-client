@@ -17,11 +17,13 @@ import android.view.WindowManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.ethereum.android.EthereumAidlService;
 import org.ethereum.android.interop.IAsyncCallback;
 import org.ethereum.android.interop.IEthereumService;
 import org.ethereum.android.interop.IListener;
 import org.ethereum.config.SystemProperties;
+
+import java.util.Timer;
+import java.util.TimerTask;
 
 
 public class MainActivity extends BaseActivity {
@@ -37,6 +39,12 @@ public class MainActivity extends BaseActivity {
     TextView consoleText;
 
     boolean isPaused = false;
+
+    private Timer timer;
+    private TimerTask timerTask;
+
+    private static int CONSOLE_LENGTH = 10000;
+    private static int CONSOLE_REFRESH = 1000;
 
     TextViewUpdater consoleUpdater = new TextViewUpdater();
 
@@ -105,7 +113,7 @@ public class MainActivity extends BaseActivity {
 
         public void trace(String message) throws RemoteException {
 
-            logMessage(message);
+            MainActivity.consoleLog += message + "\n" + "\n";
         }
     };
 
@@ -113,8 +121,8 @@ public class MainActivity extends BaseActivity {
 
         MainActivity.consoleLog += message + "\n";
         int consoleLength = MainActivity.consoleLog.length();
-        if (consoleLength > 15000) {
-            MainActivity.consoleLog = MainActivity.consoleLog.substring(consoleLength - 15000);
+        if (consoleLength > 5000) {
+            MainActivity.consoleLog = MainActivity.consoleLog.substring(2000);
         }
 
         consoleUpdater.setText(MainActivity.consoleLog);
@@ -176,6 +184,7 @@ public class MainActivity extends BaseActivity {
 
         super.onPause();
         isPaused = true;
+        timer.cancel();
     }
 
     @Override
@@ -183,6 +192,27 @@ public class MainActivity extends BaseActivity {
 
         super.onResume();
         isPaused = false;
+        try {
+            timer = new Timer();
+            timerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    MainActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            int length = MainActivity.consoleLog.length();
+                            if (length > CONSOLE_LENGTH) {
+                                MainActivity.consoleLog = MainActivity.consoleLog.substring(CONSOLE_LENGTH * ((length/CONSOLE_LENGTH)-1) + length%CONSOLE_LENGTH);
+                            }
+                            consoleUpdater.setText(MainActivity.consoleLog);
+                            MainActivity.this.consoleText.post(consoleUpdater);
+                        }
+                    });
+                }
+            };
+            timer.schedule(timerTask, 1000, CONSOLE_REFRESH);
+        } catch (IllegalStateException e){
+            android.util.Log.i("Damn", "resume error");
+        }
     }
 
     @Override

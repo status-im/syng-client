@@ -17,7 +17,7 @@ public class EthereumService extends EthereumAidlService {
     @Override
     protected void broadcastMessage(String message) {
 
-        updateLog(message);
+        //updateLog(message);
         for (IListener listener: clientListeners) {
             try {
                 listener.trace(message);
@@ -32,8 +32,8 @@ public class EthereumService extends EthereumAidlService {
 
         EthereumService.log += message;
         int logLength = EthereumService.log.length();
-        if (logLength > 100000) {
-            EthereumService.log = EthereumService.log.substring(50000);
+        if (logLength > 5000) {
+            EthereumService.log = EthereumService.log.substring(2000);
         }
     }
 
