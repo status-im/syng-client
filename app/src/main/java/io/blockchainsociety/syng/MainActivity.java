@@ -136,7 +136,7 @@ public class MainActivity extends BaseActivity {
         consoleText = (TextView) findViewById(R.id.console_log);
         consoleText.setText(MainActivity.consoleLog);
         consoleText.setMovementMethod(new ScrollingMovementMethod());
-        ComponentName myService = startService(new Intent("io.blockchainsociety.syng.EthereumService"));
+        ComponentName myService = startService(new Intent(MainActivity.this, EthereumService.class));
         doBindService();
     }
 
@@ -145,7 +145,7 @@ public class MainActivity extends BaseActivity {
         // Establish a connection with the service.  We use an explicit
         // class name because there is no reason to be able to let other
         // applications replace our component.
-        bindService(new Intent("io.blockchainsociety.syng.EthereumService"), serviceConnection, Context.BIND_AUTO_CREATE);
+        bindService(new Intent(MainActivity.this, EthereumService.class), serviceConnection, Context.BIND_AUTO_CREATE);
         isBound = true;
         Toast.makeText(MainActivity.this, "binding to service", Toast.LENGTH_SHORT).show();
     }
