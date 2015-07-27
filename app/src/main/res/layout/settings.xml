@@ -43,7 +43,8 @@
 
                 <Switch
                     style="@style/ListSwitch"
-                    android:text="EthereumJ" />
+                    android:text="Running Mode"
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
             <LinearLayout
@@ -55,7 +56,8 @@
 
                 <Switch
                     style="@style/ListSwitch"
-                    android:text="127.0.0.1:8080" />
+                    android:text="Sync in background"
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
             <LinearLayout
@@ -67,7 +69,8 @@
 
                 <Switch
                     style="@style/ListSwitch"
-                    android:text="Switch on WiFi" />
+                    android:text="Sync only on wifi"
+                    android:layout_height="match_parent" />
             </LinearLayout>
 
             <View
@@ -76,7 +79,7 @@
 
             <TextView
                 style="@style/ListTitle"
-                android:text="Profile" />
+                android:text="Servers" />
 
             <LinearLayout
                 style="@style/ListItem">

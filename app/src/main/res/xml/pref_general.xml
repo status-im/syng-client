@@ -1,0 +1,24 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="runningMode"
+        android:title="@string/pref_title_running_mode"
+        android:defaultValue="3"
+        android:entries="@array/pref_running_modes_titles"
+        android:entryValues="@array/pref_running_modes_values"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null" />
+
+    <CheckBoxPreference
+        android:key="syncInBackground"
+        android:title="@string/pref_title_sync_in_background"
+        android:summary="@string/pref_description_sync_in_background"
+        android:defaultValue="true" />
+
+    <CheckBoxPreference
+        android:key="syncOnlyWhenWifi"
+        android:title="@string/pref_title_sync_only_on_wifi"
+        android:summary="@string/pref_description_sync_only_on_wifi"
+        android:defaultValue="true" />
+
+</PreferenceScreen>

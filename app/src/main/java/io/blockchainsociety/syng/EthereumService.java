@@ -1,40 +1,20 @@
 package io.blockchainsociety.syng;
 
-import org.ethereum.android.EthereumAidlService;
-import org.ethereum.android.interop.IListener;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import android.content.Intent;
 
-public class EthereumService extends EthereumAidlService {
+import org.ethereum.android.service.EthereumRemoteService;
 
-
-    private static final Logger logger = LoggerFactory.getLogger("EthereumService");
+public class EthereumService extends EthereumRemoteService {
 
     public EthereumService() {
 
+        super();
     }
+
 
     @Override
-    protected void broadcastMessage(String message) {
+    public int onStartCommand(Intent intent, int flags, int startId) {
 
-        //updateLog(message);
-        for (IListener listener: clientListeners) {
-            try {
-                listener.trace(message);
-            } catch (Exception e) {
-                // Remove listener
-                clientListeners.remove(listener);
-            }
-        }
+        return START_STICKY;
     }
-
-    private void updateLog(String message) {
-
-        EthereumService.log += message;
-        int logLength = EthereumService.log.length();
-        if (logLength > 5000) {
-            EthereumService.log = EthereumService.log.substring(2000);
-        }
-    }
-
 }

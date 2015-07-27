@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="white">#ffffff</color>
+    <color name="red">#fa0000</color>
     <color name="toolbar">#fafafa</color>
+    <color name="icons">#fafafa</color>
+    <color name="profile">#161c30</color>
+
+    <color name="primary">#ffeeeeee</color>
+    <color name="primary_dark">#ff303030</color>
+    <color name="accent">#fafafa</color>
 </resources>

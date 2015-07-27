@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
@@ -27,17 +28,22 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import io.blockchainsociety.syng.entities.PreferenceManager;
+import io.blockchainsociety.syng.entities.Profile;
+
 public class BaseActivity extends AppCompatActivity {
 
     Toolbar toolbar;
-    public String[] layers;
     protected ActionBarDrawerToggle drawerToggle;
     ArrayList<String> menuItems = new ArrayList<>(Arrays.asList("Console", "DApps", "EtherEx", "TrustDavis", "Augur"));
-    String[] spinnerItems = {"3WMn9M3uk2CxdGcwp", "L8a9KzyWyfDRnRMCA", "userID3", "userID4"};
+    protected List<Profile> profiles;
 
     Spinner spinner;
     EditText search;
     ListView drawerList;
+
+    TextView settings;
+    TextView profileManager;
 
     protected ArrayAdapter<String> drawerListAdapter;
 
@@ -50,14 +56,15 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void setContentView(final int layoutResID) {
 
-        DrawerLayout fullLayout = (DrawerLayout) getLayoutInflater().inflate(R.layout.drawer, null);
+        LayoutInflater inflater = getLayoutInflater();
+        DrawerLayout fullLayout = (DrawerLayout) inflater.inflate(R.layout.drawer, null);
         LinearLayout actContent= (LinearLayout) fullLayout.findViewById(R.id.content);
 
         DrawerLayout drawerLayout = (DrawerLayout) fullLayout.findViewById(R.id.drawer_layout);
-        drawerList = (ListView) fullLayout.findViewById(R.id.drawer_list);
+        drawerList = (ListView) drawerLayout.findViewById(R.id.drawer_list);
         initDrawer();
 
-        toolbar = (Toolbar) getLayoutInflater().inflate(layoutResID, actContent, true).findViewById(R.id.myToolbar);
+        toolbar = (Toolbar) inflater.inflate(layoutResID, actContent, true).findViewById(R.id.myToolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
         }
@@ -70,6 +77,24 @@ public class BaseActivity extends AppCompatActivity {
 
         search = (EditText) drawerLayout.findViewById(R.id.search);
         initSearch();
+
+        settings = (TextView) drawerLayout.findViewById(R.id.settings);
+        settings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(BaseActivity.this, SettingsActivity.class));
+            }
+        });
+
+        profileManager = (TextView) drawerLayout.findViewById(R.id.profileManager);
+        profileManager.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                startActivity(new Intent(BaseActivity.this, ProfileManagerActivity.class));
+            }
+        });
 
         super.setContentView(fullLayout);
     }
@@ -87,7 +112,7 @@ public class BaseActivity extends AppCompatActivity {
 
                 String item = parent.getItemAtPosition(position).toString();
 
-                switch(item) {
+                switch (item) {
                     case "Console":
                         startActivity(new Intent(BaseActivity.this, MainActivity.class));
                         break;
@@ -105,9 +130,14 @@ public class BaseActivity extends AppCompatActivity {
         });
     }
 
-    private void initSpinner() {
+    public void initSpinner() {
 
-        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, spinnerItems));
+        profiles = ((Syng)getApplication()).preferenceManager.getProfiles();
+        ArrayList<String> spinnerItems = new ArrayList<>();
+        for (Profile profile: profiles) {
+            spinnerItems.add(profile.getName());
+        }
+        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, spinnerItems.toArray(new String[spinnerItems.size()])));
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {

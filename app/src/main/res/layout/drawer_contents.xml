@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/addrel"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <RelativeLayout
+        android:id="@+id/drawer_bg"
+        style="@style/Drawer320">
+
+        <TextView
+            android:id="@+id/nv_name"
+            style="@style/TextDrawer320" />
+
+        <Spinner
+            android:id="@+id/nv_email"
+            style="@style/SpinnertDrawer320" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            style="@style/ViewDrawer320" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/search_ll"
+        style="@style/Search320">
+
+        <EditText
+            android:id="@+id/search"
+            android:inputType="text"
+            style="@style/TextSearch320" />
+
+        <ImageView style="@style/ViewSearch320" />
+
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/drawer_list"
+        style="@style/List320"
+        tools:listitem="@android:layout/simple_list_item_1"
+        android:layout_alignParentEnd="true"
+        android:layout_width="match_parent"
+        android:layout_height="250dp">
+
+    </ListView>
+
+    <RelativeLayout style="@style/BottomLinks320" android:layout_below="@+id/drawer_list"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/profileManager"
+            style="@style/TextBottomLinks320"
+            android:text="Profile Manager"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/settings"
+            style="@style/TextBottomLinks320"
+            android:layout_below="@+id/profileManager"
+            android:text="Settings" />
+
+        <View
+            android:id="@+id/seperator"
+            style="@style/SeparatorBottomLinks320" />
+
+        <TextView
+            android:id="@+id/help"
+            style="@style/TextBottomLinks320"
+            android:layout_below="@+id/seperator"
+            android:text="Help" />
+    </RelativeLayout>
+
+</RelativeLayout>

@@ -6,4 +6,22 @@
 
     <string name="drawer_open">Open Navigation Drawer</string>
     <string name="drawer_close">Close Navigation Drawer</string>
+    <string name="title_activity_profile_manager">ProfileManagerActivity</string>
+
+<!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="title_activity_test">Test</string>
+
+
+    <string name="add_profile">Add Profile</string>
+    <string name="profile_manager_title">Profiles</string>
+    <string name="profile_save">Save</string>
+    <string name="profile_password_protected">Password Protected</string>
+    <string name="dapp_dialog_title">Add Dapp</string>
+
+    <string name="name">Name</string>
+    <string name="url">Url</string>
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="manage_profiles">Manage Profiles</string>
 </resources>

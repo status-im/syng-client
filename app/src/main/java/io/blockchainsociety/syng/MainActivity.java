@@ -1,40 +1,42 @@
 package io.blockchainsociety.syng;
 
-import android.content.ComponentName;
-import android.content.Context;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.IBinder;
-import android.os.RemoteException;
+import android.os.Message;
 import android.text.method.ScrollingMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import org.ethereum.android.interop.IAsyncCallback;
-import org.ethereum.android.interop.IEthereumService;
-import org.ethereum.android.interop.IListener;
+import org.ethereum.android.service.ConnectorHandler;
+import org.ethereum.android.service.EthereumClientMessage;
+import org.ethereum.android.service.EthereumConnector;
+import org.ethereum.android.service.events.BlockEventData;
+import org.ethereum.android.service.events.EventData;
+import org.ethereum.android.service.events.EventFlag;
+import org.ethereum.android.service.events.MessageEventData;
+import org.ethereum.android.service.events.PeerDisconnectEventData;
+import org.ethereum.android.service.events.PendingTransactionsEventData;
+import org.ethereum.android.service.events.TraceEventData;
+import org.ethereum.android.service.events.VMTraceCreatedEventData;
 import org.ethereum.config.SystemProperties;
+import org.ethereum.net.message.MessageFactory;
+import org.ethereum.net.p2p.HelloMessage;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.EnumSet;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 
-public class MainActivity extends BaseActivity {
+public class MainActivity extends BaseActivity implements ConnectorHandler {
 
     protected static String consoleLog = "";
-
-    /** Ethereum Aidl Service. */
-    IEthereumService ethereumService = null;
-
-    /** Flag indicating whether we have called bind on the service. */
-    boolean isBound;
 
     TextView consoleText;
 
@@ -46,7 +48,12 @@ public class MainActivity extends BaseActivity {
     private static int CONSOLE_LENGTH = 10000;
     private static int CONSOLE_REFRESH = 1000;
 
+    static EthereumConnector ethereum = null;
+    protected String handlerIdentifier = UUID.randomUUID().toString();
+
     TextViewUpdater consoleUpdater = new TextViewUpdater();
+
+    static DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
 
     private class TextViewUpdater implements Runnable {
 
@@ -60,73 +67,6 @@ public class MainActivity extends BaseActivity {
 
             this.txt = txt;
         }
-
-    }
-
-    IAsyncCallback.Stub getLogCallback = new IAsyncCallback.Stub() {
-
-        public void handleResponse(String log) throws RemoteException {
-
-            MainActivity.consoleLog = log;
-            logMessage("");
-        }
-    };
-
-    /**
-     * Class for interacting with the main interface of the service.
-     */
-    protected ServiceConnection serviceConnection = new ServiceConnection() {
-
-        public void onServiceConnected(ComponentName className, IBinder service) {
-
-            // This is called when the connection with the service has been
-            // established, giving us the service object we can use to
-            // interact with the service.  We are communicating with our
-            // service through an IDL interface, so get a client-side
-            // representation of that from the raw service object.
-            ethereumService = IEthereumService.Stub.asInterface(service);
-            Toast.makeText(MainActivity.this, "service attached", Toast.LENGTH_SHORT).show();
-
-            // We want to monitor the service for as long as we are
-            // connected to it.
-            try {
-                ethereumService.addListener(ethereumListener);
-                ethereumService.connect(SystemProperties.CONFIG.activePeerIP(),
-                        SystemProperties.CONFIG.activePeerPort(),
-                        SystemProperties.CONFIG.activePeerNodeid());
-                Toast.makeText(MainActivity.this, "connected to service", Toast.LENGTH_SHORT).show();
-            } catch (Exception e) {
-                logMessage("Error adding listener: " + e.getMessage());
-            }
-        }
-
-        public void onServiceDisconnected(ComponentName className) {
-
-            // This is called when the connection with the service has been
-            // unexpectedly disconnected -- that is, its process crashed.
-            ethereumService = null;
-            Toast.makeText(MainActivity.this, "service disconnected", Toast.LENGTH_SHORT).show();
-        }
-    };
-
-    IListener.Stub ethereumListener = new IListener.Stub() {
-
-        public void trace(String message) throws RemoteException {
-
-            MainActivity.consoleLog += message + "\n" + "\n";
-        }
-    };
-
-    protected void logMessage(String message) {
-
-        MainActivity.consoleLog += message + "\n";
-        int consoleLength = MainActivity.consoleLog.length();
-        if (consoleLength > 5000) {
-            MainActivity.consoleLog = MainActivity.consoleLog.substring(2000);
-        }
-
-        consoleUpdater.setText(MainActivity.consoleLog);
-        MainActivity.this.consoleText.post(consoleUpdater);
     }
 
     @Override
@@ -144,38 +84,10 @@ public class MainActivity extends BaseActivity {
         consoleText = (TextView) findViewById(R.id.console_log);
         consoleText.setText(MainActivity.consoleLog);
         consoleText.setMovementMethod(new ScrollingMovementMethod());
-        ComponentName myService = startService(new Intent(MainActivity.this, EthereumService.class));
-        doBindService();
-    }
 
-    void doBindService() {
-
-        // Establish a connection with the service.  We use an explicit
-        // class name because there is no reason to be able to let other
-        // applications replace our component.
-        bindService(new Intent(MainActivity.this, EthereumService.class), serviceConnection, Context.BIND_AUTO_CREATE);
-        isBound = true;
-        Toast.makeText(MainActivity.this, "binding to service", Toast.LENGTH_SHORT).show();
-    }
-
-    void doUnbindService() {
-
-        if (isBound) {
-            // If we have received the service, and hence registered with
-            // it, then now is the time to unregister.
-            if (ethereumService != null) {
-                try {
-                    ethereumService.removeListener(ethereumListener);
-                } catch (RemoteException e) {
-                    // There is nothing special we need to do if the service
-                    // has crashed.
-                }
-            }
-
-            // Detach our existing connection.
-            unbindService(serviceConnection);
-            isBound = false;
-            Toast.makeText(MainActivity.this, "unbinding from service", Toast.LENGTH_SHORT).show();
+        if (ethereum == null) {
+            ethereum = new EthereumConnector(this, EthereumService.class);
+            ethereum.registerHandler(this);
         }
     }
 
@@ -185,6 +97,8 @@ public class MainActivity extends BaseActivity {
         super.onPause();
         isPaused = true;
         timer.cancel();
+        ethereum.removeListener(handlerIdentifier);
+        ethereum.unbindService();
     }
 
     @Override
@@ -213,13 +127,14 @@ public class MainActivity extends BaseActivity {
         } catch (IllegalStateException e){
             android.util.Log.i("Damn", "resume error");
         }
+        ethereum.bindService();
     }
 
     @Override
     protected void onDestroy() {
 
         super.onDestroy();
-        doUnbindService();
+        ethereum.unbindService();
     }
 
     @Override
@@ -239,4 +154,90 @@ public class MainActivity extends BaseActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    @Override
+    public boolean handleMessage(Message message) {
+
+        boolean isClaimed = true;
+        switch(message.what) {
+            case EthereumClientMessage.MSG_EVENT:
+                Bundle data = message.getData();
+                data.setClassLoader(EventFlag.class.getClassLoader());
+                EventFlag event = (EventFlag)data.getSerializable("event");
+                EventData eventData;
+                MessageEventData messageEventData;
+                switch(event) {
+                    case EVENT_BLOCK:
+                        BlockEventData blockEventData = data.getParcelable("data");
+                        addLogEntry(blockEventData.registeredTime, "Added block with " + blockEventData.receipts.size() + " transaction receipts.");
+                        break;
+                    case EVENT_HANDSHAKE_PEER:
+                        messageEventData = data.getParcelable("data");
+                        addLogEntry(messageEventData.registeredTime, "Peer " + new HelloMessage(messageEventData.message).getPeerId() + " said hello");
+                        break;
+                    case EVENT_NO_CONNECTIONS:
+                        eventData = data.getParcelable("data");
+                        addLogEntry(eventData.registeredTime, "No connections");
+                        break;
+                    case EVENT_PEER_DISCONNECT:
+                        PeerDisconnectEventData peerDisconnectEventData = data.getParcelable("data");
+                        addLogEntry(peerDisconnectEventData.registeredTime, "Peer " + peerDisconnectEventData.host + ":" + peerDisconnectEventData.port + " disconnected.");
+                        break;
+                    case EVENT_PENDING_TRANSACTIONS_RECEIVED:
+                        PendingTransactionsEventData pendingTransactionsEventData = data.getParcelable("data");
+                        addLogEntry(pendingTransactionsEventData.registeredTime, "Received " + pendingTransactionsEventData.transactions.size() + " pending transactions");
+                        break;
+                    case EVENT_RECEIVE_MESSAGE:
+                        messageEventData = data.getParcelable("data");
+                        addLogEntry(messageEventData.registeredTime, "Received message: " + messageEventData.messageClass.getName());
+                        break;
+                    case EVENT_SEND_MESSAGE:
+                        messageEventData = data.getParcelable("data");
+                        addLogEntry(messageEventData.registeredTime, "Sent message: " + messageEventData.messageClass.getName());
+                        break;
+                    case EVENT_SYNC_DONE:
+                        eventData = data.getParcelable("data");
+                        addLogEntry(eventData.registeredTime, "Sync done");
+                        break;
+                    case EVENT_VM_TRACE_CREATED:
+                        VMTraceCreatedEventData vmTraceCreatedEventData = data.getParcelable("data");
+                        addLogEntry(vmTraceCreatedEventData.registeredTime, "CM trace created: " + vmTraceCreatedEventData.transactionHash + " - " + vmTraceCreatedEventData.trace);
+                        break;
+                    case EVENT_TRACE:
+                        TraceEventData traceEventData = data.getParcelable("data");
+                        addLogEntry(traceEventData.registeredTime, traceEventData.message);
+                        break;
+                }
+                break;
+            default:
+                isClaimed = false;
+        }
+        return isClaimed;
+    }
+
+    protected void addLogEntry(long timestamp, String message) {
+
+        Date date = new Date(timestamp);
+
+        MainActivity.consoleLog += formatter.format(date) + " -> " + message + "\n";
+    }
+
+    @Override
+    public String getID() {
+
+        return handlerIdentifier;
+    }
+
+    @Override
+    public void onConnectorConnected() {
+
+        ethereum.addListener(handlerIdentifier, EnumSet.allOf(EventFlag.class));
+        //ethereum.connect(SystemProperties.CONFIG.activePeerIP(), SystemProperties.CONFIG.activePeerPort(), SystemProperties.CONFIG.activePeerNodeid());
+    }
+
+    @Override
+    public void onConnectorDisconnected() {
+
+    }
+
 }

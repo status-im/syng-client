@@ -1,0 +1,52 @@
+<resources>
+    <string name="title_activity_settings">Settings</string>
+
+    <!-- Strings related to Settings -->
+
+    <!-- Example General settings -->
+    <string name="pref_header_general">General</string>
+
+    <string name="pref_title_sync_in_background">Sync in background</string>
+    <string name="pref_description_sync_in_background">Enable syncing blockchain in background
+    </string>
+
+    <string name="pref_title_sync_only_on_wifi">Sync only on wifi</string>
+    <string name="pref_description_sync_only_on_wifi">Sync blockchain only on wifi
+    </string>
+
+    <string name="pref_title_display_name">Display name</string>
+    <string name="pref_default_display_name">John Smith</string>
+
+    <string name="pref_title_running_mode">Running Mode</string>
+    <string-array name="pref_running_modes_titles">
+        <item>Full Client</item>
+        <item>Light Client</item>
+        <item>Json RPC Client</item>
+    </string-array>
+    <string-array name="pref_running_modes_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
+
+    <!-- Example settings for Data & Sync -->
+    <string name="pref_header_data_sync">Data &amp; sync</string>
+
+    <string name="pref_title_sync_frequency">Sync frequency</string>
+    <string-array name="pref_sync_frequency_titles">
+        <item>15 minutes</item>
+        <item>30 minutes</item>
+        <item>1 hour</item>
+        <item>3 hours</item>
+        <item>6 hours</item>
+        <item>Never</item>
+    </string-array>
+    <string-array name="pref_sync_frequency_values">
+        <item>15</item>
+        <item>30</item>
+        <item>60</item>
+        <item>180</item>
+        <item>360</item>
+        <item>-1</item>
+    </string-array>
+</resources>
