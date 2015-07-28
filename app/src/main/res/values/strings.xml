@@ -24,4 +24,6 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="manage_profiles">Manage Profiles</string>
+
+    <string name="title_activity_spash_screen">Syng</string>
 </resources>

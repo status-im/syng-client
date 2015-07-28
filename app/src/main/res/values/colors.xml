@@ -9,4 +9,6 @@
     <color name="primary">#ffeeeeee</color>
     <color name="primary_dark">#ff303030</color>
     <color name="accent">#fafafa</color>
+
+    <color name="black_overlay">#66000000</color>
 </resources>
