@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;

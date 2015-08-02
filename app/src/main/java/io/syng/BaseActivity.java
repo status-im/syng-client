@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
 import android.content.Context;
 import android.content.Intent;
@@ -28,8 +28,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import io.blockchainsociety.syng.entities.PreferenceManager;
-import io.blockchainsociety.syng.entities.Profile;
+import io.syng.entities.PreferenceManager;
+import io.syng.entities.Profile;
 
 public class BaseActivity extends AppCompatActivity {
 

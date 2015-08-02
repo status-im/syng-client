@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
 import android.graphics.Color;
 import android.os.Build;

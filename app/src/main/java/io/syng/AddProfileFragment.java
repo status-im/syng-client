@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
 import android.app.Activity;
 import android.net.Uri;
@@ -19,9 +19,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.dift.ui.SwipeToAction;
-import io.blockchainsociety.syng.entities.Dapp;
-import io.blockchainsociety.syng.entities.DappAdapter;
-import io.blockchainsociety.syng.entities.Profile;
+import io.syng.entities.Dapp;
+import io.syng.entities.DappAdapter;
+import io.syng.entities.Profile;
 
 
 /**

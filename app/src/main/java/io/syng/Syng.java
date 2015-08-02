@@ -1,8 +1,8 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
 import android.content.res.Configuration;
 
-import io.blockchainsociety.syng.entities.PreferenceManager;
+import io.syng.entities.PreferenceManager;
 
 
 public class Syng extends android.support.multidex.MultiDexApplication {

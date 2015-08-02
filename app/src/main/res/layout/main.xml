@@ -3,7 +3,7 @@
     style="@style/ContainerNet"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="io.blockchainsociety.syng.MainActivity">
+    tools:context="io.syng.MainActivity">
 
     <RelativeLayout
         android:id="@+id/rella_lay"

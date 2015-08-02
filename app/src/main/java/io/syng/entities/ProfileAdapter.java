@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng.entities;
+package io.syng.entities;
 
 
 import android.support.v7.widget.RecyclerView;
@@ -10,19 +10,19 @@ import android.widget.TextView;
 import java.util.ArrayList;
 
 import co.dift.ui.SwipeToAction;
-import io.blockchainsociety.syng.R;
+import io.syng.R;
 
-public class DappAdapter extends RecyclerView.Adapter<DappAdapter.DappViewHolder> {
+public class ProfileAdapter extends RecyclerView.Adapter<ProfileAdapter.ProfileViewHolder> {
 
-    private ArrayList<Dapp> dataset;
+    private ArrayList<Profile> dataset;
 
 
-    public class DappViewHolder extends SwipeToAction.ViewHolder<Dapp> {
+    public class ProfileViewHolder extends SwipeToAction.ViewHolder<Profile> {
 
         public TextView txtHeader;
         public TextView txtFooter;
 
-        public DappViewHolder(View v) {
+        public ProfileViewHolder(View v) {
 
             super(v);
             txtHeader = (TextView) v.findViewById(R.id.firstLine);
@@ -30,26 +30,26 @@ public class DappAdapter extends RecyclerView.Adapter<DappAdapter.DappViewHolder
         }
     }
 
-    public void add(int position, Dapp item) {
+    public void add(int position, Profile item) {
 
         dataset.add(position, item);
         notifyItemInserted(position);
     }
 
-    public void set(int position, Dapp item) {
+    public void set(int position, Profile item) {
 
         dataset.set(position, item);
         notifyItemChanged(position);
     }
 
-    public void add(Dapp item) {
+    public void add(Profile item) {
 
         dataset.add(item);
         int position = dataset.indexOf(item);
         notifyItemInserted(position);
     }
 
-    public void remove(Dapp item) {
+    public void remove(Profile item) {
 
         int position = dataset.indexOf(item);
         dataset.remove(position);
@@ -62,41 +62,41 @@ public class DappAdapter extends RecyclerView.Adapter<DappAdapter.DappViewHolder
         notifyDataSetChanged();
     }
 
-    public int getPosition(Dapp dapp) {
+    public int getPosition(Profile item) {
 
-        return dataset.indexOf(dapp);
+        return dataset.indexOf(item);
     }
 
-    public ArrayList<Dapp> getItems() {
+    public ArrayList<Profile> getItems() {
 
-        return (ArrayList<Dapp>)dataset.clone();
+        return (ArrayList<Profile>)dataset.clone();
     }
 
-    public DappAdapter(ArrayList<Dapp> dataset) {
+    public ProfileAdapter(ArrayList<Profile> dataset) {
 
         this.dataset = dataset;
     }
 
     @Override
-    public DappAdapter.DappViewHolder onCreateViewHolder(ViewGroup parent,
+    public ProfileAdapter.ProfileViewHolder onCreateViewHolder(ViewGroup parent,
                                                    int viewType) {
 
         // create a new view
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.dapp_item, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_item, parent, false);
         // set the view's size, margins, paddings and layout parameters
-        DappViewHolder vh = new DappViewHolder(v);
+        ProfileViewHolder vh = new ProfileViewHolder(v);
         return vh;
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     @Override
-    public void onBindViewHolder(DappViewHolder holder, int position) {
+    public void onBindViewHolder(ProfileViewHolder holder, int position) {
 
         // - get element from your dataset at this position
         // - replace the contents of the view with that element
-        final Dapp dapp = dataset.get(position);
-        DappViewHolder viewHolder = (DappViewHolder) holder;
-        viewHolder.data = dapp;
+        final Profile profile = dataset.get(position);
+        ProfileViewHolder viewHolder = (ProfileViewHolder) holder;
+        viewHolder.data = profile;
         holder.txtHeader.setText(dataset.get(position).getName());
         holder.txtFooter.setText("Footer: " + dataset.get(position).getName());
 

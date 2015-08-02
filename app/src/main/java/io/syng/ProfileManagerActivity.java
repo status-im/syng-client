@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
 import android.app.FragmentManager;
 import android.net.Uri;
@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import io.blockchainsociety.syng.entities.Profile;
+import io.syng.entities.Profile;
 
 
 public class ProfileManagerActivity extends BaseActivity implements OnFragmentInteractionListener {

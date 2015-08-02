@@ -1,6 +1,6 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
-import io.blockchainsociety.syng.util.SystemUiHider;
+import io.syng.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

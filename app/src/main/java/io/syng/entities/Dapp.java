@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng.entities;
+package io.syng.entities;
 
 public class Dapp {
 

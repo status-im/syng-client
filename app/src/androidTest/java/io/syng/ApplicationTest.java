@@ -1,4 +1,4 @@
-package io.blockchainsociety.syng;
+package io.syng;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
