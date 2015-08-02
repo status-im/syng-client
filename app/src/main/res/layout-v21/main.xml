@@ -55,7 +55,7 @@
                     android:layout_height="0dp"
                     android:layout_gravity="center_horizontal"
                     android:layout_weight="1.3"
-                    android:src="@drawable/etherum_icon" />
+                    android:src="@drawable/ethereum_icon" />
 
                 <View
                     android:layout_width="wrap_content"

@@ -1,7 +1,7 @@
 <resources>
 
     <style name="splashScreenTheme" parent="@android:style/Theme.DeviceDefault.Light.NoActionBar">
-        <item name="android:windowBackground">@drawable/etherum_icon</item>
+        <item name="android:windowBackground">@drawable/ethereum_icon</item>
     </style>
 
     <!-- Base application theme. -->
