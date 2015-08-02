@@ -1,6 +1,6 @@
 package io.syng;
 
-import io.syng.util.SystemUiHider;
+//import io.syng.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -12,12 +12,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 
-/**
- * An example full-screen activity that shows and hides the system UI (i.e.
- * status bar and navigation/system bar) with user interaction.
- *
- * @see SystemUiHider
- */
 public class SpashScreen extends Activity {
 
     private final int SPLASH_DISPLAY_LENGTH = 1000;
