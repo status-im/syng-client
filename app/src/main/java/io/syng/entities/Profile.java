@@ -18,7 +18,17 @@ public class Profile implements Serializable {
 
     public Profile() {
 
-        this.privateKey = "new key";
+        this.privateKey = createPrivateKey();
+    }
+
+    public Profile(String privateKey) {
+
+        this.privateKey = privateKey;
+    }
+
+    protected String createPrivateKey() {
+
+        return "";
     }
 
     public String getPrivateKey() {

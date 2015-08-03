@@ -26,4 +26,10 @@
     <string name="manage_profiles">Manage Profiles</string>
 
     <string name="title_activity_spash_screen">Syng</string>
+
+    <string name="account_mode_title">Account</string>
+    <string name="ok">OK</string>
+    <string name="create_new_account">Create new Account</string>
+    <string name="import_account_from_file">Import account from file</string>
+    <string name="import_account_from_string">Import account from string</string>
 </resources>
