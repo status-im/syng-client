@@ -51,7 +51,8 @@ public class webview extends BaseActivity implements ObservableScrollViewCallbac
             }
         });
         webView.setScrollViewCallbacks(this);
-        webView.loadUrl("http://trustdavis.meteor.com");
+//        webView.loadUrl("http://trustdavis.meteor.com");
+        webView.loadUrl("file:///android_asset/boilerplate/index.html");
     }
 
 
