@@ -48,12 +48,13 @@ public class MainActivity extends BaseActivity implements ConnectorHandler {
     private static int CONSOLE_LENGTH = 10000;
     private static int CONSOLE_REFRESH = 1000;
 
-    static EthereumConnector ethereum = null;
     protected String handlerIdentifier = UUID.randomUUID().toString();
 
     TextViewUpdater consoleUpdater = new TextViewUpdater();
 
     static DateFormat formatter = new SimpleDateFormat("HH:mm:ss:SSS");
+
+    private boolean isConnectorReady = false;
 
     private class TextViewUpdater implements Runnable {
 
@@ -85,10 +86,8 @@ public class MainActivity extends BaseActivity implements ConnectorHandler {
         consoleText.setText(MainActivity.consoleLog);
         consoleText.setMovementMethod(new ScrollingMovementMethod());
 
-        if (ethereum == null) {
-            ethereum = new EthereumConnector(this, EthereumService.class);
-            ethereum.registerHandler(this);
-        }
+        Syng application = (Syng)getApplication();
+        application.ethereum.registerHandler(this);
     }
 
     @Override
@@ -97,8 +96,8 @@ public class MainActivity extends BaseActivity implements ConnectorHandler {
         super.onPause();
         isPaused = true;
         timer.cancel();
-        ethereum.removeListener(handlerIdentifier);
-        ethereum.unbindService();
+        Syng application = (Syng)getApplication();
+        application.ethereum.removeListener(handlerIdentifier);
     }
 
     @Override
@@ -127,14 +126,16 @@ public class MainActivity extends BaseActivity implements ConnectorHandler {
         } catch (IllegalStateException e){
             android.util.Log.i("Damn", "resume error");
         }
-        ethereum.bindService();
+        if (isConnectorReady) {
+            Syng application = (Syng)getApplication();
+            application.ethereum.addListener(handlerIdentifier, EnumSet.allOf(EventFlag.class));
+        }
     }
 
     @Override
     protected void onDestroy() {
 
         super.onDestroy();
-        ethereum.unbindService();
     }
 
     @Override
@@ -231,7 +232,9 @@ public class MainActivity extends BaseActivity implements ConnectorHandler {
     @Override
     public void onConnectorConnected() {
 
-        ethereum.addListener(handlerIdentifier, EnumSet.allOf(EventFlag.class));
+        isConnectorReady = true;
+        Syng application = (Syng)getApplication();
+        application.ethereum.addListener(handlerIdentifier, EnumSet.allOf(EventFlag.class));
         //ethereum.connect(SystemProperties.CONFIG.activePeerIP(), SystemProperties.CONFIG.activePeerPort(), SystemProperties.CONFIG.activePeerNodeid());
         ethereum.startJsonRpc();
     }
@@ -239,6 +242,9 @@ public class MainActivity extends BaseActivity implements ConnectorHandler {
     @Override
     public void onConnectorDisconnected() {
 
+        isConnectorReady = false;
+        Syng application = (Syng)getApplication();
+        application.ethereum.removeListener(handlerIdentifier);
     }
 
 }

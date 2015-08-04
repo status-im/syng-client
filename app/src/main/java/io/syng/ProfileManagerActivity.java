@@ -8,7 +8,10 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import io.syng.entities.Profile;
 
@@ -37,9 +40,44 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
             @Override
             public void onClick(View view) {
 
-                Profile profile = addProfileFragment.getProfile();
-                profileManagerFragment.addProfile(profile);
-                hideAddProfile();
+                final Profile profile = addProfileFragment.getProfile();
+                if (profile.getPasswordProtectedProfile()) {
+                    new MaterialDialog.Builder(ProfileManagerActivity.this)
+                            .title(R.string.request_profile_password)
+                            .customView(R.layout.profile_password, true)
+                            .positiveText(R.string.ok)
+                            .negativeText(R.string.cancel)
+                            .contentColor(R.color.accent) // notice no 'res' postfix for literal color
+                            .dividerColorRes(R.color.accent)
+                            .backgroundColorRes(R.color.primary_dark)
+                            .positiveColorRes(R.color.accent)
+                            .negativeColorRes(R.color.accent)
+                            .widgetColorRes(R.color.accent)
+                            .callback(new MaterialDialog.ButtonCallback() {
+
+                                @Override
+                                public void onPositive(MaterialDialog dialog) {
+
+                                    View view = dialog.getCustomView();
+                                    EditText passwordInput = (EditText) view.findViewById(R.id.passwordInput);
+                                    profile.encrypt(passwordInput.getText().toString());
+                                    profileManagerFragment.addProfile(profile);
+                                    hideAddProfile();
+                                }
+
+                                @Override
+                                public void onNegative(MaterialDialog dialog) {
+
+                                    dialog.hide();
+                                    spinner.setSelection(currentPosition, false);
+                                }
+                            })
+                            .build()
+                            .show();
+                } else {
+                    profileManagerFragment.addProfile(profile);
+                    hideAddProfile();
+                }
             }
         });
         addProfileLink = (TextView)findViewById(R.id.add_profile_link);

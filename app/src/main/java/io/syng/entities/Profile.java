@@ -1,13 +1,17 @@
 package io.syng.entities;
 
+import org.ethereum.crypto.HashUtil;
+import org.spongycastle.util.encoders.Hex;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Profile implements Serializable {
 
     protected String name;
 
-    protected String privateKey;
+    protected List<String> privateKeys = new ArrayList<>();
 
     /* "password protect profile" (encrypt the private keys) */
     protected boolean passwordProtectedProfile = false;
@@ -16,37 +20,49 @@ public class Profile implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    protected String passwordHash;
+
+    protected transient boolean isEncrypted = false;
+
     public Profile() {
 
-        this.privateKey = createPrivateKey();
+        this.privateKeys.add(createPrivateKey());
     }
 
     public Profile(String privateKey) {
 
-        this.privateKey = privateKey;
+        this.privateKeys.add(privateKey);
+    }
+
+    public Profile(List<String> privateKeys) {
+
+        this.privateKeys = privateKeys;
     }
 
     protected String createPrivateKey() {
 
-        return "";
+        byte[] privateKey = HashUtil.sha3(HashUtil.randomPeerId());
+        return Hex.toHexString(privateKey);
     }
 
-    public String getPrivateKey() {
+    public List<String> getPrivateKeys() {
 
-        if (passwordProtectedProfile) {
-            return decryptPrivateKey(privateKey, null);
-        } else {
-            return privateKey;
-        }
+        return privateKeys;
     }
 
-    public void setPrivateKey(String privateKey) {
+    public void setPrivateKeys(List<String> privateKeys) {
 
-        if (passwordProtectedProfile) {
-            this.privateKey = encryptPrivateKey(privateKey, null);
-        } else {
-            this.privateKey = privateKey;
-        }
+        this.privateKeys = privateKeys;
+    }
+
+    public void addPrivateKey(String privateKey) {
+
+        this.privateKeys.add(privateKey);
+    }
+
+    public void removePrivateKey(String privateKey) {
+
+        this.privateKeys.remove(privateKey);
     }
 
     public List<Dapp> getDapps() {
@@ -77,9 +93,6 @@ public class Profile implements Serializable {
     public void setPasswordProtectedProfile(boolean passwordProtectedProfile) {
 
         this.passwordProtectedProfile = passwordProtectedProfile;
-        if (passwordProtectedProfile) {
-            this.privateKey = encryptPrivateKey(privateKey, null);
-        }
     }
 
     public String getName() {
@@ -90,6 +103,40 @@ public class Profile implements Serializable {
     public void setName(String name) {
 
         this.name = name;
+    }
+
+    protected void setPassword(String password) {
+
+        this.passwordHash = Hex.toHexString(HashUtil.sha3(password.getBytes()));
+    }
+
+    public void encrypt(String password) {
+
+        if (!passwordProtectedProfile) {
+            setPassword(password);
+            List<String> encrypted = new ArrayList<>();
+            for (String privateKey : this.privateKeys) {
+                encrypted.add(encryptPrivateKey(privateKey, password));
+            }
+            this.privateKeys = encrypted;
+            passwordProtectedProfile = true;
+        }
+    }
+
+    public boolean decrypt(String password) {
+
+        if (passwordProtectedProfile) {
+            if (passwordHash != Hex.toHexString(HashUtil.sha3(password.getBytes()))) {
+                return false;
+            }
+            List<String> decrypted = new ArrayList<>();
+            for (String privateKey : this.privateKeys) {
+                decrypted.add(decryptPrivateKey(privateKey, password));
+            }
+            this.privateKeys = decrypted;
+            passwordProtectedProfile = false;
+        }
+        return true;
     }
 
     protected String encryptPrivateKey(String privateKey, String password) {

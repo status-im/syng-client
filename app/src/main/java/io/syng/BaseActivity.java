@@ -14,6 +14,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -23,6 +24,8 @@ import android.widget.ListView;
 import android.support.v7.widget.Toolbar;
 import android.widget.Spinner;
 import android.widget.TextView;
+
+import com.afollestad.materialdialogs.MaterialDialog;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,11 +42,16 @@ public class BaseActivity extends AppCompatActivity {
     protected List<Profile> profiles;
 
     Spinner spinner;
+    SpinnerAdapter spinnerAdapter;
+
     EditText search;
     ListView drawerList;
 
     TextView settings;
     TextView profileManager;
+
+    Profile requestProfile;
+    int currentPosition;
 
     protected ArrayAdapter<String> drawerListAdapter;
 
@@ -130,20 +138,73 @@ public class BaseActivity extends AppCompatActivity {
         });
     }
 
+    protected void changeProfile(Profile profile) {
+
+        /*
+
+        */
+        Syng application = (Syng)getApplication();
+        List<String> privateKeys = profile.getPrivateKeys();
+        application.ethereum.init(privateKeys);
+        currentPosition = spinnerAdapter.getPosition(profile);
+    }
+
+    protected void requestChangeProfile(Profile profile) {
+
+        requestProfile = profile;
+        new MaterialDialog.Builder(BaseActivity.this)
+            .title(R.string.request_profile_password)
+            .customView(R.layout.profile_password, true)
+            .positiveText(R.string.ok)
+            .negativeText(R.string.cancel)
+            .contentColor(R.color.accent) // notice no 'res' postfix for literal color
+            .dividerColorRes(R.color.accent)
+            .backgroundColorRes(R.color.primary_dark)
+            .positiveColorRes(R.color.accent)
+            .negativeColorRes(R.color.accent)
+            .widgetColorRes(R.color.accent)
+            .callback(new MaterialDialog.ButtonCallback() {
+
+                @Override
+                public void onPositive(MaterialDialog dialog) {
+
+                    View view = dialog.getCustomView();
+                    EditText passwordInput = (EditText) view.findViewById(R.id.passwordInput);
+                    if (requestProfile.decrypt(passwordInput.getText().toString())) {
+                        changeProfile(requestProfile);
+                    } else {
+                        dialog.hide();
+                        spinner.setSelection(currentPosition, false);
+                    }
+                }
+
+                @Override
+                public void onNegative(MaterialDialog dialog) {
+
+                    dialog.hide();
+                    spinner.setSelection(currentPosition, false);
+                }
+            })
+            .build()
+            .show();
+    }
+
     public void initSpinner() {
 
         profiles = ((Syng)getApplication()).preferenceManager.getProfiles();
-        ArrayList<String> spinnerItems = new ArrayList<>();
-        for (Profile profile: profiles) {
-            spinnerItems.add(profile.getName());
-        }
-        spinner.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, spinnerItems.toArray(new String[spinnerItems.size()])));
+        spinnerAdapter = new SpinnerAdapter(this, android.R.layout.simple_dropdown_item_1line, profiles);
+        spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                //String item = (String) adapterView.getItemAtPosition(i);
                 if (adapterView != null && adapterView.getChildAt(0) != null) {
                     ((TextView) adapterView.getChildAt(0)).setTextColor(Color.parseColor("#ffffff"));
+                }
+                Profile profile = spinnerAdapter.getItem(i);
+                if (profile.getPasswordProtectedProfile()) {
+                    requestChangeProfile(profile);
+                } else {
+                    changeProfile(profile);
                 }
             }
 
@@ -229,5 +290,55 @@ public class BaseActivity extends AppCompatActivity {
 
         super.onConfigurationChanged(newConfig);
         drawerToggle.onConfigurationChanged(newConfig);
+    }
+
+    public class SpinnerAdapter extends ArrayAdapter<Profile> {
+
+        private Context context;
+
+        private List<Profile> values;
+
+        public SpinnerAdapter(Context context, int textViewResourceId, List<Profile> values) {
+
+            super(context, textViewResourceId, values);
+            this.context = context;
+            this.values = values;
+        }
+
+        public int getCount() {
+
+            return values.size();
+        }
+
+        public Profile getItem(int position){
+
+            return values.get(position);
+        }
+
+        public long getItemId(int position){
+
+            return position;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+
+            return getCustomView(position, convertView, parent);
+        }
+
+        @Override
+        public View getDropDownView(int position, View convertView, ViewGroup parent) {
+
+            return getCustomView(position, convertView, parent);
+        }
+
+        public View getCustomView(int position, View convertView, ViewGroup parent) {
+
+            LayoutInflater inflater = getLayoutInflater();
+            View row=inflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
+            TextView label=(TextView)row.findViewById(android.R.id.text1);
+            label.setText(spinnerAdapter.getItem(position).getName());
+            return row;
+        }
     }
 }
