@@ -233,6 +233,7 @@ public class MainActivity extends BaseActivity implements ConnectorHandler {
 
         ethereum.addListener(handlerIdentifier, EnumSet.allOf(EventFlag.class));
         //ethereum.connect(SystemProperties.CONFIG.activePeerIP(), SystemProperties.CONFIG.activePeerPort(), SystemProperties.CONFIG.activePeerNodeid());
+        ethereum.startJsonRpc();
     }
 
     @Override
