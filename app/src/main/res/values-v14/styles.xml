@@ -1,0 +1,12 @@
+<resources>
+
+    <style name="SettingsTheme" parent="@android:style/Theme.Holo.Light.DarkActionBar">
+        <item name="android:actionBarStyle">@style/ActionBar.V14.Synq.NoTitle</item>
+    </style>
+
+    <style name="ActionBar.V14.Synq.NoTitle" parent="@android:style/Widget.Holo.Light.ActionBar.Solid.Inverse">
+        <item name="android:background">@color/primary_dark</item>
+        <item name="android:height">56dp</item>
+    </style>
+
+</resources>

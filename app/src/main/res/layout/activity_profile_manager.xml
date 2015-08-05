@@ -1,37 +1,38 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout
+    android:id="@+id/profileManagerContainer"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/profileManagerContainer"
     android:title="@string/manage_profiles"
-    tools:context="io.syng.ProfileManagerActivity">
+    tools:context="io.syng.activity.ProfileManagerActivity">
 
     <android.support.v7.widget.Toolbar
         android:id="@+id/myToolbar"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="?actionBarSize"
         android:background="@color/primary_dark"
-        android:gravity="end"
-        android:theme="@style/MyToolbar"
-        >
-        <RelativeLayout android:layout_width="wrap_content"
+        android:gravity="end">
+
+        <RelativeLayout
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content">
-            <TextView
-                style="@style/ToolbarIcon"
-                android:id="@+id/add_profile_link"
-                android:text="@string/add_profile"
-                android:textColor="@color/accent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
 
             <TextView
+                android:id="@+id/add_profile_link"
                 style="@style/ToolbarIcon"
-                android:id="@+id/save_profile_link"
-                android:text="@string/save"
-                android:textColor="@color/accent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_width="wrap_content" />
+                android:text="@string/add_profile"
+                android:textColor="@color/accent"/>
+
+            <TextView
+                android:id="@+id/save_profile_link"
+                style="@style/ToolbarIcon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/save"
+                android:textColor="@color/accent"/>
         </RelativeLayout>
 
     </android.support.v7.widget.Toolbar>
@@ -40,15 +41,17 @@
         android:id="@+id/profileManagerFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="visible"
-        android:layout_below="@id/myToolbar">
+        android:layout_below="@id/myToolbar"
+        android:visibility="visible">
 
     </FrameLayout>
+
     <FrameLayout
         android:id="@+id/addProfileFragmentContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="invisible"
-        android:layout_below="@id/myToolbar">
+        android:layout_below="@id/myToolbar"
+        android:visibility="invisible">
     </FrameLayout>
+
 </RelativeLayout>
