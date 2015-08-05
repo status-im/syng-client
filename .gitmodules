@@ -1,0 +1,6 @@
+[submodule "ethereumj"]
+	path = ethereumj
+	url = https://github.com/syng-io/ethereumj-android.git
+[submodule "cordova-android"]
+	path = cordova-android
+	url = https://github.com/apache/cordova-android.git

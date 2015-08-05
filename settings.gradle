@@ -1,7 +1,7 @@
 include ':ethereumj-core'
-project(':ethereumj-core').projectDir = new File('../ethereumj/ethereumj-core')
+project(':ethereumj-core').projectDir = new File('ethereumj/ethereumj-core')
 include ':ethereumj-core-android'
-project(':ethereumj-core-android').projectDir = new File('../ethereumj/ethereumj-core-android')
+project(':ethereumj-core-android').projectDir = new File('ethereumj/ethereumj-core-android')
 include ':cordova-android'
-project(':cordova-android').projectDir = new File('../cordova-android-master/framework')
+project(':cordova-android').projectDir = new File('cordova-android/framework')
 include ':app'
