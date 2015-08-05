@@ -79,7 +79,6 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/recyclerview-v7/22.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.android.support/support-v4/22.2.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.getbase/floatingactionbutton/1.9.0/jars" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.github.ksoichiro/android-observablescrollview/1.5.2/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/exploded-aar/com.squareup.leakcanary/leakcanary-android/1.3.1/jars" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/incremental" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jacoco" />
@@ -98,59 +97,59 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 22 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="haha-1.3" level="project" />
-    <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
-    <orderEntry type="library" exported="" name="json-io-2.4.1" level="project" />
-    <orderEntry type="library" exported="" name="floatingactionbutton-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="ormlite-android-4.48" level="project" />
-    <orderEntry type="library" exported="" name="dagger-producers-2.0-beta" level="project" />
-    <orderEntry type="library" exported="" name="glide-3.6.1" level="project" />
-    <orderEntry type="library" exported="" name="jackson-core-2.5.1" level="project" />
-    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
-    <orderEntry type="library" exported="" name="commons-pool-1.5.4" level="project" />
-    <orderEntry type="library" exported="" name="support-v4-22.2.1" level="project" />
-    <orderEntry type="library" exported="" name="jackson-databind-2.5.1" level="project" />
-    <orderEntry type="library" exported="" name="leakcanary-android-1.3.1" level="project" />
-    <orderEntry type="library" exported="" name="leakcanary-watcher-1.3.1" level="project" />
-    <orderEntry type="library" exported="" name="jsonrpc2-base-1.36" level="project" />
-    <orderEntry type="library" exported="" name="log4j-1.2.17" level="project" />
-    <orderEntry type="library" exported="" name="library-1.1" level="project" />
-    <orderEntry type="library" exported="" name="leveldb-0.7" level="project" />
+    <orderEntry type="library" exported="" name="floatingactionbutton-1.9.0" level="project" />
     <orderEntry type="library" exported="" name="design-22.2.1" level="project" />
-    <orderEntry type="library" exported="" name="dagger-2.1-SNAPSHOT" level="project" />
-    <orderEntry type="library" exported="" name="javassist-3.15.0-GA" level="project" />
-    <orderEntry type="library" exported="" name="commons-dbcp-1.4" level="project" />
-    <orderEntry type="library" exported="" name="recyclerview-v7-22.2.1" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-22.2.1" level="project" />
-    <orderEntry type="library" exported="" name="rxjava-android-0.20.7" level="project" />
-    <orderEntry type="library" exported="" name="jsr305-3.0.0" level="project" />
-    <orderEntry type="library" exported="" name="prov-1.51.0.0" level="project" />
-    <orderEntry type="library" exported="" name="leveldb-api-0.7" level="project" />
-    <orderEntry type="library" exported="" name="logback-android-core-1.1.1-3" level="project" />
-    <orderEntry type="library" exported="" name="appcompat-v7-22.2.1" level="project" />
-    <orderEntry type="library" exported="" name="java-util-1.8.0" level="project" />
-    <orderEntry type="library" exported="" name="jsonrpc2-client-1.15" level="project" />
-    <orderEntry type="library" exported="" name="javax.annotation-10.0-b28" level="project" />
-    <orderEntry type="library" exported="" name="json-smart-1.3.1" level="project" />
-    <orderEntry type="library" exported="" name="leakcanary-analyzer-1.3.1" level="project" />
-    <orderEntry type="library" exported="" name="jackson-annotations-2.5.0" level="project" />
-    <orderEntry type="library" exported="" name="core-1.51.0.0" level="project" />
     <orderEntry type="library" exported="" name="dagger-compiler-2.0" level="project" />
-    <orderEntry type="library" exported="" name="rxjava-core-0.20.7" level="project" />
-    <orderEntry type="library" exported="" name="commons-collections4-4.0" level="project" />
-    <orderEntry type="library" exported="" name="netty-all-4.0.28.Final" level="project" />
-    <orderEntry type="library" exported="" name="android-observablescrollview-1.5.2" level="project" />
-    <orderEntry type="library" exported="" name="json-simple-1.1.1" level="project" />
-    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
+    <orderEntry type="library" exported="" name="dagger-producers-2.0-beta" level="project" />
     <orderEntry type="library" exported="" name="apktool-lib-1.4.4-3" level="project" />
     <orderEntry type="library" exported="" name="ormlite-core-4.48" level="project" />
-    <orderEntry type="library" exported="" name="jsonrpc2-server-1.11" level="project" />
-    <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="persistence-api-1.0.2" level="project" />
-    <orderEntry type="library" exported="" name="logback-android-classic-1.1.1-3" level="project" />
-    <orderEntry type="library" exported="" name="slf4j-api-1.7.12" level="project" />
+    <orderEntry type="library" exported="" name="jsonrpc2-base-1.36" level="project" />
+    <orderEntry type="library" exported="" name="java-util-1.8.0" level="project" />
     <orderEntry type="library" exported="" name="material-dialogs-0.7.7.0" level="project" />
+    <orderEntry type="library" exported="" name="leakcanary-analyzer-1.3.1" level="project" />
+    <orderEntry type="library" exported="" name="glide-3.6.1" level="project" />
+    <orderEntry type="library" exported="" name="commons-collections4-4.0" level="project" />
+    <orderEntry type="library" exported="" name="recyclerview-v7-22.2.1" level="project" />
+    <orderEntry type="library" exported="" name="logback-android-core-1.1.1-3" level="project" />
+    <orderEntry type="library" exported="" name="haha-1.3" level="project" />
+    <orderEntry type="library" exported="" name="jsonrpc2-server-1.11" level="project" />
+    <orderEntry type="library" exported="" name="leakcanary-android-1.3.1" level="project" />
+    <orderEntry type="library" exported="" name="logback-android-classic-1.1.1-3" level="project" />
+    <orderEntry type="library" exported="" name="appcompat-v7-22.2.1" level="project" />
+    <orderEntry type="library" exported="" name="json-io-2.4.1" level="project" />
+    <orderEntry type="library" exported="" name="leveldb-api-0.7" level="project" />
+    <orderEntry type="library" exported="" name="jackson-databind-2.5.1" level="project" />
+    <orderEntry type="library" exported="" name="leveldb-0.7" level="project" />
+    <orderEntry type="library" exported="" name="persistence-api-1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="netty-all-4.0.28.Final" level="project" />
+    <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="commons-io-2.4" level="project" />
+    <orderEntry type="library" exported="" name="log4j-1.2.17" level="project" />
+    <orderEntry type="library" exported="" name="library-1.1" level="project" />
+    <orderEntry type="library" exported="" name="guava-18.0" level="project" />
+    <orderEntry type="library" exported="" name="jackson-annotations-2.5.0" level="project" />
+    <orderEntry type="library" exported="" name="javassist-3.15.0-GA" level="project" />
+    <orderEntry type="library" exported="" name="javax.annotation-10.0-b28" level="project" />
+    <orderEntry type="library" exported="" name="json-smart-1.3.1" level="project" />
+    <orderEntry type="library" exported="" name="core-1.51.0.0" level="project" />
+    <orderEntry type="library" exported="" name="prov-1.51.0.0" level="project" />
+    <orderEntry type="library" exported="" name="rxjava-core-0.20.7" level="project" />
+    <orderEntry type="library" exported="" name="leakcanary-watcher-1.3.1" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-22.2.1" level="project" />
+    <orderEntry type="library" exported="" name="commons-pool-1.5.4" level="project" />
+    <orderEntry type="library" exported="" name="dagger-2.1-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" name="jsr305-3.0.0" level="project" />
+    <orderEntry type="library" exported="" name="commons-dbcp-1.4" level="project" />
+    <orderEntry type="library" exported="" name="rxjava-android-0.20.7" level="project" />
+    <orderEntry type="library" exported="" name="slf4j-api-1.7.12" level="project" />
+    <orderEntry type="library" exported="" name="support-v4-22.2.1" level="project" />
+    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
+    <orderEntry type="library" exported="" name="json-simple-1.1.1" level="project" />
+    <orderEntry type="library" exported="" name="jsonrpc2-client-1.15" level="project" />
+    <orderEntry type="library" exported="" name="jackson-core-2.5.1" level="project" />
     <orderEntry type="module" module-name="ethereumj-core-android" exported="" />
     <orderEntry type="module" module-name="ethereumj-core" exported="" />
+    <orderEntry type="module" module-name="cordova-android" exported="" />
   </component>
 </module>
