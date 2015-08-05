@@ -6,14 +6,22 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.RadioButton;
 import android.widget.Switch;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -52,6 +60,32 @@ public class AddProfileFragment extends Fragment {
 
     private int dapEditPosition = -1;
 
+    private TextView walletModeButton;
+    private MaterialDialog walletModeDialog;
+    private RadioButton walletCreate;
+    private RadioButton walletImportFile;
+    private RadioButton accountModeImportString;
+    private EditText walletImportSource;
+
+    private int accountMode;
+    private String accountPrivateKey = null;
+
+    protected View.OnClickListener accountModeListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            accountMode = view.getId();
+            switch(accountMode) {
+                case R.id.radio_new_account:
+                    walletImportSource.setInputType(InputType.TYPE_NULL);
+                    break;
+                case R.id.radio_import_file:
+                case R.id.radio_import_string:
+                    walletImportSource.setInputType(InputType.TYPE_CLASS_TEXT);
+                    break;
+            }
+        }
+    };
+
     public void setProfile(Profile profile) {
 
         profileName.setText(profile != null ? profile.getName() : "");
@@ -71,7 +105,7 @@ public class AddProfileFragment extends Fragment {
     }
 
     public Profile getProfile() {
-        Profile profile = new Profile();
+        Profile profile = accountPrivateKey != null ? new Profile(accountPrivateKey) : new Profile();
         profile.setName(profileName.getText().toString());
         profile.setPasswordProtectedProfile(profilePasswordProtected.isChecked());
         List<Dapp> dapps = mAdapter.getItems();
@@ -105,6 +139,84 @@ public class AddProfileFragment extends Fragment {
         profileName = (EditText) view.findViewById(R.id.profile_name);
         profilePasswordProtected = (Switch) view.findViewById(R.id.profile_password_protected);
 
+        walletModeButton = (TextView)view.findViewById(R.id.wallet_mode);
+        walletModeDialog = new MaterialDialog.Builder(getActivity())
+                .title(R.string.wallet_title)
+                .customView(R.layout.wallet_creation_mode, true)
+                .positiveText(R.string.ok)
+                .negativeText(R.string.cancel)
+                .contentColor(getResources().getColor(R.color.accent))
+                .dividerColorRes(R.color.accent)
+                .backgroundColorRes(R.color.primary_dark)
+                .positiveColorRes(R.color.accent)
+                .negativeColorRes(R.color.accent)
+                .widgetColorRes(R.color.accent)
+                .autoDismiss(false)
+                .callback(new MaterialDialog.ButtonCallback() {
+
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+
+                        boolean hideDialog = true;
+                        accountPrivateKey = null;
+                        switch (accountMode) {
+                            case R.id.radio_new_account:
+
+                                break;
+                            case R.id.radio_import_file:
+                                File file = new File(walletImportSource.getText().toString());
+                                if (file.exists()) {
+                                    StringBuilder text = new StringBuilder();
+
+                                    try {
+                                        BufferedReader buffer = new BufferedReader(new FileReader(file));
+                                        String line;
+
+                                        while ((line = buffer.readLine()) != null) {
+                                            text.append(line);
+                                        }
+                                        buffer.close();
+                                        accountPrivateKey = text.toString();
+                                    } catch (IOException e) {
+
+                                    }
+                                } else {
+                                    Toast.makeText(getActivity(), "File not found", Toast.LENGTH_LONG).show();
+                                    hideDialog = false;
+                                }
+                                break;
+                            case R.id.radio_import_string:
+                                accountPrivateKey = walletImportSource.getText().toString();
+                                break;
+                        }
+                        if (hideDialog) {
+                            dialog.hide();
+                        }
+
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+
+                        dialog.hide();
+                    }
+                })
+                .build();
+        walletModeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                walletModeDialog.show();
+            }
+        });
+        View accountModeView = walletModeDialog.getCustomView();
+        walletCreate = (RadioButton)accountModeView.findViewById(R.id.radio_new_account);
+        walletImportFile = (RadioButton)accountModeView.findViewById(R.id.radio_import_file);
+        accountModeImportString = (RadioButton)accountModeView.findViewById(R.id.radio_import_string);
+        walletImportSource = (EditText)accountModeView.findViewById(R.id.accout_import_source);
+
+        walletCreate.setOnClickListener(accountModeListener);
+        walletImportFile.setOnClickListener(accountModeListener);
+        accountModeImportString.setOnClickListener(accountModeListener);
         mDappsRecyclerView = (RecyclerView) view.findViewById(R.id.profile_dapps_list);
 
         // use this setting to improve performance if you know that changes

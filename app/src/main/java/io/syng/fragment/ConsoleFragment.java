@@ -50,8 +50,6 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
 
     private String mConsoleLog = "";
 
-    private static EthereumConnector sEthereumConnector;
-
     private TextView mConsoleText;
 
     private Handler mHandler = new Handler();
@@ -100,10 +98,6 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
         ImageView ethereumText = (ImageView) view.findViewById(R.id.iv_ethereum_text);
         Glide.with(this).load(R.drawable.ethereum_text).into(ethereumText);
         Glide.with(this).load(R.drawable.ethereum_icon).into(ethereumIcon);
-
-        if (sEthereumConnector == null) {
-            sEthereumConnector = new EthereumConnector(getActivity(), EthereumService.class);
-        }
         return view;
     }
 
@@ -111,17 +105,19 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
     public void onPause() {
         super.onPause();
         mHandler.removeCallbacksAndMessages(null);
-//        sEthereumConnector.removeHandler(this);
-        sEthereumConnector.removeListener(mHandlerIdentifier);
-        sEthereumConnector.unbindService();
+        SyngApplication application = (SyngApplication)getActivity().getApplication();
+        application.sEthereumConnector.removeHandler(this);
+        application.sEthereumConnector.removeListener(mHandlerIdentifier);
+        application.sEthereumConnector.unbindService();
     }
 
     @Override
     public void onResume() {
         super.onResume();
         mHandler.post(mRunnable);
-        sEthereumConnector.registerHandler(this);
-        sEthereumConnector.bindService();
+        SyngApplication application = (SyngApplication)getActivity().getApplication();
+        application.sEthereumConnector.registerHandler(this);
+        application.sEthereumConnector.bindService();
     }
 
 
@@ -150,7 +146,8 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
 
     @Override
     public void onConnectorConnected() {
-        sEthereumConnector.addListener(mHandlerIdentifier, EnumSet.allOf(EventFlag.class));
+        SyngApplication application = (SyngApplication)getActivity().getApplication();
+        application.sEthereumConnector.addListener(mHandlerIdentifier, EnumSet.allOf(EventFlag.class));
     }
 
     @Override
@@ -162,9 +159,6 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
         super.onDestroy();
         RefWatcher refWatcher = SyngApplication.getRefWatcher(getActivity());
         refWatcher.watch(this);
-        if (getActivity().isFinishing()) {
-            sEthereumConnector = null;
-        }
     }
 
     private LogEntry myHandleMessage(Message message) {

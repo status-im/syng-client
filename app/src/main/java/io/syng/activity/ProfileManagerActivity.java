@@ -34,7 +34,7 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile_manager);
 
-        saveProfileLink = (TextView)findViewById(R.id.save_profile_link);
+        saveProfileLink = (TextView) findViewById(R.id.save_profile_link);
         saveProfileLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,9 +74,9 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
                             .build()
                             .show();
                 } else {
-                profileManagerFragment.addProfile(profile);
-                hideAddProfile();
-            }
+                    profileManagerFragment.addProfile(profile);
+                    hideAddProfile();
+                }
             }
         });
         addProfileLink = (TextView) findViewById(R.id.add_profile_link);
@@ -91,9 +91,9 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
         if (savedInstanceState == null) {
             addProfileFragment = new AddProfileFragment();
             profileManagerFragment = new ProfileManagerFragment();
-            getFragmentManager().beginTransaction()
-//                    .add(R.id.profileManagerFragmentContainer, profileManagerFragment)
-//                    .add(R.id.addProfileFragmentContainer, addProfileFragment)
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.profileManagerFragmentContainer, profileManagerFragment)
+                    .add(R.id.addProfileFragmentContainer, addProfileFragment)
                     .commit();
         }
 
@@ -134,27 +134,6 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
     public void onFragmentInteraction(Uri uri) {
     }
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_profile_manager, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-//      if (id == R.id.action_settings) {
-//            return true;
-//    }
-
-        return super.onOptionsItemSelected(item);
-    }
 
     @Override
     protected void onDAppClick(String item) {
