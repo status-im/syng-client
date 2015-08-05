@@ -111,7 +111,7 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
     public void onPause() {
         super.onPause();
         mHandler.removeCallbacksAndMessages(null);
-        sEthereumConnector.removeHandler(this);
+//        sEthereumConnector.removeHandler(this);
         sEthereumConnector.removeListener(mHandlerIdentifier);
         sEthereumConnector.unbindService();
     }

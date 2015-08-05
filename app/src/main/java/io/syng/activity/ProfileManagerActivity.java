@@ -2,11 +2,19 @@ package io.syng.activity;
 
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import io.syng.entities.Profile;
+import com.afollestad.materialdialogs.MaterialDialog;
+
+import io.syng.R;
+import io.syng.entity.Profile;
+import io.syng.fragment.AddProfileFragment;
+import io.syng.fragment.ProfileManagerFragment;
+import io.syng.interfaces.OnFragmentInteractionListener;
 
 
 public class ProfileManagerActivity extends BaseActivity implements OnFragmentInteractionListener {
@@ -38,7 +46,7 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
                             .customView(R.layout.profile_password, true)
                             .positiveText(R.string.ok)
                             .negativeText(R.string.cancel)
-                            .contentColor(R.color.accent) // notice no 'res' postfix for literal color
+//                            .contentColor(R.color.accent) // notice no 'res' postfix for literal color
                             .dividerColorRes(R.color.accent)
                             .backgroundColorRes(R.color.primary_dark)
                             .positiveColorRes(R.color.accent)
@@ -60,7 +68,7 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
                                 public void onNegative(MaterialDialog dialog) {
 
                                     dialog.hide();
-                                    spinner.setSelection(currentPosition, false);
+//                                    spinner.setSelection(currentPosition, false);
                                 }
                             })
                             .build()
@@ -84,8 +92,8 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
             addProfileFragment = new AddProfileFragment();
             profileManagerFragment = new ProfileManagerFragment();
             getFragmentManager().beginTransaction()
-                    .add(R.id.profileManagerFragmentContainer, profileManagerFragment)
-                    .add(R.id.addProfileFragmentContainer, addProfileFragment)
+//                    .add(R.id.profileManagerFragmentContainer, profileManagerFragment)
+//                    .add(R.id.addProfileFragmentContainer, addProfileFragment)
                     .commit();
         }
 
@@ -129,7 +137,7 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_profile_manager, menu);
+//        getMenuInflater().inflate(R.menu.menu_profile_manager, menu);
         return true;
     }
 
@@ -141,11 +149,15 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-    }
+//      if (id == R.id.action_settings) {
+//            return true;
+//    }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    protected void onDAppClick(String item) {
     }
 
 
