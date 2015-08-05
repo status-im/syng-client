@@ -1,19 +1,9 @@
 <resources>
+    
 
-    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
-        <!-- Main theme colors -->
-        <!--   your app branding color for the app bar -->
-        <item name="android:colorPrimary">@color/primary</item>
-        <!-- darker variant for the status bar and contextual app bars -->
+    <style name="SettingsTheme" parent="@android:style/Theme.Material.Light.DarkActionBar">
+        <item name="android:colorPrimary">@color/primary_dark</item>
         <item name="android:colorPrimaryDark">@color/primary_dark</item>
-        <!--   theme UI controls like checkboxes and text fields -->
-        <item name="android:colorAccent">@color/accent</item>
-        <!--
-                <item name="android:textColorPrimary">@color/accent</item>
+    </style>
 
-        -->
-                <item name="windowActionBar">false</item>
-            </style>
-
-
-        </resources>
+</resources>

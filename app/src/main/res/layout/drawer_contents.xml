@@ -1,77 +1,141 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/addrel"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    >
+    android:background="@android:color/white"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <FrameLayout
         android:id="@+id/drawer_bg"
-        style="@style/Drawer320">
-
-        <TextView
-            android:id="@+id/nv_name"
-            style="@style/TextDrawer320" />
-
-        <Spinner
-            android:id="@+id/nv_email"
-            style="@style/SpinnertDrawer320" />
+        android:layout_width="wrap_content"
+        android:layout_height="80dp">
 
         <ImageView
-            android:id="@+id/imageView"
-            style="@style/ViewDrawer320" />
+            android:id="@+id/iv_header"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"/>
 
-    </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:id="@+id/nv_name"
+                style="@style/TextDrawer320"/>
+
+            <Spinner
+                android:id="@+id/nv_email"
+                style="@style/SpinnerDrawer320"/>
+
+            <ImageView
+                android:id="@+id/imageView"
+                style="@style/ViewDrawer320"/>
+        </RelativeLayout>
+
+
+    </FrameLayout>
 
     <RelativeLayout
         android:id="@+id/search_ll"
-        style="@style/Search320">
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
 
         <EditText
             android:id="@+id/search"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:layout_marginEnd="32dp"
+            android:layout_marginLeft="32dp"
+            android:layout_marginRight="32dp"
+            android:layout_marginStart="32dp"
+            android:alpha="0.75"
+            android:hint="Search"
             android:inputType="text"
-            style="@style/TextSearch320" />
+            android:textColor="@android:color/black"
+            android:textColorHint="@android:color/black"
+            android:textSize="16sp"/>
 
-        <ImageView style="@style/ViewSearch320" />
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_marginEnd="40dp"
+            android:layout_marginLeft="40dp"
+            android:layout_marginRight="40dp"
+            android:layout_marginStart="40dp"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:src="@drawable/search"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"/>
 
     </RelativeLayout>
 
     <ListView
         android:id="@+id/drawer_list"
         style="@style/List320"
-        tools:listitem="@android:layout/simple_list_item_1"
-        android:layout_alignParentEnd="true"
         android:layout_width="match_parent"
-        android:layout_height="250dp">
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        tools:listitem="@layout/simple_list_item">
 
     </ListView>
 
-    <RelativeLayout style="@style/BottomLinks320" android:layout_below="@+id/drawer_list"
-        android:layout_height="wrap_content">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:orientation="vertical">
 
         <TextView
-            android:id="@+id/profileManager"
-            style="@style/TextBottomLinks320"
-            android:text="Profile Manager"
+            android:id="@+id/profile_manager"
+            style="@style/Base.TextAppearance.AppCompat.Body2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingLeft="32dp"
+            android:paddingStart="32dp"
+            android:text="Profile Manager"
+            android:textAllCaps="true"/>
 
         <TextView
             android:id="@+id/settings"
-            style="@style/TextBottomLinks320"
-            android:layout_below="@+id/profileManager"
-            android:text="Settings" />
+            style="@style/Base.TextAppearance.AppCompat.Body2"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingLeft="32dp"
+            android:paddingStart="32dp"
+            android:text="Settings"
+            android:textAllCaps="true"/>
 
         <View
             android:id="@+id/seperator"
-            style="@style/SeparatorBottomLinks320" />
+            android:layout_width="match_parent"
+            android:layout_height="0.2dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginTop="8dp"
+            android:alpha="0.2"
+            android:background="@android:color/black"/>
 
         <TextView
-            android:id="@+id/help"
-            style="@style/TextBottomLinks320"
-            android:layout_below="@+id/seperator"
-            android:text="Help" />
-    </RelativeLayout>
+            android:id="@+id/tv_contribute"
+            style="@style/Base.TextAppearance.AppCompat.Body2"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/listPreferredItemHeightSmall"
+            android:background="?attr/selectableItemBackground"
+            android:gravity="center_vertical"
+            android:paddingLeft="32dp"
+            android:paddingStart="32dp"
+            android:text="Contribute"
+            android:textAllCaps="true"/>
 
-</RelativeLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
     android:id="@+id/drawer_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@drawable/bg">
+    android:layout_height="match_parent">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    <FrameLayout
         android:id="@+id/content"
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    </LinearLayout>
+    </FrameLayout>
 
-    <LinearLayout
-        style="@style/Container320">
+    <FrameLayout
+        android:layout_width="305dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="start">
 
-        <include layout="@layout/drawer_contents" />
-    </LinearLayout>
+        <include layout="@layout/drawer_contents"/>
+    </FrameLayout>
 
 </android.support.v4.widget.DrawerLayout>
