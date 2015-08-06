@@ -17,6 +17,7 @@ import android.widget.RelativeLayout;
 
 import com.squareup.leakcanary.RefWatcher;
 
+import org.apache.cordova.Config;
 import org.apache.cordova.ConfigXmlParser;
 import org.apache.cordova.CordovaInterfaceImpl;
 import org.apache.cordova.CordovaPreferences;
@@ -131,6 +132,7 @@ public class WebViewFragment extends Fragment {
         preferences = parser.getPreferences();
         preferences.setPreferencesBundle(getActivity().getIntent().getExtras());
         pluginEntries = parser.getPluginEntries();
+        Config.init(getActivity());
     }
 
     @SuppressWarnings({"deprecation", "ResourceType"})
