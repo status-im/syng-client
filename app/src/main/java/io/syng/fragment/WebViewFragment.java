@@ -93,7 +93,7 @@ public class WebViewFragment extends Fragment {
         init();
 
 //        loadUrl("http://trustdavis.meteor.com");
-        loadUrl("file:///android_asset/boilerplate/index.html");
+        loadUrl("file:///android_asset/www/boilerplate/index.html");
 
         return view;
     }
