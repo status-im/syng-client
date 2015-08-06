@@ -44,7 +44,7 @@ public class WebViewFragment extends Fragment {
     protected boolean keepRunning = true;
     protected boolean immersiveMode;
 
-    protected View view;
+//    protected View view;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -82,7 +82,7 @@ public class WebViewFragment extends Fragment {
         }
 */
 
-        view = inflater.inflate(R.layout.fragment_web_view, container, false);
+//        view = inflater.inflate(R.layout.fragment_web_view, container, false);
 
         cordovaInterface = makeCordovaInterface();
         if(savedInstanceState != null)
@@ -95,7 +95,8 @@ public class WebViewFragment extends Fragment {
 //        loadUrl("http://trustdavis.meteor.com");
         loadUrl("file:///android_asset/www/boilerplate/index.html");
 
-        return view;
+//        return view;
+        return webView.getView();
     }
 
     public void loadUrl(String url) {
@@ -142,11 +143,11 @@ public class WebViewFragment extends Fragment {
         RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-        p.addRule(RelativeLayout.BELOW, R.id.myToolbar);
+//        p.addRule(RelativeLayout.BELOW, R.id.myToolbar);
         webView.getView().setLayoutParams(p);
 
-        RelativeLayout rl = (RelativeLayout)view.findViewById(R.id.web_view_layout);
-        rl.addView(webView.getView());
+//        RelativeLayout rl = (RelativeLayout)view.findViewById(R.id.web_view_layout);
+//        rl.addView(webView.getView());
 
         if (preferences.contains("BackgroundColor")) {
             int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
