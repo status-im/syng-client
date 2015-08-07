@@ -38,6 +38,19 @@
 	<!-- <link rel="ethereum-dapp-icon" href="/apple-touch-icon-precomposed.png"> -->
 	<!-- <link rel="apple-touch-icon" href="/apple-touch-icon-precomposed.png"> -->
 	<!-- <link rel="apple-touch-startup-image" href="/startup.png"> -->
+<script>
+document.addEventListener("deviceready", onDeviceReady, false);
+function alertDismissed() {
+}
+function onDeviceReady() {
+navigator.notification.alert(
+    'You are the winner!',  // message
+    alertDismissed,         // callback
+    'Game Over',            // title
+    'Done'                  // buttonName
+);
+}
+</script>
     </head>
     <body>
     </body>

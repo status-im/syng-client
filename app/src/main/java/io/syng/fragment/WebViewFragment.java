@@ -5,14 +5,11 @@ import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.media.AudioManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
 import com.squareup.leakcanary.RefWatcher;
@@ -30,7 +27,6 @@ import org.apache.cordova.PluginManager;
 import java.util.ArrayList;
 import java.util.Locale;
 
-import io.syng.R;
 import io.syng.app.SyngApplication;
 
 
@@ -43,6 +39,14 @@ public class WebViewFragment extends Fragment {
 
     protected boolean keepRunning = true;
     protected boolean immersiveMode;
+
+    private static String js_cordova = ""
+            +"var script = document.createElement('script'); "
+            +"script.setAttribute('type','text/javascript'); "
+            +"script.setAttribute('async','async'); "
+            +"script.setAttribute('src','file:///android_asset/www/cordova.js'); "
+            +"(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);"
+            +"";
 
 //    protected View view;
 
@@ -186,6 +190,8 @@ public class WebViewFragment extends Fragment {
                 e.printStackTrace();
             }
 */
+        } else if ("onPageFinished".equals(id)) {
+            webView.getEngine().loadUrl("javascript: " + js_cordova, false);
         } else if ("exit".equals(id)) {
             getActivity().finish();
         }
