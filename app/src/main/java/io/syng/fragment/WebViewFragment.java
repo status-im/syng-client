@@ -40,6 +40,8 @@ public class WebViewFragment extends Fragment {
     protected boolean keepRunning = true;
     protected boolean immersiveMode;
 
+/*
+    Dapps must keep cordova JS files inside or we must place them on external HTTP server. If inject from file: - external scripts not have access to it.
     private static String js_cordova = ""
             +"var script = document.createElement('script'); "
             +"script.setAttribute('type','text/javascript'); "
@@ -47,6 +49,7 @@ public class WebViewFragment extends Fragment {
             +"script.setAttribute('src','file:///android_asset/www/cordova.js'); "
             +"(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);"
             +"";
+*/
 
 //    protected View view;
 
@@ -191,7 +194,7 @@ public class WebViewFragment extends Fragment {
             }
 */
         } else if ("onPageFinished".equals(id)) {
-            webView.getEngine().loadUrl("javascript: " + js_cordova, false);
+//            webView.getEngine().loadUrl("javascript: " + js_cordova, false);
         } else if ("exit".equals(id)) {
             getActivity().finish();
         }

@@ -15,7 +15,7 @@
     <content src="index.html" />
 
 
-    <access origin="*" />
+    <access origin="*" subdomains="true" />
 
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -62,11 +62,11 @@
 
 <!--
     After enable it block and freez requests to our JSON-RPC
+-->
     <feature name="Whitelist" >
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin"/>
         <param name="onload" value="true" />
     </feature>
--->
 
     <preference name="loglevel" value="DEBUG" />
     <!--
