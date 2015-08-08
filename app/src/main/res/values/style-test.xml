@@ -51,7 +51,7 @@
     <style name="ViewDrawer320">
         <item name="android:layout_width">30dp</item>
         <item name="android:layout_height">30dp</item>
-        <item name="android:src">@drawable/dropdown</item>
+        <item name="android:src">@drawable/ic_arrow_drop_down_black_24dp</item>
         <item name="android:layout_alignParentBottom">true</item>
         <item name="android:layout_alignParentRight">true</item>
         <item name="android:layout_alignParentEnd">true</item>
@@ -61,38 +61,6 @@
     </style>
 
 
-
-    <!-- List320 -->
-    <style name="List320">
-        <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:divider">#000000</item>
-    </style>
-
-
-    <style name="ToolbarButton">
-        <item name="android:layout_width">24dp</item>
-        <item name="android:layout_height">24dp</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_alignParentStart">false</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:src">@drawable/ico_menu</item>
-        <item name="android:layout_margin">15dp</item>
-        <item name="android:layout_marginLeft">25dp</item>
-        <item name="android:background">@null</item>
-    </style>
-
-    <style name="ToolbarButtonWhite">
-        <item name="android:layout_width">24dp</item>
-        <item name="android:layout_height">24dp</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_alignParentStart">false</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:src">@drawable/ico_menu_white</item>
-        <item name="android:layout_margin">15dp</item>
-        <item name="android:layout_marginLeft">25dp</item>
-        <item name="android:background">@null</item>
-    </style>
 
     <style name="ToolbarIcon">
         <item name="android:layout_marginEnd">10dp</item>
@@ -189,18 +157,7 @@
         <item name="android:textSize">24sp</item>
     </style>
 
-    <style name="ButtonGreen">
-        <!--<item name="android:layout_width">wrap_content</item>-->
-        <item name="android:layout_width">44dp</item>
-        <item name="android:layout_height">36dp</item>
-        <item name="android:layout_alignParentLeft">true</item>
-        <item name="android:layout_alignParentStart">false</item>
-        <item name="android:layout_alignParentTop">true</item>
-        <item name="android:src">@drawable/ico_menu_green</item>
-        <item name="android:layout_margin">10dp</item>
-        <item name="android:layout_gravity">right</item>
-        <item name="android:background">@drawable/button_green_bg</item>
-    </style>
+
 
     <style name="GreedPanel">
         <item name="android:orientation">vertical</item>
@@ -336,17 +293,6 @@
         <item name="android:layout_marginLeft">-15dp</item>
     </style>
 
-    <style name="ViewDrawer">
-        <item name="android:layout_width">30dp</item>
-        <item name="android:layout_height">30dp</item>
-        <item name="android:src">@drawable/dropdown_gray</item>
-        <item name="android:layout_alignParentBottom">true</item>
-        <item name="android:layout_alignParentRight">true</item>
-        <item name="android:layout_alignParentEnd">true</item>
-        <item name="android:layout_marginEnd">10dp</item>
-        <item name="android:layout_marginRight">5dp</item>
-        <item name="android:layout_marginBottom">5dp</item>
-    </style>
 
     <style name="Popup_Buttons">
         <item name="android:layout_height">wrap_content</item>

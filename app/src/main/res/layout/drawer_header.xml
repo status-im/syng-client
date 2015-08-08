@@ -1,0 +1,35 @@
+<FrameLayout
+    android:id="@+id/drawer_header"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="80dp"
+    android:background="?attr/selectableItemBackground"
+    android:soundEffectsEnabled="false" >
+
+    <ImageView
+        android:id="@+id/iv_header"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_name"
+            style="@style/TextDrawer320"/>
+
+        <Spinner
+            android:id="@+id/nv_email"
+            style="@style/SpinnerDrawer320"
+            android:visibility="gone"/>
+
+        <ImageView
+            android:id="@+id/drawer_indicator"
+            android:tint="@android:color/white"
+            style="@style/ViewDrawer320"/>
+    </RelativeLayout>
+
+
+</FrameLayout>

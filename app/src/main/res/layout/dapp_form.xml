@@ -2,31 +2,27 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primary_dark">
+    >
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!--<android.support.design.widget.TextInputLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
         <EditText
             android:id="@+id/dapp_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/accent"
-            android:textColorHint="@color/accent"
             android:hint="@string/name" />
-    </android.support.design.widget.TextInputLayout>
+    <!--</android.support.design.widget.TextInputLayout>-->
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!--<android.support.design.widget.TextInputLayout-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content">-->
         <EditText
             android:id="@+id/dapp_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textColor="@color/accent"
-            android:textColorHint="@color/accent"
             android:hint="@string/url" />
-    </android.support.design.widget.TextInputLayout>
+    <!--</android.support.design.widget.TextInputLayout>-->
 
 
 </LinearLayout>

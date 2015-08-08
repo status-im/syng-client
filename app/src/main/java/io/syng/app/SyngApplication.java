@@ -4,11 +4,10 @@ import android.content.Context;
 import android.os.Message;
 import android.support.multidex.MultiDexApplication;
 
+import com.squareup.leakcanary.RefWatcher;
+
 import org.ethereum.android.service.ConnectorHandler;
 import org.ethereum.android.service.EthereumConnector;
-
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
 
 import io.syng.service.EthereumService;
 import io.syng.util.PreferenceManager;
@@ -25,13 +24,13 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
     @Override public void onCreate() {
         super.onCreate();
         mPreferenceManager = new PreferenceManager(this);
-        refWatcher = LeakCanary.install(this);
+//        refWatcher = LeakCanary.install(this);
         if (sEthereumConnector == null) {
             sEthereumConnector = new EthereumConnector(this, EthereumService.class);
             sEthereumConnector.registerHandler(this);
             sEthereumConnector.bindService();
         }
-//        refWatcher = RefWatcher.DISABLED;
+        refWatcher = RefWatcher.DISABLED;
     }
 
     @Override

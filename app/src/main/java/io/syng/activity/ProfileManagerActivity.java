@@ -2,8 +2,6 @@ package io.syng.activity;
 
 import android.net.Uri;
 import android.os.Bundle;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -11,6 +9,7 @@ import android.widget.TextView;
 import com.afollestad.materialdialogs.MaterialDialog;
 
 import io.syng.R;
+import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
 import io.syng.fragment.AddProfileFragment;
 import io.syng.fragment.ProfileManagerFragment;
@@ -134,10 +133,9 @@ public class ProfileManagerActivity extends BaseActivity implements OnFragmentIn
     public void onFragmentInteraction(Uri uri) {
     }
 
-
     @Override
-    protected void onDAppClick(String item) {
-    }
+    protected void onDAppClick(Dapp dapp) {
 
+    }
 
 }

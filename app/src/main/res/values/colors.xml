@@ -8,7 +8,10 @@
 
     <color name="primary">#e7333333</color>
     <color name="primary_dark">#303030</color>
-    <color name="accent">#fafafa</color>
+    <color name="accent">#536DFE</color>
 
     <color name="black_overlay">#66000000</color>
+
+    <color name="toolbar_color">#efefef</color>
+    <color name="fab_dark_color">#cfcfcf</color>
 </resources>
