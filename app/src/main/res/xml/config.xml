@@ -60,6 +60,11 @@
         <param name="android-package" value="org.apache.cordova.vibration.Vibration"/>
     </feature>
 
+    <feature name="DappURL">
+        <param name="android-package" value="io.syng.cordova.plugin.DappURL"/>
+        <param name="onload" value="true" />
+    </feature>
+
 <!--
     After enable it block and freez requests to our JSON-RPC
 -->

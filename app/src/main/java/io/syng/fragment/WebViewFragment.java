@@ -32,6 +32,8 @@ import io.syng.app.SyngApplication;
 
 public class WebViewFragment extends Fragment {
 
+    private static final  String DEFAULT_DAPP = "file:///android_asset/www/boilerplate/index.html";
+
     protected CordovaWebView webView;
     protected CordovaInterfaceImpl cordovaInterface;
     protected CordovaPreferences preferences;
@@ -39,6 +41,8 @@ public class WebViewFragment extends Fragment {
 
     protected boolean keepRunning = true;
     protected boolean immersiveMode;
+
+    protected String url;
 
 /*
     Dapps must keep cordova JS files inside or we must place them on external HTTP server. If inject from file: - external scripts not have access to it.
@@ -52,6 +56,12 @@ public class WebViewFragment extends Fragment {
 */
 
 //    protected View view;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        url = getArguments() != null ? getArguments().getString("url") : null;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,20 +109,27 @@ public class WebViewFragment extends Fragment {
 
         init();
 
-//        loadUrl("http://trustdavis.meteor.com");
-        loadUrl("file:///android_asset/www/boilerplate/index.html");
+        loadUrl();
 
 //        return view;
         return webView.getView();
     }
 
-    public void loadUrl(String url) {
+    private void loadUrl() {
+        if (url == null || url.isEmpty()) {
+            url = DEFAULT_DAPP;
+        }
+
         if (webView == null) {
             init();
         }
 
         // If keepRunning
         this.keepRunning = preferences.getBoolean("KeepRunning", true);
+
+        if (url.indexOf("dapp://") == 0) {
+            url = url.replace("dapp://", "http://");
+        }
 
         webView.loadUrlIntoView(url, true);
     }

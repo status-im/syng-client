@@ -1,5 +1,6 @@
 package io.syng.activity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.Toolbar;
@@ -21,7 +22,16 @@ public class MainActivity extends BaseActivity {
 
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
+        Intent intent = getIntent();
+
+        if (intent.getDataString() != null && intent.getDataString().indexOf("dapp://") == 0) {
+            WebViewFragment wvF = new WebViewFragment();
+            Bundle args = new Bundle();
+            args.putString("url", intent.getDataString());
+            wvF.setArguments(args);
+            replaceFragment(wvF);
+        }
+        else if (savedInstanceState == null) {
             replaceFragment(new ConsoleFragment());
         }
 
