@@ -34,6 +34,9 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
+import org.ethereum.crypto.HashUtil;
+import org.spongycastle.util.encoders.Hex;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -50,6 +53,7 @@ import io.syng.util.GeneralUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
+import static org.ethereum.config.SystemProperties.CONFIG;
 
 public abstract class BaseActivity extends AppCompatActivity implements
         OnClickListener, OnDAppClickListener, OnProfileClickListener {
@@ -63,7 +67,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             "EtherEx", "TrustDavis", "Augur", "Console", "DApps",
             "EtherEx", "TrustDavis"));
 
-    private ArrayList<String> mAccountNamesList = new ArrayList<>(Arrays.asList("Yaroslav", "Frank Underwood",
+    private ArrayList<String> mAccountNamesList = new ArrayList<>(Arrays.asList("Cow", "Yaroslav", "Frank Underwood",
             "Jarradh", "Adrian"));
 
     private ActionBarDrawerToggle mDrawerToggle;
@@ -153,6 +157,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Glide.with(this).load(R.drawable.drawer).into(header);
 
         super.setContentView(mDrawerLayout);
+        TextView textView = (TextView) findViewById(R.id.tv_name);
+        if (textView != null) {
+            textView.setText("Cow");
+        }
     }
 
 
@@ -161,6 +169,21 @@ public abstract class BaseActivity extends AppCompatActivity implements
         for (String name : mAccountNamesList) {
             Profile profile = new Profile();
             profile.setName(name);
+            // default cow account
+            if (name == "Cow") {
+                // Add default cow and monkey addresses
+                List<String> addresses = new ArrayList<String>();
+                byte[] cowAddr = HashUtil.sha3("cow".getBytes());
+                addresses.add(Hex.toHexString(cowAddr));
+                String secret = CONFIG.coinbaseSecret();
+                byte[] cbAddr = HashUtil.sha3(secret.getBytes());
+                addresses.add(Hex.toHexString(cbAddr));
+                profile.setPrivateKeys(addresses);
+                SyngApplication app = (SyngApplication)getApplication();
+                if (app.currentProfile == null) {
+                    changeProfile(profile);
+                }
+            }
             mProfiles.add(profile);
         }
         mAccountDrawerAdapter = new AccountDrawerAdapter(this, mProfiles, this);
@@ -192,10 +215,15 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected void changeProfile(Profile profile) {
 
+        TextView textView = (TextView) findViewById(R.id.tv_name);
+        if (textView != null) {
+            textView.setText(profile.getName());
+        }
         SyngApplication application = (SyngApplication) getApplication();
         List<String> privateKeys = profile.getPrivateKeys();
         application.sEthereumConnector.init(privateKeys);
-        currentPosition = spinnerAdapter.getPosition(profile);
+        application.currentProfile = profile;
+        //currentPosition = spinnerAdapter.getPosition(profile);
     }
 
     protected void requestChangeProfile(Profile profile) {
@@ -461,8 +489,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onProfileClick(Profile profile) {
-        TextView textView = (TextView) findViewById(R.id.tv_name);
-        textView.setText(profile.getName());
+        changeProfile(profile);
         flipDrawer();
     }
 

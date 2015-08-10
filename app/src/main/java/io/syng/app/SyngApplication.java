@@ -9,6 +9,7 @@ import com.squareup.leakcanary.RefWatcher;
 import org.ethereum.android.service.ConnectorHandler;
 import org.ethereum.android.service.EthereumConnector;
 
+import io.syng.entity.Profile;
 import io.syng.service.EthereumService;
 import io.syng.util.PreferenceManager;
 
@@ -20,6 +21,8 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
     public static EthereumConnector sEthereumConnector = null;
 
     private RefWatcher refWatcher;
+
+    public Profile currentProfile = null;
 
     @Override public void onCreate() {
         super.onCreate();
@@ -50,6 +53,10 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     @Override
     public void onConnectorConnected() {
+
+        if (currentProfile != null) {
+            sEthereumConnector.init(currentProfile.getPrivateKeys());
+        }
         sEthereumConnector.startJsonRpc();
     }
 
