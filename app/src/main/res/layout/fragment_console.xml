@@ -28,7 +28,7 @@
                 android:paddingBottom="60dp">
 
                 <ImageView
-                    android:id="@+id/iv_ethereum_icon"
+                    android:id="@+id/iv_syng_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_gravity="center_horizontal"
@@ -40,7 +40,7 @@
                     android:layout_weight="0.1"/>
 
                 <ImageView
-                    android:id="@+id/iv_ethereum_text"
+                    android:id="@+id/iv_syng_text"
                     android:layout_width="wrap_content"
                     android:layout_height="0dp"
                     android:layout_gravity="center_horizontal"

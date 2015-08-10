@@ -83,10 +83,10 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
         ImageView background = (ImageView) view.findViewById(R.id.iv_background);
         Glide.with(this).load(R.drawable.bg1).into(background);
 
-        ImageView ethereumIcon = (ImageView) view.findViewById(R.id.iv_ethereum_icon);
-        ImageView ethereumText = (ImageView) view.findViewById(R.id.iv_ethereum_text);
-        Glide.with(this).load(R.drawable.ethereum_text).into(ethereumText);
-        Glide.with(this).load(R.drawable.ethereum_icon).into(ethereumIcon);
+        ImageView syngLogo = (ImageView) view.findViewById(R.id.iv_syng_logo);
+        ImageView syngText = (ImageView) view.findViewById(R.id.iv_syng_text);
+        Glide.with(this).load(R.drawable.syng_text).into(syngText);
+        Glide.with(this).load(R.drawable.syng_logo).into(syngLogo);
 
         ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
 
