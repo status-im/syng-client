@@ -1,10 +1,11 @@
 <FrameLayout
     android:id="@+id/drawer_header"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
-    android:layout_height="80dp"
+    android:layout_width="match_parent"
+    android:layout_height="120dp"
     android:background="?attr/selectableItemBackground"
-    android:soundEffectsEnabled="false" >
+    android:soundEffectsEnabled="false"
+    android:fitsSystemWindows="true">
 
     <ImageView
         android:id="@+id/iv_header"
@@ -18,7 +19,10 @@
 
         <TextView
             android:id="@+id/tv_name"
-            style="@style/TextDrawer320"/>
+            style="@style/TextDrawer320"
+            android:layout_alignTop="@+id/drawer_indicator"
+            android:layout_toRightOf="@+id/nv_email"
+            android:layout_toEndOf="@+id/nv_email"/>
 
         <Spinner
             android:id="@+id/nv_email"

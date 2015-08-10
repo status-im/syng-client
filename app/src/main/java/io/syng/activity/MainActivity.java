@@ -3,10 +3,6 @@ package io.syng.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.Toolbar;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
 
 import io.syng.R;
 import io.syng.entity.Dapp;
@@ -58,22 +54,13 @@ public class MainActivity extends BaseActivity {
         }
     }
 
+
     @SuppressWarnings("ConstantConditions")
     private void replaceFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.container, fragment).commit();
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.myToolbar);
-        ImageView background = (ImageView) findViewById(R.id.iv_background);
-        if (!(fragment instanceof ConsoleFragment)) {
-            toolbar.setBackgroundResource(R.color.toolbar_color);
-            background.setImageResource(0);
-        } else {
-            Glide.with(this).load(R.drawable.bg1).into(background);
-            toolbar.setBackgroundResource(R.drawable.fill);
-        }
-
     }
+
 
 
 }

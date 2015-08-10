@@ -19,11 +19,12 @@
 
 
     <style name="TextDrawer320">
-        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_gravity">start</item>
+        <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginLeft">20dp</item>
         <item name="android:layout_marginStart">20dp</item>
-        <item name="android:layout_marginTop">15dp</item>
+        <item name="android:layout_marginBottom">15dp</item>
         <item name="android:text">Jarrad Hope</item>
         <item name="android:textColor">#ffffff</item>
         <item name="android:textSize">20sp</item>

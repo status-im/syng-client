@@ -62,6 +62,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private static final int DRAWER_CLOSE_DELAY_LONG = 400;
 
     private static final String CONTRIBUTE_LINK = "https://github.com/syng-io";
+    private static final String CONTINUE_SEARCH_LINK = "dapp://syng.io/store?q=search%20query";
 
     private ArrayList<String> mDAppNamesList = new ArrayList<>(Arrays.asList("Console", "DApps",
             "EtherEx", "TrustDavis", "Augur", "Console", "DApps",
@@ -99,7 +100,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     private SpinnerAdapter spinnerAdapter;
     private Profile requestProfile;
-    private int currentPosition;
 
     @SuppressLint("InflateParams")
     @Override
@@ -117,6 +117,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) inflater.inflate(layoutResID, content, true).findViewById(R.id.myToolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
+            mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(android.R.color.black));
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
@@ -133,8 +134,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-//        mAccountSpinner = (Spinner) mDrawerLayout.findViewById(R.id.nv_email);
-//        initSpinner();
 
         mSearchTextView = (EditText) mDrawerLayout.findViewById(R.id.search);
         initSearch();
@@ -179,7 +178,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 byte[] cbAddr = HashUtil.sha3(secret.getBytes());
                 addresses.add(Hex.toHexString(cbAddr));
                 profile.setPrivateKeys(addresses);
-                SyngApplication app = (SyngApplication)getApplication();
+                SyngApplication app = (SyngApplication) getApplication();
                 if (app.currentProfile == null) {
                     changeProfile(profile);
                 }
@@ -197,17 +196,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
             mDApps.add(new Dapp(name));
         }
         mDAppsDrawerAdapter = new DAppDrawerAdapter(new ArrayList<>(mDApps), this);
-        initFooter();
         mDAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
     }
 
-    private void initFooter() {
-//        ViewGroup header = (ViewGroup) getLayoutInflater().inflate(
-//                R.layout.quiz_result_header_item, mListView, false);
-
-//        mDAppsRecyclerView.addHeaderView(header);
-//        mListView.setAdapter(mAdapter);
-    }
 
     private void closeDrawer(int delayMills) {
         mHandler.postDelayed(mRunnable, delayMills);
@@ -328,14 +319,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     protected void updateAppList(String filter) {
-        mDAppsDrawerAdapter.clear();
-        int length = mDAppNamesList.size();
+        ArrayList<Dapp> dapps = new ArrayList<>(mDApps.size());
+        int length = mDApps.size();
         for (int i = 0; i < length; i++) {
             Dapp item = mDApps.get(i);
             if (item.getName().toLowerCase().contains(filter.toLowerCase())) {
-                mDAppsDrawerAdapter.add(item);
+                dapps.add(item);
             }
         }
+        mDAppsDrawerAdapter = new DAppDrawerAdapter(dapps, this);
+        mDAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
     }
 
     @Override
@@ -422,6 +415,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private boolean isDrawerFrontViewActive() {
         return mFrontView.getVisibility() == VISIBLE;
     }
+
     @Override
     public void onBackPressed() {
         if (mDrawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -481,6 +475,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             return row;
         }
     }
+
     @Override
     public void onDAppItemClick(Dapp dapp) {
         onDAppClick(dapp);
@@ -550,6 +545,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     }
                 })
                 .build().show();
+    }
+
+    @Override
+    public void onDAppContinueSearch() {
+        String url = CONTINUE_SEARCH_LINK;
+        Intent intent = new Intent(Intent.ACTION_VIEW);
+        intent.setData(Uri.parse(url));
+        if (intent.resolveActivity(getPackageManager()) != null) {
+            startActivity(intent);
+        }
     }
 
     @Override

@@ -1,6 +1,7 @@
 package io.syng.adapter;
 
 
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +17,7 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private static final int TYPE_FOOTER = 10;
     private static final int TYPE_SIMPLE_ITEM = 20;
+    private static final int TYPE_CONTINUE_SEARCH = 30;
 
     private final OnDAppClickListener mListener;
 
@@ -26,13 +28,17 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         void onDAppPress(Dapp dapp);
 
         void onDAppAdd();
+
+        void onDAppContinueSearch();
     }
 
     private List<Dapp> mDataSet;
+    private boolean continueSearch;
 
-    public DAppDrawerAdapter(List<Dapp> data, OnDAppClickListener listener) {
+    public DAppDrawerAdapter(@NonNull List<Dapp> data, OnDAppClickListener listener) {
         this.mDataSet = data;
         mListener = listener;
+        continueSearch = data.isEmpty();
     }
 
     @Override
@@ -41,10 +47,13 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         View v;
         if (viewType == TYPE_SIMPLE_ITEM) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.dapp_drawer_list_item, parent, false);
-            return new DappSimpleViewHolder(v);
+            return new SimpleViewHolder(v);
         } else if (viewType == TYPE_FOOTER) {
             v = LayoutInflater.from(parent.getContext()).inflate(R.layout.dapp_drawer_add_item, parent, false);
-            return new DappFooterViewHolder(v);
+            return new FooterViewHolder(v);
+        } else if (viewType == TYPE_CONTINUE_SEARCH) {
+            v = LayoutInflater.from(parent.getContext()).inflate(R.layout.dapp_drawer_continue_search_item, parent, false);
+            return new ContinueSearchViewHolder(v);
         }
 
         throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
@@ -52,8 +61,8 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        if (holder instanceof DappSimpleViewHolder) {
-            DappSimpleViewHolder myHolder = (DappSimpleViewHolder) holder;
+        if (holder instanceof SimpleViewHolder) {
+            SimpleViewHolder myHolder = (SimpleViewHolder) holder;
             final Dapp dapp = mDataSet.get(position);
             myHolder.nameTextView.setText(dapp.getName());
             myHolder.nameTextView.setOnClickListener(new View.OnClickListener() {
@@ -74,8 +83,8 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             });
         }
-        if (holder instanceof DappFooterViewHolder) {
-            DappFooterViewHolder myHolder = (DappFooterViewHolder) holder;
+        if (holder instanceof FooterViewHolder) {
+            FooterViewHolder myHolder = (FooterViewHolder) holder;
             myHolder.addView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -85,11 +94,23 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 }
             });
         }
+        if (holder instanceof ContinueSearchViewHolder) {
+            ContinueSearchViewHolder myHolder = (ContinueSearchViewHolder) holder;
+            myHolder.continueSearchView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mListener != null) {
+                        mListener.onDAppContinueSearch();
+                    }
+                }
+            });
+
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mDataSet.size() + 1;
+        return continueSearch ? mDataSet.size() + 2 : mDataSet.size() + 1;
     }
 
     @Override
@@ -97,11 +118,18 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         if (isPositionFooter(position))
             return TYPE_FOOTER;
 
+        if (isPositionContinueItem(position))
+            return TYPE_CONTINUE_SEARCH;
+
         return TYPE_SIMPLE_ITEM;
     }
 
     private boolean isPositionFooter(int position) {
-        return position == mDataSet.size();
+        return continueSearch ? position == mDataSet.size() + 1 : position == mDataSet.size();
+    }
+
+    private boolean isPositionContinueItem(int position) {
+        return continueSearch && position == mDataSet.size();
     }
 
 
@@ -115,24 +143,35 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
-    static class DappSimpleViewHolder extends RecyclerView.ViewHolder {
+    static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nameTextView;
 
-        public DappSimpleViewHolder(View v) {
+        public SimpleViewHolder(View v) {
             super(v);
             nameTextView = (TextView) v.findViewById(R.id.text);
         }
 
     }
 
-    static class DappFooterViewHolder extends RecyclerView.ViewHolder {
+    static class FooterViewHolder extends RecyclerView.ViewHolder {
 
         private View addView;
 
-        public DappFooterViewHolder(View v) {
+        public FooterViewHolder(View v) {
             super(v);
             addView = v.findViewById(R.id.ll_add);
+        }
+
+    }
+
+    static class ContinueSearchViewHolder extends RecyclerView.ViewHolder {
+
+        private View continueSearchView;
+
+        public ContinueSearchViewHolder(View v) {
+            super(v);
+            continueSearchView = v.findViewById(R.id.ll_continue_search);
         }
 
     }

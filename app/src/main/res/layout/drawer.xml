@@ -3,7 +3,8 @@
     android:id="@+id/drawer_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
     <FrameLayout
         android:id="@+id/content"
@@ -12,12 +13,13 @@
 
     </FrameLayout>
 
-    <FrameLayout
+    <android.support.design.widget.NavigationView
         android:layout_width="305dp"
         android:layout_height="match_parent"
         android:layout_gravity="start">
 
         <include layout="@layout/drawer_content"/>
-    </FrameLayout>
+
+    </android.support.design.widget.NavigationView>
 
 </android.support.v4.widget.DrawerLayout>

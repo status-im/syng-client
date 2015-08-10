@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AppCompatActivity;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -86,6 +87,9 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
         ImageView ethereumText = (ImageView) view.findViewById(R.id.iv_ethereum_text);
         Glide.with(this).load(R.drawable.ethereum_text).into(ethereumText);
         Glide.with(this).load(R.drawable.ethereum_icon).into(ethereumIcon);
+
+        ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayShowTitleEnabled(true);
+
         return view;
     }
 
