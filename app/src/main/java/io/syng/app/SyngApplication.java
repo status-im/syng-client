@@ -11,22 +11,21 @@ import org.ethereum.android.service.EthereumConnector;
 
 import io.syng.entity.Profile;
 import io.syng.service.EthereumService;
-import io.syng.util.PreferenceManager;
+import io.syng.util.PrefsUtil;
 
 
 public class SyngApplication extends MultiDexApplication implements ConnectorHandler {
 
-    public PreferenceManager mPreferenceManager;
-
-    public static EthereumConnector sEthereumConnector = null;
+    public static EthereumConnector sEthereumConnector;
 
     private RefWatcher refWatcher;
 
-    public Profile currentProfile = null;
+    public Profile currentProfile;
 
-    @Override public void onCreate() {
+    @Override
+    public void onCreate() {
         super.onCreate();
-        mPreferenceManager = new PreferenceManager(this);
+        PrefsUtil.initialize(this);
 //        refWatcher = LeakCanary.install(this);
         if (sEthereumConnector == null) {
             sEthereumConnector = new EthereumConnector(this, EthereumService.class);
@@ -39,7 +38,6 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
     @Override
     public void onTerminate() {
         super.onTerminate();
-        mPreferenceManager.close();
         sEthereumConnector.removeHandler(this);
         sEthereumConnector.unbindService();
         sEthereumConnector = null;
@@ -53,7 +51,6 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     @Override
     public void onConnectorConnected() {
-
         if (currentProfile != null) {
             sEthereumConnector.init(currentProfile.getPrivateKeys());
         }

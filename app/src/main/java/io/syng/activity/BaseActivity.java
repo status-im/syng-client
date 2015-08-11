@@ -2,6 +2,7 @@ package io.syng.activity;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -31,6 +32,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
@@ -50,6 +52,7 @@ import io.syng.app.SyngApplication;
 import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
 import io.syng.util.GeneralUtil;
+import io.syng.util.PrefsUtil;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -131,7 +134,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-
         mSearchTextView = (EditText) mDrawerLayout.findViewById(R.id.search);
         initSearch();
 
@@ -157,6 +159,24 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (textView != null) {
             textView.setText("Cow");
         }
+
+        showWarningDialogIfNeed();
+
+    }
+
+    private void showWarningDialogIfNeed() {
+        if (PrefsUtil.isFirstLaunch()) {
+            PrefsUtil.setFirstLaunch(false);
+            new AlertDialogWrapper.Builder(this)
+                    .setTitle(R.string.warning_title)
+                    .setMessage(R.string.warning_message)
+                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    }).show();
+        }
     }
 
 
@@ -166,7 +186,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             Profile profile = new Profile();
             profile.setName(name);
             // default cow account
-            if (name == "Cow") {
+            if (name.equals("Cow")) {
                 // Add default cow and monkey addresses
                 List<String> addresses = new ArrayList<String>();
                 byte[] cowAddr = HashUtil.sha3("cow".getBytes());
@@ -209,7 +229,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
         SyngApplication application = (SyngApplication) getApplication();
         List<String> privateKeys = profile.getPrivateKeys();
-        application.sEthereumConnector.init(privateKeys);
+        SyngApplication.sEthereumConnector.init(privateKeys);
         application.currentProfile = profile;
         //currentPosition = spinnerAdapter.getPosition(profile);
     }
@@ -256,7 +276,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     public void initSpinner() {
 
-        List<Profile> profilesList = ((SyngApplication) getApplication()).mPreferenceManager.getProfiles();
+        List<Profile> profilesList = PrefsUtil.getProfiles();
         spinnerAdapter = new SpinnerAdapter(this, android.R.layout.simple_dropdown_item_1line, profilesList);
 //        mAccountSpinner.setAdapter(spinnerAdapter);
 //        mAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {

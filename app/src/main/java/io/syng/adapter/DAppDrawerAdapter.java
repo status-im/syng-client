@@ -1,7 +1,6 @@
 package io.syng.adapter;
 
 
-import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,20 +21,16 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private final OnDAppClickListener mListener;
 
     public interface OnDAppClickListener {
-
         void onDAppItemClick(Dapp dapp);
-
         void onDAppPress(Dapp dapp);
-
         void onDAppAdd();
-
         void onDAppContinueSearch();
     }
 
     private List<Dapp> mDataSet;
     private boolean continueSearch;
 
-    public DAppDrawerAdapter(@NonNull List<Dapp> data, OnDAppClickListener listener) {
+    public DAppDrawerAdapter(List<Dapp> data, OnDAppClickListener listener) {
         this.mDataSet = data;
         mListener = listener;
         continueSearch = data.isEmpty();
