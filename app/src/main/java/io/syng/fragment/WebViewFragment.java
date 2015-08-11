@@ -192,14 +192,17 @@ public class WebViewFragment extends Fragment {
     }
 
     protected CordovaInterfaceImpl makeCordovaInterface() {
+        return new CordovaInterfaceImpl(getActivity());
+/*
         return new CordovaInterfaceImpl(getActivity()) {
             @Override
             public Object onMessage(String id, Object data) {
                 return WebViewFragment.this.onMessage(id, data);
             }
         };
+*/
     }
-
+/*
     public Object onMessage(String id, Object data) {
         if ("onReceivedError".equals(id)) {
             //TODO: do we need handle error and show it?
@@ -210,7 +213,7 @@ public class WebViewFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-*/
+* /
         } else if ("onPageFinished".equals(id)) {
 //            webView.getEngine().loadUrl("javascript: " + js_cordova, false);
         } else if ("exit".equals(id)) {
@@ -218,7 +221,7 @@ public class WebViewFragment extends Fragment {
         }
         return null;
     }
-
+*/
     @Override
     public void onPause() {
         super.onPause();
