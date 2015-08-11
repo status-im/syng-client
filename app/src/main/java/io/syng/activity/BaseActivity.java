@@ -134,7 +134,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-
         mSearchTextView = (EditText) mDrawerLayout.findViewById(R.id.search);
         initSearch();
 
