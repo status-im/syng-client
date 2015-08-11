@@ -35,21 +35,16 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onDAppClick(Dapp dapp) {
-        switch (dapp.getName()) {
-            case "Console":
+        switch (dapp.getUrl()) {
+            case "":
                 replaceFragment(new ConsoleFragment());
                 break;
-            case "DApps":
-                replaceFragment(new WebViewFragment());
-                break;
-            case "EtherEx":
-                replaceFragment(new WebViewFragment());
-                break;
-            case "TrustDavis":
-                replaceFragment(new WebViewFragment());
-                break;
-            case "Augur":
-                replaceFragment(new WebViewFragment());
+            default:
+                WebViewFragment wvF = new WebViewFragment();
+                Bundle args = new Bundle();
+                args.putString("url", dapp.getUrl());
+                wvF.setArguments(args);
+                replaceFragment(wvF);
                 break;
         }
     }

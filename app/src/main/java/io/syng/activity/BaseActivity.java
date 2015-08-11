@@ -64,12 +64,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private static final String CONTRIBUTE_LINK = "https://github.com/syng-io";
     private static final String CONTINUE_SEARCH_LINK = "dapp://syng.io/store?q=search%20query";
 
-    private ArrayList<String> mDAppNamesList = new ArrayList<>(Arrays.asList("Console", "DApps",
-            "EtherEx", "TrustDavis", "Augur", "Console", "DApps",
-            "EtherEx", "TrustDavis"));
+    private ArrayList<String> mDAppNamesList = new ArrayList<>(Arrays.asList("Console"));
 
-    private ArrayList<String> mAccountNamesList = new ArrayList<>(Arrays.asList("Cow", "Yaroslav", "Frank Underwood",
-            "Jarradh", "Adrian"));
+    private ArrayList<String> mAccountNamesList = new ArrayList<>(Arrays.asList("Cow"));
 
     private ActionBarDrawerToggle mDrawerToggle;
 
