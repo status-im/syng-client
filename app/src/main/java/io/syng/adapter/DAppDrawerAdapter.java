@@ -22,8 +22,11 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public interface OnDAppClickListener {
         void onDAppItemClick(Dapp dapp);
+
         void onDAppPress(Dapp dapp);
+
         void onDAppAdd();
+
         void onDAppContinueSearch();
     }
 
@@ -60,7 +63,7 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             SimpleViewHolder myHolder = (SimpleViewHolder) holder;
             final Dapp dapp = mDataSet.get(position);
             myHolder.nameTextView.setText(dapp.getName());
-            myHolder.nameTextView.setOnClickListener(new View.OnClickListener() {
+            myHolder.item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     if (mListener != null) {
@@ -68,7 +71,7 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                 }
             });
-            myHolder.nameTextView.setOnLongClickListener(new View.OnLongClickListener() {
+            myHolder.item.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     if (mListener != null) {
@@ -141,10 +144,12 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nameTextView;
+        private View item;
 
         public SimpleViewHolder(View v) {
             super(v);
             nameTextView = (TextView) v.findViewById(R.id.text);
+            item = v.findViewById(R.id.ll_dapp_item);
         }
 
     }

@@ -18,8 +18,15 @@ public class MainActivity extends BaseActivity {
 
         setContentView(R.layout.activity_main);
 
-        Intent intent = getIntent();
+        if (savedInstanceState == null) {
+            replaceFragment(new ConsoleFragment());
+        }
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         if (intent.getDataString() != null && intent.getDataString().indexOf("dapp://") == 0) {
             WebViewFragment wvF = new WebViewFragment();
             Bundle args = new Bundle();
@@ -27,10 +34,6 @@ public class MainActivity extends BaseActivity {
             wvF.setArguments(args);
             replaceFragment(wvF);
         }
-        else if (savedInstanceState == null) {
-            replaceFragment(new ConsoleFragment());
-        }
-
     }
 
     @Override
@@ -55,7 +58,6 @@ public class MainActivity extends BaseActivity {
         getSupportFragmentManager().beginTransaction().
                 replace(R.id.container, fragment).commit();
     }
-
 
 
 }

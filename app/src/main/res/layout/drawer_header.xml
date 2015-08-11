@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="120dp"
     android:background="?attr/selectableItemBackground"
-    android:soundEffectsEnabled="false"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:soundEffectsEnabled="false">
 
     <ImageView
         android:id="@+id/iv_header"
@@ -19,10 +19,18 @@
 
         <TextView
             android:id="@+id/tv_name"
-            style="@style/TextDrawer320"
+            style="@style/Base.TextAppearance.AppCompat.Title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_alignTop="@+id/drawer_indicator"
+            android:layout_gravity="start"
+            android:layout_marginBottom="15dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginStart="20dp"
+            android:layout_toEndOf="@+id/nv_email"
             android:layout_toRightOf="@+id/nv_email"
-            android:layout_toEndOf="@+id/nv_email"/>
+            android:text="Jarrad Hope"
+            android:textColor="#ffffff"/>
 
         <Spinner
             android:id="@+id/nv_email"
@@ -31,8 +39,8 @@
 
         <ImageView
             android:id="@+id/drawer_indicator"
-            android:tint="@android:color/white"
-            style="@style/ViewDrawer320"/>
+            style="@style/ViewDrawer320"
+            android:tint="@android:color/white"/>
     </RelativeLayout>
 
 

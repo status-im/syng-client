@@ -1,13 +1,33 @@
-<TextView
-    android:id="@+id/text"
+<LinearLayout
+    android:id="@+id/ll_dapp_item"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="?attr/listPreferredItemHeightSmall"
+    android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    android:textAppearance="?android:attr/textAppearanceListItemSmall"
-    android:paddingEnd="16dp"
-    android:paddingStart="16dp"
-    android:textColor="@android:color/black"
-    android:background="?attr/selectableItemBackground"/>
+    android:orientation="horizontal">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/ic_favorite_black_24dp"
+        android:tint="@color/drawer_icons_color"/>
+
+    <TextView
+        android:id="@+id/text"
+        style="@style/Base.TextAppearance.AppCompat.Body2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
+        android:textColor="@android:color/black"
+        tools:text="Test text"
+        />
+
+
+</LinearLayout>
+
 

@@ -138,7 +138,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         initSearch();
 
         mDrawerLayout.findViewById(R.id.ll_settings).setOnClickListener(this);
-        mDrawerLayout.findViewById(R.id.profile_manager).setOnClickListener(this);
         mDrawerLayout.findViewById(R.id.ll_contribute).setOnClickListener(this);
         mDrawerLayout.findViewById(R.id.drawer_header).setOnClickListener(this);
 
@@ -152,7 +151,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         initProfiles();
 
         ImageView header = (ImageView) mDrawerLayout.findViewById(R.id.iv_header);
-        Glide.with(this).load(R.drawable.drawer).into(header);
+        Glide.with(this).load(R.drawable.two).into(header);
 
         super.setContentView(mDrawerLayout);
         TextView textView = (TextView) findViewById(R.id.tv_name);
@@ -388,10 +387,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 startActivity(new Intent(BaseActivity.this, SettingsActivity.class));
                 closeDrawer(DRAWER_CLOSE_DELAY_LONG);
                 break;
-            case R.id.profile_manager:
-                startActivity(new Intent(BaseActivity.this, ProfileManagerActivity.class));
-                closeDrawer(DRAWER_CLOSE_DELAY_LONG);
-                break;
             case R.id.drawer_header:
                 flipDrawer();
                 break;
@@ -571,6 +566,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         intent.setData(Uri.parse(url));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
+            closeDrawer(DRAWER_CLOSE_DELAY_SHORT);
+            mSearchTextView.getText().clear();
         }
     }
 

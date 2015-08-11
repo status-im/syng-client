@@ -17,20 +17,6 @@
         android:orientation="vertical"
         >
 
-        <TextView
-            android:id="@+id/profile_manager"
-            style="@style/Base.TextAppearance.AppCompat.Body2"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/listPreferredItemHeightSmall"
-            android:background="?attr/selectableItemBackground"
-            android:gravity="center_vertical"
-            android:paddingLeft="32dp"
-            android:paddingStart="32dp"
-            android:text="Profile Manager"
-            android:textAllCaps="true"
-            android:visibility="gone"/>
-
-
         <LinearLayout
             android:id="@+id/ll_settings"
             android:layout_width="match_parent"
@@ -44,7 +30,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
-                android:src="@drawable/ic_settings_black_24dp"/>
+                android:src="@drawable/ic_settings_black_24dp"
+                android:tint="@color/drawer_icons_color"/>
 
             <TextView
                 android:id="@+id/settings"
@@ -60,7 +47,6 @@
         </LinearLayout>
 
 
-
         <LinearLayout
             android:id="@+id/ll_contribute"
             android:layout_width="match_parent"
@@ -74,7 +60,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="16dp"
                 android:layout_marginStart="16dp"
-                android:src="@drawable/ic_github_circle_black_24dp"/>
+                android:src="@drawable/ic_github_circle_black_24dp"
+                android:tint="@color/drawer_icons_color"/>
 
             <TextView
                 android:id="@+id/tv_contribute"

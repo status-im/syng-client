@@ -39,7 +39,8 @@
             android:layout_marginRight="25dp"
             android:layout_marginStart="25dp"
             android:gravity="center_vertical"
-            android:src="@drawable/ic_search_black_24dp"/>
+            android:src="@drawable/ic_search_black_24dp"
+            android:tint="@color/drawer_icons_color"/>
 
     </RelativeLayout>
 

@@ -33,7 +33,8 @@
         <activity
             android:name=".activity.MainActivity"
             android:label="@string/app_name"
-            android:windowSoftInputMode="adjustNothing">
+            android:windowSoftInputMode="adjustNothing"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -56,12 +57,7 @@
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activity.MainActivity"/>
-
         </activity>
-
-        <activity
-            android:name=".activity.ProfileManagerActivity"
-            android:label="@string/title_activity_profile_manager"/>
 
         <service
             android:name=".service.EthereumService"

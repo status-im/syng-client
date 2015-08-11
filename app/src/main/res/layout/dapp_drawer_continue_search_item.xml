@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:src="@drawable/ic_search_black_24dp"/>
+        android:src="@drawable/ic_search_black_24dp"
+        android:tint="@color/drawer_icons_color"/>
 
     <TextView
         android:layout_width="wrap_content"
