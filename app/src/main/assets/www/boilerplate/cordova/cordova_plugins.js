@@ -118,6 +118,13 @@ module.exports = [
             "navigator.notification",
             "navigator"
         ]
+    },
+    {
+        "file": "plugins/cordova-plugin-statusbar/www/statusbar.js",
+        "id": "cordova-plugin-statusbar.statusbar",
+        "clobbers": [
+            "window.StatusBar"
+        ]
     }
 ];
 module.exports.metadata = 
@@ -132,7 +139,8 @@ module.exports.metadata =
     "cordova-plugin-device-orientation": "1.0.1",
     "cordova-plugin-camera": "1.2.0",
     "cordova-plugin-dialogs": "1.1.1",
-    "cordova-plugin-vibration": "1.2.0"
+    "cordova-plugin-vibration": "1.2.0",
+    "cordova-plugin-statusbar": "1.0.1"
 }
 // BOTTOM OF METADATA
 });
