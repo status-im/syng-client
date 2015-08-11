@@ -33,7 +33,7 @@ import io.syng.app.SyngApplication;
 
 public class WebViewFragment extends Fragment {
 
-    private static final  String DEFAULT_DAPP = "file:///android_asset/www/boilerplate/index.html";
+    private static final  String DEFAULT_DAPP = "dapp://syng.io/dapps/wallet";
 
     protected CordovaWebView webView;
     protected CordovaInterfaceImpl cordovaInterface;
@@ -47,14 +47,15 @@ public class WebViewFragment extends Fragment {
 
 /*
     Dapps must keep cordova JS files inside or we must place them on external HTTP server. If inject from file: - external scripts not have access to it.
+*/
     private static String js_cordova = ""
             +"var script = document.createElement('script'); "
             +"script.setAttribute('type','text/javascript'); "
             +"script.setAttribute('async','async'); "
-            +"script.setAttribute('src','file:///android_asset/www/cordova.js'); "
+            +"script.setAttribute('src','http://syng.io/dapps/lib/cordova/cordova.js'); "
             +"(document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(script);"
             +"";
-*/
+
 
 //    protected View view;
 
@@ -192,17 +193,14 @@ public class WebViewFragment extends Fragment {
     }
 
     protected CordovaInterfaceImpl makeCordovaInterface() {
-        return new CordovaInterfaceImpl(getActivity());
-/*
         return new CordovaInterfaceImpl(getActivity()) {
             @Override
             public Object onMessage(String id, Object data) {
                 return WebViewFragment.this.onMessage(id, data);
             }
         };
-*/
     }
-/*
+
     public Object onMessage(String id, Object data) {
         if ("onReceivedError".equals(id)) {
             //TODO: do we need handle error and show it?
@@ -213,15 +211,16 @@ public class WebViewFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-* /
+*/
         } else if ("onPageFinished".equals(id)) {
-//            webView.getEngine().loadUrl("javascript: " + js_cordova, false);
+
+            webView.getEngine().loadUrl("javascript: " + js_cordova, false);
         } else if ("exit".equals(id)) {
             getActivity().finish();
         }
         return null;
     }
-*/
+
     @Override
     public void onPause() {
         super.onPause();
