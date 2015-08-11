@@ -17,9 +17,9 @@ import io.syng.R;
 import io.syng.activity.BaseActivity;
 import io.syng.activity.ProfileManagerActivity;
 import io.syng.adapter.ProfileAdapter;
-import io.syng.app.SyngApplication;
 import io.syng.entity.Profile;
 import io.syng.interfaces.OnFragmentInteractionListener;
+import io.syng.util.PrefsUtil;
 
 
 /**
@@ -66,7 +66,7 @@ public class ProfileManagerFragment extends Fragment {
     public void updateProfiles() {
 
         BaseActivity activity = (BaseActivity)getActivity();
-        ((SyngApplication) activity.getApplication()).mPreferenceManager.saveProfiles(adapter.getItems());
+        PrefsUtil.saveProfiles(adapter.getItems());
         activity.initSpinner();
     }
 
@@ -94,7 +94,7 @@ public class ProfileManagerFragment extends Fragment {
 
         // specify an adapter (see also next example)
 
-        profiles = ((SyngApplication)getActivity().getApplication()).mPreferenceManager.getProfiles();
+        profiles = PrefsUtil.getProfiles();
         adapter = new ProfileAdapter(profiles);
         recyclerView.setAdapter(adapter);
 
