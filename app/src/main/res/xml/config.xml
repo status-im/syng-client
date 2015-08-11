@@ -65,6 +65,10 @@
         <param name="onload" value="true" />
     </feature>
 
+    <feature name="Contacts">
+        <param name="android-package" value="org.apache.cordova.contacts.ContactManager"/>
+    </feature>
+
     <feature name="DappURL">
         <param name="android-package" value="io.syng.cordova.plugin.DappURL"/>
         <param name="onload" value="true" />
