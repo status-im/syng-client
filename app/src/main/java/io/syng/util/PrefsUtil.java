@@ -39,7 +39,7 @@ public final class PrefsUtil {
     }
 
     private static Editor getEditor() {
-        return getInstance().mPreferences.edit();
+        return getPrefs().edit();
     }
 
     private static SharedPreferences getPrefs() {
@@ -48,11 +48,12 @@ public final class PrefsUtil {
 
     public static void saveProfiles(ArrayList<Profile> profiles) {
         try {
-            getEditor().putString(PROFILES_KEY, ObjectSerializer.serialize(profiles));
+            SharedPreferences.Editor editor = getEditor();
+            editor.putString(PROFILES_KEY, ObjectSerializer.serialize(profiles));
+            editor.apply();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        getEditor().apply();
     }
 
     public static ArrayList<Profile> getProfiles() {
@@ -63,6 +64,32 @@ public final class PrefsUtil {
             e.printStackTrace();
         }
         return profiles;
+    }
+
+    public static void updateProfile(Profile profile) {
+
+        ArrayList<Profile> profiles = getProfiles();
+        for (Profile item: profiles) {
+            if (item.getName().equals(profile.getName())) {
+                int index = profiles.indexOf(item);
+                profiles.set(index, profile);
+                saveProfiles(profiles);
+                break;
+            }
+        }
+    }
+
+    public static boolean saveProfile(Profile profile) {
+
+        ArrayList<Profile> profiles = PrefsUtil.getProfiles();
+        for (Profile item: profiles) {
+            if (item.getName().equals(profile.getName())) {
+                return false;
+            }
+        }
+        profiles.add(profile);
+        saveProfiles(profiles);
+        return true;
     }
 
 

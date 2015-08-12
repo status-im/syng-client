@@ -15,15 +15,18 @@
     <string name="url">Url</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="sImport">Import</string>
     <string name="manage_profiles">Manage Profiles</string>
 
     <string name="title_activity_spash_screen">Syng</string>
 
-    <string name="wallet_title">Wallet</string>
+    <string name="wallet_title">Import Wallet</string>
     <string name="ok">OK</string>
-    <string name="create_new_wallet">Create new Wallet</string>
-    <string name="import_wallet_from_file">Import wallet from file</string>
-    <string name="import_account_from_string">Import account from string</string>
+    <string name="json_wallet">Import json wallet</string>
+    <string name="hex_private_key">Import hex encoded private key</string>
+    <string name="file_not_found">The specified file was not found.</string>
+    <string name="error_reading_file">Error reading specified file.</string>
+    <string name="invalid_wallet_password">Invalid wallet or password.</string>
 
     <string name="request_profile_password">Profile Password</string>
     <string name="warning.message">This is PRE-ALPHA software and most likely contains numerous bugs. The layout, design, and functionality may change frequently. This also lacks numerous features that will be included in later versions. Using this software you agree that you hold yourself personally accountable for interacting with this software.</string>

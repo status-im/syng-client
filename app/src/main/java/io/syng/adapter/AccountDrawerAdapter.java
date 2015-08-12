@@ -27,6 +27,7 @@ public class AccountDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         void onProfileClick(Profile profile);
         void onProfilePress(Profile profile);
+        void onProfileImport();
         void onNewProfile();
 
     }

@@ -28,6 +28,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -37,8 +38,15 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
 import org.ethereum.crypto.HashUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.nio.MappedByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -61,15 +69,13 @@ import static org.ethereum.config.SystemProperties.CONFIG;
 public abstract class BaseActivity extends AppCompatActivity implements
         OnClickListener, OnDAppClickListener, OnProfileClickListener {
 
+    private static final Logger logger = LoggerFactory.getLogger("SyngApplication");
+
     private static final int DRAWER_CLOSE_DELAY_SHORT = 200;
     private static final int DRAWER_CLOSE_DELAY_LONG = 400;
 
     private static final String CONTRIBUTE_LINK = "https://github.com/syng-io";
     private static final String CONTINUE_SEARCH_LINK = "dapp://syng.io/store?q=search%20query";
-
-    private ArrayList<String> mDAppNamesList = new ArrayList<>(Arrays.asList("Console"));
-
-    private ArrayList<String> mAccountNamesList = new ArrayList<>(Arrays.asList("Cow"));
 
     private ActionBarDrawerToggle mDrawerToggle;
 
@@ -108,12 +114,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mDrawerLayout = (DrawerLayout) inflater.inflate(R.layout.drawer, null, false);
         FrameLayout content = (FrameLayout) mDrawerLayout.findViewById(R.id.content);
 
-        mDAppsRecyclerView = (RecyclerView) mDrawerLayout.findViewById(R.id.dapd_drawer_recycler_view);
-        mDAppsRecyclerView.setHasFixedSize(true);
-        RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
-        mDAppsRecyclerView.setLayoutManager(layoutManager1);
-        initDApps();
-
         Toolbar toolbar = (Toolbar) inflater.inflate(layoutResID, content, true).findViewById(R.id.myToolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -137,6 +137,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mSearchTextView = (EditText) mDrawerLayout.findViewById(R.id.search);
         initSearch();
 
+        mDrawerLayout.findViewById(R.id.ll_import_wallet).setOnClickListener(this);
         mDrawerLayout.findViewById(R.id.ll_settings).setOnClickListener(this);
         mDrawerLayout.findViewById(R.id.ll_contribute).setOnClickListener(this);
         mDrawerLayout.findViewById(R.id.drawer_header).setOnClickListener(this);
@@ -149,6 +150,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this);
         mAccountsRecyclerView.setLayoutManager(layoutManager2);
         initProfiles();
+
+        mDAppsRecyclerView = (RecyclerView) mDrawerLayout.findViewById(R.id.dapd_drawer_recycler_view);
+        mDAppsRecyclerView.setHasFixedSize(true);
+        RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
+        mDAppsRecyclerView.setLayoutManager(layoutManager1);
+        initDApps();
 
         ImageView header = (ImageView) mDrawerLayout.findViewById(R.id.iv_header);
         Glide.with(this).load(R.drawable.two).into(header);
@@ -180,39 +187,40 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
 
     private void initProfiles() {
-        mProfiles = new ArrayList<>(mAccountNamesList.size());
-        for (String name : mAccountNamesList) {
+        mProfiles = PrefsUtil.getProfiles();
+        // Add default cow account if not present
+        if (mProfiles.size() == 0) {
             Profile profile = new Profile();
-            profile.setName(name);
-            // default cow account
-            if (name.equals("Cow")) {
-                // Add default cow and monkey addresses
-                List<String> addresses = new ArrayList<String>();
-                byte[] cowAddr = HashUtil.sha3("cow".getBytes());
-                addresses.add(Hex.toHexString(cowAddr));
-                String secret = CONFIG.coinbaseSecret();
-                byte[] cbAddr = HashUtil.sha3(secret.getBytes());
-                addresses.add(Hex.toHexString(cbAddr));
-                profile.setPrivateKeys(addresses);
-                SyngApplication app = (SyngApplication) getApplication();
-                if (app.currentProfile == null) {
-                    changeProfile(profile);
-                }
-            }
+            profile.setName("Cow");
+            // Add default cow and monkey addresses
+            List<String> addresses = new ArrayList<String>();
+            byte[] cowAddr = HashUtil.sha3("cow".getBytes());
+            addresses.add(Hex.toHexString(cowAddr));
+            String secret = CONFIG.coinbaseSecret();
+            byte[] cbAddr = HashUtil.sha3(secret.getBytes());
+            addresses.add(Hex.toHexString(cbAddr));
+            profile.setPrivateKeys(addresses);
+            PrefsUtil.saveProfile(profile);
             mProfiles.add(profile);
         }
         mAccountDrawerAdapter = new AccountDrawerAdapter(this, mProfiles, this);
         mAccountsRecyclerView.setAdapter(mAccountDrawerAdapter);
+        if (SyngApplication.currentProfile == null) {
+            SyngApplication.changeProfile(mProfiles.get(0));
+        }
     }
 
 
     private void initDApps() {
-        mDApps = new ArrayList<>(mDAppNamesList.size());
-        for (String name : mDAppNamesList) {
-            mDApps.add(new Dapp(name));
+        mDApps = new ArrayList<>();
+        if (SyngApplication.currentProfile != null) {
+            mDApps = SyngApplication.currentProfile.getDapps();
         }
-        mDAppsDrawerAdapter = new DAppDrawerAdapter(new ArrayList<>(mDApps), this);
-        mDAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
+        // Add default Console dapp if not present
+        if (mDApps.size() == 0) {
+            mDApps.add(new Dapp("Console"));
+        }
+        updateAppList(mSearchTextView.getText().toString());
     }
 
 
@@ -226,11 +234,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (textView != null) {
             textView.setText(profile.getName());
         }
-        SyngApplication application = (SyngApplication) getApplication();
-        List<String> privateKeys = profile.getPrivateKeys();
-        SyngApplication.sEthereumConnector.init(privateKeys);
-        application.currentProfile = profile;
-        //currentPosition = spinnerAdapter.getPosition(profile);
+        SyngApplication.changeProfile(profile);
+        initDApps();
     }
 
     protected void requestChangeProfile(Profile profile) {
@@ -374,6 +379,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+            case R.id.ll_import_wallet:
+                onProfileImport();
+                break;
             case R.id.ll_contribute:
                 String url = CONTRIBUTE_LINK;
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -405,6 +413,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         Profile profile = new Profile();
                         profile.setName(input.toString());
                         mProfiles.add(profile);
+                        PrefsUtil.saveProfile(profile);
                         mAccountDrawerAdapter.notifyDataSetChanged();
                     }
                 }).show();
@@ -501,17 +510,57 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDAppPress(final Dapp dapp) {
+    public void onProfileImport() {
         new MaterialDialog.Builder(this)
-                .title("Edit")
-                .customView(R.layout.dapp_form, true)
-                .positiveText(R.string.save)
+                .title(R.string.wallet_title)
+                .customView(R.layout.wallet_import, true)
+                .positiveText(R.string.sImport)
                 .negativeText(R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
 
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        Toast.makeText(BaseActivity.this, "Just do nothing", Toast.LENGTH_SHORT).show();
+                        RadioButton importJsonRadio = (RadioButton)dialog.findViewById(R.id.radio_import_json);
+                        EditText importPathEdit = (EditText)dialog.findViewById(R.id.wallet_import_path);
+                        EditText walletPasswordEdit = (EditText)dialog.findViewById(R.id.wallet_password);
+                        String importPath = importPathEdit.getText().toString();
+                        String password = walletPasswordEdit.getText().toString();
+                        String fileContents = null;
+                        try {
+                            File walletFile = new File(importPath);
+                            if (walletFile.exists()) {
+                                FileInputStream stream = new FileInputStream(walletFile);
+                                try {
+                                    FileChannel fileChannel = stream.getChannel();
+                                    MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
+                                    fileContents = Charset.defaultCharset().decode(buffer).toString();
+                                } finally {
+                                    stream.close();
+                                }
+                            } else {
+                                Toast.makeText(BaseActivity.this, R.string.file_not_found, Toast.LENGTH_SHORT).show();
+                                logger.warn("Wallet file not found: " + importPath);
+                                return;
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(BaseActivity.this, R.string.error_reading_file, Toast.LENGTH_SHORT).show();
+                            logger.error("Error reading wallet file", e);
+                        }
+
+                        if (importJsonRadio.isChecked()) {
+                            if (SyngApplication.currentProfile != null) {
+                                if (SyngApplication.currentProfile.importWallet(fileContents, password)) {
+                                    PrefsUtil.updateProfile(SyngApplication.currentProfile);
+                                    SyngApplication.changeProfile(SyngApplication.currentProfile);
+                                } else {
+                                    Toast.makeText(BaseActivity.this, R.string.invalid_wallet_password, Toast.LENGTH_SHORT).show();
+                                }
+                            } else {
+                                logger.warn("SyngApplication.currentProfile is null ...?!");
+                            }
+                        } else {
+                            SyngApplication.currentProfile.importPrivateKey(fileContents, password);
+                        }
                     }
 
                     @Override
@@ -523,8 +572,40 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onDAppPress(final Dapp dapp) {
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
+                .title("Edit")
+                .customView(R.layout.dapp_form, true)
+                .positiveText(R.string.save)
+                .negativeText(R.string.cancel)
+                .callback(new MaterialDialog.ButtonCallback() {
+
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
+                        EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
+                        dapp.setName(dappNameEdit.getText().toString());
+                        dapp.setUrl(dappUrlEdit.getText().toString());
+                        SyngApplication.updateDapp(dapp);
+                        initDApps();
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        dialog.hide();
+                    }
+                })
+                .build();
+        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
+        dappNameEdit.setText(dapp.getName());
+        EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
+        dappUrlEdit.setText(dapp.getUrl());
+        dialog.show();
+    }
+
+    @Override
     public void onProfilePress(Profile profile) {
-        new MaterialDialog.Builder(this)
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title("Edit account")
                 .content("Put your name to create new account")
                 .inputType(InputType.TYPE_CLASS_TEXT)
@@ -534,7 +615,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         Toast.makeText(BaseActivity.this, "Just do nothing", Toast.LENGTH_SHORT).show();
                     }
                 }).show();
-
+        dialog.getInputEditText().setText(profile.getName());
     }
 
     @Override
@@ -548,7 +629,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        Toast.makeText(BaseActivity.this, "Just do nothing", Toast.LENGTH_SHORT).show();
+                        EditText dappNameEdit = (EditText)dialog.findViewById(R.id.dapp_name);
+                        EditText dappUrlEdit = (EditText)dialog.findViewById(R.id.dapp_url);
+                        Dapp dapp = new Dapp(dappNameEdit.getText().toString());
+                        dapp.setUrl(dappUrlEdit.getText().toString());
+                        SyngApplication.addDapp(dapp);
+                        initDApps();
                     }
 
                     @Override

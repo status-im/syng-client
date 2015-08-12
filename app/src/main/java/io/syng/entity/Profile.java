@@ -1,6 +1,12 @@
 package io.syng.entity;
 
+import org.ethereum.crypto.ECKey;
 import org.ethereum.crypto.HashUtil;
+import org.ethereum.wallet.EtherSaleWallet;
+import org.ethereum.wallet.EtherSaleWalletDecoder;
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
 
 import java.io.Serializable;
@@ -9,6 +15,8 @@ import java.util.List;
 
 public class Profile implements Serializable {
 
+    private static final Logger logger = LoggerFactory.getLogger("Profile");
+
     protected String name;
 
     protected List<String> privateKeys = new ArrayList<>();
@@ -16,7 +24,7 @@ public class Profile implements Serializable {
     /* "password protect profile" (encrypt the private keys) */
     protected boolean passwordProtectedProfile = false;
 
-    protected List<Dapp> dapps;
+    protected List<Dapp> dapps = new ArrayList<>();
 
     private static final long serialVersionUID = 1L;
 
@@ -78,6 +86,16 @@ public class Profile implements Serializable {
     public void addDapp(Dapp dapp) {
 
         this.dapps.add(dapp);
+    }
+
+    public void updateDapp(Dapp dapp) {
+
+        for (Dapp item: dapps) {
+            if (item.getId().equals(dapp.getId())) {
+                int index = dapps.indexOf(item);
+                dapps.set(index, dapp);
+            }
+        }
     }
 
     public void removeDapp(Dapp dapp) {
@@ -150,4 +168,50 @@ public class Profile implements Serializable {
         // TODO: Decrypt private key
         return privateKey;
     }
+
+    public boolean importWallet(String jsonWallet, String password) {
+
+        try {
+            JSONObject json = new JSONObject(jsonWallet);
+            byte[] privateKey = null;
+            EtherSaleWallet wallet = new EtherSaleWallet();
+            if (json.has("encseed")) {
+                wallet.setEncseed(json.getString("encseed"));
+                wallet.setEthaddr(json.getString("ethaddr"));
+                wallet.setEmail(json.getString("email"));
+                wallet.setBtcaddr(json.getString("btcaddr"));
+                EtherSaleWalletDecoder decoder = new EtherSaleWalletDecoder(wallet);
+                privateKey = decoder.getPrivateKey(password);
+            } else if (json.has("Crypto")) {
+                wallet.setEncseed(json.getJSONObject("Crypto").getJSONObject("cipherparams").getString("iv") + json.getJSONObject("Crypto").getString("ciphertext"));
+                wallet.setEthaddr(json.getString("address"));
+                EtherSaleWalletDecoder decoder = new EtherSaleWalletDecoder(wallet);
+                privateKey = decoder.getPrivateKey(password);
+            }
+            if (privateKey == null) {
+                logger.warn("Invalid json wallet file.");
+                return false;
+            }
+            ECKey key = ECKey.fromPrivate(privateKey);
+            String address = Hex.toHexString(key.getAddress());
+            if (address.equals(wallet.getEthaddr())) {
+                privateKeys.add(Hex.toHexString(privateKey));
+            } else {
+                logger.warn("Invalid wallet password.");
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Error importing wallet.", e);
+            return false;
+        }
+
+        return true;
+    }
+
+    public void importPrivateKey(String privateKey, String password) {
+
+        privateKeys.add(decryptPrivateKey(privateKey, password));
+    }
+
+
 }
