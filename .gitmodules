@@ -1,6 +1,8 @@
 [submodule "ethereumj"]
 	path = ethereumj
 	url = https://github.com/syng-io/ethereumj-android.git
+    branch = android-test-poc9-rlpx
 [submodule "cordova-android"]
 	path = cordova-android
 	url = https://github.com/apache/cordova-android.git
+    branch = master
