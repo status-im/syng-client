@@ -35,16 +35,36 @@ public class Profile implements Serializable {
     public Profile() {
 
         this.privateKeys.add(createPrivateKey());
+        addDefaultApps();
     }
 
     public Profile(String privateKey) {
 
         this.privateKeys.add(privateKey);
+        addDefaultApps();
     }
 
     public Profile(List<String> privateKeys) {
 
         this.privateKeys = privateKeys;
+        addDefaultApps();
+    }
+
+    protected void addDefaultApps() {
+
+        // Add console dapp
+        Dapp console = new Dapp("Console");
+        dapps.add(console);
+
+        // Add wallet dapp
+        Dapp wallet = new Dapp("Wallet");
+        wallet.setUrl("http://syng.io/dapps/wallet");
+        dapps.add(wallet);
+
+        // Add contacts dapp
+        Dapp contacts = new Dapp("Contacts");
+        contacts.setUrl("http://syng.io/dapps/contacts");
+        dapps.add(contacts);
     }
 
     protected String createPrivateKey() {

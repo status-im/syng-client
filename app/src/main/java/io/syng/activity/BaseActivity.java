@@ -48,7 +48,6 @@ import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import io.syng.R;
@@ -215,10 +214,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mDApps = new ArrayList<>();
         if (SyngApplication.currentProfile != null) {
             mDApps = SyngApplication.currentProfile.getDapps();
-        }
-        // Add default Console dapp if not present
-        if (mDApps.size() == 0) {
-            mDApps.add(new Dapp("Console"));
         }
         updateAppList(mSearchTextView.getText().toString());
     }
