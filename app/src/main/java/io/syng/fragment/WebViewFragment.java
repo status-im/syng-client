@@ -144,6 +144,8 @@ public class WebViewFragment extends Fragment {
         }
         webView.getView().requestFocusFromTouch();
         cordovaInterface.onCordovaInit(webView.getPluginManager());
+        webView.clearCache();
+        android.webkit.CookieManager.getInstance().removeAllCookie();
 
         // Wire the hardware volume controls to control media if desired.
         String volumePref = preferences.getString("DefaultVolumeStream", "");
