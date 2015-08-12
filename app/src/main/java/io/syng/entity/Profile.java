@@ -60,12 +60,12 @@ public class Profile implements Serializable {
 
         // Add wallet dapp
         Dapp wallet = new Dapp("Wallet");
-        wallet.setUrl("http://syng.io/dapps/wallet");
+        wallet.setUrl("dapp://syng.io/dapps/wallet");
         dapps.add(wallet);
 
         // Add contacts dapp
         Dapp contacts = new Dapp("Contacts");
-        contacts.setUrl("http://syng.io/dapps/contacts");
+        contacts.setUrl("dapp://syng.io/dapps/contacts");
         dapps.add(contacts);
     }
 

@@ -11,6 +11,7 @@
             android:id="@+id/dapp_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:hint="@string/name" />
     <!--</android.support.design.widget.TextInputLayout>-->
 
@@ -21,6 +22,7 @@
             android:id="@+id/dapp_url"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:singleLine="true"
             android:hint="@string/url" />
     <!--</android.support.design.widget.TextInputLayout>-->
 

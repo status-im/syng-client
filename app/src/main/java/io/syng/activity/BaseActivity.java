@@ -18,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -374,7 +375,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     private void showAccountCreateDialog() {
-        new MaterialDialog.Builder(this)
+        MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title("New account")
                 .content("Put your name to create new account")
                 .inputType(InputType.TYPE_CLASS_TEXT)
@@ -388,6 +389,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         mAccountDrawerAdapter.notifyDataSetChanged();
                     }
                 }).show();
+        dialog.getInputEditText().setSingleLine();
     }
 
 
@@ -555,10 +557,17 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     public void onPositive(MaterialDialog dialog) {
                         EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
                         EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
-                        dapp.setName(dappNameEdit.getText().toString());
-                        dapp.setUrl(dappUrlEdit.getText().toString());
-                        SyngApplication.updateDapp(dapp);
-                        initDApps();
+                        String url = dappUrlEdit.getText().toString();
+                        if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
+                            dapp.setName(dappNameEdit.getText().toString());
+                            dapp.setUrl(url);
+                            System.out.println(url);
+                            SyngApplication.updateDapp(dapp);
+                            initDApps();
+                            dialog.hide();
+                        } else {
+                            Toast.makeText(BaseActivity.this, R.string.invalid_url, Toast.LENGTH_SHORT).show();
+                        }
                     }
 
                     @Override
@@ -566,6 +575,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         dialog.hide();
                     }
                 })
+                .autoDismiss(false)
                 .build();
         EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
         dappNameEdit.setText(dapp.getName());
@@ -585,7 +595,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     public void onInput(MaterialDialog dialog, CharSequence input) {
                         profile.setName(input.toString());
                         PrefsUtil.updateProfile(profile);
-                        for (Profile item: mProfiles) {
+                        for (Profile item : mProfiles) {
                             if (item.getId().equals(profile.getId())) {
                                 int index = mProfiles.indexOf(item);
                                 mProfiles.set(index, profile);
@@ -598,6 +608,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         }
                     }
                 }).show();
+        dialog.getInputEditText().setSingleLine();
         dialog.getInputEditText().setText(profile.getName());
     }
 
@@ -614,10 +625,17 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     public void onPositive(MaterialDialog dialog) {
                         EditText dappNameEdit = (EditText)dialog.findViewById(R.id.dapp_name);
                         EditText dappUrlEdit = (EditText)dialog.findViewById(R.id.dapp_url);
-                        Dapp dapp = new Dapp(dappNameEdit.getText().toString());
-                        dapp.setUrl(dappUrlEdit.getText().toString());
-                        SyngApplication.addDapp(dapp);
-                        initDApps();
+                        String url = dappUrlEdit.getText().toString();
+                        if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
+                            Dapp dapp = new Dapp(dappNameEdit.getText().toString());
+                            dapp.setUrl(dappUrlEdit.getText().toString());
+                            SyngApplication.addDapp(dapp);
+                            initDApps();
+                            dialog.hide();
+                        } else {
+                            Toast.makeText(BaseActivity.this, R.string.invalid_url, Toast.LENGTH_SHORT).show();
+                        }
+
                     }
 
                     @Override
@@ -625,6 +643,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         dialog.hide();
                     }
                 })
+                .autoDismiss(false)
                 .build().show();
     }
 
