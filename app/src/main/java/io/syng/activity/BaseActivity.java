@@ -225,12 +225,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected void changeProfile(Profile profile) {
 
-        TextView textView = (TextView) findViewById(R.id.tv_name);
-        if (textView != null) {
-            textView.setText(profile.getName());
-        }
+        updateCurrentProfileName(profile.getName());
         SyngApplication.changeProfile(profile);
         initDApps();
+    }
+
+    protected void updateCurrentProfileName(String name) {
+        TextView textView = (TextView) findViewById(R.id.tv_name);
+        if (textView != null) {
+            textView.setText(name);
+        }
     }
 
     protected void requestChangeProfile(Profile profile) {
@@ -271,34 +275,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 })
                 .build()
                 .show();
-    }
-
-    public void initSpinner() {
-
-        List<Profile> profilesList = PrefsUtil.getProfiles();
-        spinnerAdapter = new SpinnerAdapter(this, android.R.layout.simple_dropdown_item_1line, profilesList);
-//        mAccountSpinner.setAdapter(spinnerAdapter);
-//        mAccountSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-//            @Override
-//            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-//                //String item = (String) adapterView.getItemAtPosition(i);
-//                if (adapterView != null && adapterView.getChildAt(0) != null) {
-//                    ((TextView) adapterView.getChildAt(0)).setTextColor(Color.parseColor("#ffffff"));
-//                }
-//                Profile profile = spinnerAdapter.getItem(i);
-//                if (profile.getPasswordProtectedProfile()) {
-//                    requestChangeProfile(profile);
-//                } else {
-//                    changeProfile(profile);
-//                }
-//            }
-//
-//            @Override
-//            public void onNothingSelected(AdapterView<?> adapterView) {
-//                ((TextView) adapterView.getChildAt(0)).setTextColor(Color.parseColor("#ffffff"));
-//            }
-//
-//        });
     }
 
     private void initSearch() {
@@ -599,7 +575,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onProfilePress(Profile profile) {
+    public void onProfilePress(final Profile profile) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title("Edit account")
                 .content("Put your name to create new account")
@@ -607,7 +583,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .input("Name", "", new MaterialDialog.InputCallback() {
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
-                        Toast.makeText(BaseActivity.this, "Just do nothing", Toast.LENGTH_SHORT).show();
+                        profile.setName(input.toString());
+                        PrefsUtil.updateProfile(profile);
+                        for (Profile item: mProfiles) {
+                            if (item.getId().equals(profile.getId())) {
+                                int index = mProfiles.indexOf(item);
+                                mProfiles.set(index, profile);
+                                break;
+                            }
+                        }
+                        mAccountDrawerAdapter.notifyDataSetChanged();
+                        if (SyngApplication.currentProfile.getId().equals(profile.getId())) {
+                            updateCurrentProfileName(profile.getName());
+                        }
                     }
                 }).show();
         dialog.getInputEditText().setText(profile.getName());

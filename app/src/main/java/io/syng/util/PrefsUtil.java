@@ -70,7 +70,7 @@ public final class PrefsUtil {
 
         ArrayList<Profile> profiles = getProfiles();
         for (Profile item: profiles) {
-            if (item.getName().equals(profile.getName())) {
+            if (item.getId().equals(profile.getId())) {
                 int index = profiles.indexOf(item);
                 profiles.set(index, profile);
                 saveProfiles(profiles);

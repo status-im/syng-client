@@ -19,6 +19,8 @@ public class Profile implements Serializable {
 
     protected String name;
 
+    protected String id = createPrivateKey();
+
     protected List<String> privateKeys = new ArrayList<>();
 
     /* "password protect profile" (encrypt the private keys) */
@@ -141,6 +143,16 @@ public class Profile implements Serializable {
     public void setName(String name) {
 
         this.name = name;
+    }
+
+    public void setId(String id) {
+
+        this.id = id;
+    }
+
+    public String getId() {
+
+        return id;
     }
 
     protected void setPassword(String password) {
