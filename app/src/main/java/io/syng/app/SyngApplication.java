@@ -23,22 +23,22 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     private RefWatcher refWatcher;
 
-    public static Profile currentProfile;
+    public static Profile sCurrentProfile;
 
     public static void changeProfile(Profile profile) {
         List<String> privateKeys = profile.getPrivateKeys();
         sEthereumConnector.init(privateKeys);
-        currentProfile = profile;
+        sCurrentProfile = profile;
     }
 
     public static void addDapp(Dapp dapp) {
-        currentProfile.addDapp(dapp);
-        PrefsUtil.updateProfile(currentProfile);
+        sCurrentProfile.addDapp(dapp);
+        PrefsUtil.updateProfile(sCurrentProfile);
     }
 
     public static void updateDapp(Dapp dapp) {
-        currentProfile.updateDapp(dapp);
-        PrefsUtil.updateProfile(currentProfile);
+        sCurrentProfile.updateDapp(dapp);
+        PrefsUtil.updateProfile(sCurrentProfile);
     }
 
     @Override
@@ -70,8 +70,8 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     @Override
     public void onConnectorConnected() {
-        if (currentProfile != null) {
-            sEthereumConnector.init(currentProfile.getPrivateKeys());
+        if (sCurrentProfile != null) {
+            sEthereumConnector.init(sCurrentProfile.getPrivateKeys());
         }
         sEthereumConnector.startJsonRpc();
     }

@@ -1,7 +1,6 @@
 package io.syng.activity;
 
 import android.annotation.SuppressLint;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -24,13 +23,10 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.RadioButton;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -62,7 +58,6 @@ import io.syng.entity.Profile;
 import io.syng.util.GeneralUtil;
 import io.syng.util.PrefsUtil;
 
-import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 import static org.ethereum.config.SystemProperties.CONFIG;
 
@@ -79,7 +74,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     private ActionBarDrawerToggle mDrawerToggle;
 
-    private Spinner mAccountSpinner;
     private EditText mSearchTextView;
     private RecyclerView mDAppsRecyclerView;
     private RecyclerView mAccountsRecyclerView;
@@ -104,8 +98,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected abstract void onDAppClick(Dapp dapp);
 
-    private SpinnerAdapter spinnerAdapter;
-    private Profile requestProfile;
 
     @SuppressLint("InflateParams")
     @Override
@@ -144,7 +136,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         mFrontView = mDrawerLayout.findViewById(R.id.ll_front_view);
         mBackView = mDrawerLayout.findViewById(R.id.ll_back_view);
-        mBackView.setVisibility(GONE);
 
         mAccountsRecyclerView = (RecyclerView) mBackView.findViewById(R.id.accounts_drawer_recycler_view);
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this);
@@ -161,13 +152,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Glide.with(this).load(R.drawable.two).into(header);
 
         super.setContentView(mDrawerLayout);
-        TextView textView = (TextView) findViewById(R.id.tv_name);
-        if (textView != null) {
-            textView.setText("Cow");
-        }
-
         showWarningDialogIfNeed();
-
     }
 
     private void showWarningDialogIfNeed() {
@@ -189,11 +174,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private void initProfiles() {
         mProfiles = PrefsUtil.getProfiles();
         // Add default cow account if not present
-        if (mProfiles.size() == 0) {
+        if (mProfiles.isEmpty()) {
             Profile profile = new Profile();
             profile.setName("Cow");
             // Add default cow and monkey addresses
-            List<String> addresses = new ArrayList<String>();
+            List<String> addresses = new ArrayList<>();
             byte[] cowAddr = HashUtil.sha3("cow".getBytes());
             addresses.add(Hex.toHexString(cowAddr));
             String secret = CONFIG.coinbaseSecret();
@@ -205,17 +190,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
         mAccountDrawerAdapter = new AccountDrawerAdapter(this, mProfiles, this);
         mAccountsRecyclerView.setAdapter(mAccountDrawerAdapter);
-        if (SyngApplication.currentProfile == null) {
+        if (SyngApplication.sCurrentProfile == null) {
             SyngApplication.changeProfile(mProfiles.get(0));
+            updateCurrentProfileName(mProfiles.get(0).getName());
         }
     }
 
 
     private void initDApps() {
         mDApps = new ArrayList<>();
-        if (SyngApplication.currentProfile != null) {
-            mDApps = SyngApplication.currentProfile.getDapps();
+        if (SyngApplication.sCurrentProfile != null) {
+            mDApps = SyngApplication.sCurrentProfile.getDapps();
         }
+
         updateAppList(mSearchTextView.getText().toString());
     }
 
@@ -238,9 +225,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
-    protected void requestChangeProfile(Profile profile) {
+    protected void requestChangeProfile(final Profile profile) {
 
-        requestProfile = profile;
         new MaterialDialog.Builder(BaseActivity.this)
                 .title(R.string.request_profile_password)
                 .customView(R.layout.profile_password, true)
@@ -254,13 +240,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .widgetColorRes(R.color.accent)
                 .callback(new MaterialDialog.ButtonCallback() {
 
+                    @SuppressWarnings("ConstantConditions")
                     @Override
                     public void onPositive(MaterialDialog dialog) {
 
                         View view = dialog.getCustomView();
                         EditText passwordInput = (EditText) view.findViewById(R.id.passwordInput);
-                        if (requestProfile.decrypt(passwordInput.getText().toString())) {
-                            changeProfile(requestProfile);
+                        if (profile.decrypt(passwordInput.getText().toString())) {
+                            changeProfile(profile);
                         } else {
 //                            dialog.hide();
 //                            mAccountSpinner.setSelection(currentPosition, false);
@@ -419,57 +406,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
-
-    public class SpinnerAdapter extends ArrayAdapter<Profile> {
-
-        private Context context;
-
-        private List<Profile> values;
-
-        public SpinnerAdapter(Context context, int textViewResourceId, List<Profile> values) {
-
-            super(context, textViewResourceId, values);
-            this.context = context;
-            this.values = values;
-        }
-
-        public int getCount() {
-
-            return values.size();
-        }
-
-        public Profile getItem(int position) {
-
-            return values.get(position);
-        }
-
-        public long getItemId(int position) {
-
-            return position;
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-
-            return getCustomView(position, convertView, parent);
-        }
-
-        @Override
-        public View getDropDownView(int position, View convertView, ViewGroup parent) {
-
-            return getCustomView(position, convertView, parent);
-        }
-
-        public View getCustomView(int position, View convertView, ViewGroup parent) {
-
-            LayoutInflater inflater = getLayoutInflater();
-            View row = inflater.inflate(android.R.layout.simple_dropdown_item_1line, parent, false);
-            TextView label = (TextView) row.findViewById(android.R.id.text1);
-            label.setText(spinnerAdapter.getItem(position).getName());
-            return row;
-        }
-    }
-
     @Override
     public void onDAppItemClick(Dapp dapp) {
         onDAppClick(dapp);
@@ -493,9 +429,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        RadioButton importJsonRadio = (RadioButton)dialog.findViewById(R.id.radio_import_json);
-                        EditText importPathEdit = (EditText)dialog.findViewById(R.id.wallet_import_path);
-                        EditText walletPasswordEdit = (EditText)dialog.findViewById(R.id.wallet_password);
+                        RadioButton importJsonRadio = (RadioButton) dialog.findViewById(R.id.radio_import_json);
+                        EditText importPathEdit = (EditText) dialog.findViewById(R.id.wallet_import_path);
+                        EditText walletPasswordEdit = (EditText) dialog.findViewById(R.id.wallet_password);
                         String importPath = importPathEdit.getText().toString();
                         String password = walletPasswordEdit.getText().toString();
                         String fileContents = null;
@@ -521,18 +457,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         }
 
                         if (importJsonRadio.isChecked()) {
-                            if (SyngApplication.currentProfile != null) {
-                                if (SyngApplication.currentProfile.importWallet(fileContents, password)) {
-                                    PrefsUtil.updateProfile(SyngApplication.currentProfile);
-                                    SyngApplication.changeProfile(SyngApplication.currentProfile);
+                            if (SyngApplication.sCurrentProfile != null) {
+                                if (SyngApplication.sCurrentProfile.importWallet(fileContents, password)) {
+                                    PrefsUtil.updateProfile(SyngApplication.sCurrentProfile);
+                                    SyngApplication.changeProfile(SyngApplication.sCurrentProfile);
                                 } else {
                                     Toast.makeText(BaseActivity.this, R.string.invalid_wallet_password, Toast.LENGTH_SHORT).show();
                                 }
                             } else {
-                                logger.warn("SyngApplication.currentProfile is null ...?!");
+                                logger.warn("SyngApplication.sCurrentProfile is null ...?!");
                             }
                         } else {
-                            SyngApplication.currentProfile.importPrivateKey(fileContents, password);
+                            SyngApplication.sCurrentProfile.importPrivateKey(fileContents, password);
                         }
                     }
 
@@ -603,7 +539,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                             }
                         }
                         mAccountDrawerAdapter.notifyDataSetChanged();
-                        if (SyngApplication.currentProfile.getId().equals(profile.getId())) {
+                        if (SyngApplication.sCurrentProfile.getId().equals(profile.getId())) {
                             updateCurrentProfileName(profile.getName());
                         }
                     }
@@ -623,8 +559,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
                     @Override
                     public void onPositive(MaterialDialog dialog) {
-                        EditText dappNameEdit = (EditText)dialog.findViewById(R.id.dapp_name);
-                        EditText dappUrlEdit = (EditText)dialog.findViewById(R.id.dapp_url);
+                        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
+                        EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
                         String url = dappUrlEdit.getText().toString();
                         if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
                             Dapp dapp = new Dapp(dappNameEdit.getText().toString());
