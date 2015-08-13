@@ -45,6 +45,7 @@ public class MainActivity extends BaseActivity {
         switch (dapp.getUrl()) {
             case "":
                 replaceFragment(new ConsoleFragment());
+                getSupportActionBar().setTitle(R.string.app_name);
                 break;
             default:
                 WebViewFragment wvF = new WebViewFragment();
@@ -52,6 +53,7 @@ public class MainActivity extends BaseActivity {
                 args.putString("url", dapp.getUrl());
                 wvF.setArguments(args);
                 replaceFragment(wvF);
+                getSupportActionBar().setTitle(dapp.getName());
                 break;
         }
     }

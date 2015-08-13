@@ -47,10 +47,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.syng.R;
-import io.syng.adapter.AccountDrawerAdapter;
-import io.syng.adapter.AccountDrawerAdapter.OnProfileClickListener;
 import io.syng.adapter.DAppDrawerAdapter;
 import io.syng.adapter.DAppDrawerAdapter.OnDAppClickListener;
+import io.syng.adapter.ProfileDrawerAdapter;
+import io.syng.adapter.ProfileDrawerAdapter.OnProfileClickListener;
 import io.syng.app.SyngApplication;
 import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
@@ -75,11 +75,11 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     private EditText mSearchTextView;
     private RecyclerView mDAppsRecyclerView;
-    private RecyclerView mAccountsRecyclerView;
+    private RecyclerView mProfilesRecyclerView;
     private DrawerLayout mDrawerLayout;
 
     private DAppDrawerAdapter mDAppsDrawerAdapter;
-    private AccountDrawerAdapter mAccountDrawerAdapter;
+    private ProfileDrawerAdapter mProfileDrawerAdapter;
 
     private View mFrontView;
     private View mBackView;
@@ -103,7 +103,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public void setContentView(final int layoutResID) {
         LayoutInflater inflater = getLayoutInflater();
         mDrawerLayout = (DrawerLayout) inflater.inflate(R.layout.drawer, null, false);
-        FrameLayout content = (FrameLayout) mDrawerLayout.findViewById(R.id.content);
+
+        super.setContentView(mDrawerLayout);
+
+        FrameLayout content = (FrameLayout) findViewById(R.id.content);
 
         Toolbar toolbar = (Toolbar) inflater.inflate(layoutResID, content, true).findViewById(R.id.myToolbar);
         if (toolbar != null) {
@@ -125,32 +128,31 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
 
-        mSearchTextView = (EditText) mDrawerLayout.findViewById(R.id.search);
+        mSearchTextView = (EditText) findViewById(R.id.search);
         initSearch();
 
-        mDrawerLayout.findViewById(R.id.ll_import_wallet).setOnClickListener(this);
-        mDrawerLayout.findViewById(R.id.ll_settings).setOnClickListener(this);
-        mDrawerLayout.findViewById(R.id.ll_contribute).setOnClickListener(this);
-        mDrawerLayout.findViewById(R.id.drawer_header).setOnClickListener(this);
+        findViewById(R.id.ll_import_wallet).setOnClickListener(this);
+        findViewById(R.id.ll_settings).setOnClickListener(this);
+        findViewById(R.id.ll_contribute).setOnClickListener(this);
+        findViewById(R.id.drawer_header).setOnClickListener(this);
 
-        mFrontView = mDrawerLayout.findViewById(R.id.ll_front_view);
-        mBackView = mDrawerLayout.findViewById(R.id.ll_back_view);
+        mFrontView = findViewById(R.id.ll_front_view);
+        mBackView = findViewById(R.id.ll_back_view);
 
-        mAccountsRecyclerView = (RecyclerView) mBackView.findViewById(R.id.accounts_drawer_recycler_view);
+        mProfilesRecyclerView = (RecyclerView) findViewById(R.id.accounts_drawer_recycler_view);
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this);
-        mAccountsRecyclerView.setLayoutManager(layoutManager2);
+        mProfilesRecyclerView.setLayoutManager(layoutManager2);
         initProfiles();
 
-        mDAppsRecyclerView = (RecyclerView) mDrawerLayout.findViewById(R.id.dapd_drawer_recycler_view);
+        mDAppsRecyclerView = (RecyclerView) findViewById(R.id.dapd_drawer_recycler_view);
         mDAppsRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         mDAppsRecyclerView.setLayoutManager(layoutManager1);
         initDApps();
 
-        ImageView header = (ImageView) mDrawerLayout.findViewById(R.id.iv_header);
-        Glide.with(this).load(R.drawable.two).into(header);
+        ImageView header = (ImageView) findViewById(R.id.iv_header);
+        Glide.with(this).load(R.drawable.drawer).into(header);
 
-        super.setContentView(mDrawerLayout);
         GeneralUtil.showWarningDialogIfNeed(this);
     }
 
@@ -172,12 +174,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
             PrefsUtil.saveProfile(profile);
             mProfiles.add(profile);
         }
-        mAccountDrawerAdapter = new AccountDrawerAdapter(this, mProfiles, this);
-        mAccountsRecyclerView.setAdapter(mAccountDrawerAdapter);
+        mProfileDrawerAdapter = new ProfileDrawerAdapter(this, mProfiles, this);
+        mProfilesRecyclerView.setAdapter(mProfileDrawerAdapter);
         if (SyngApplication.sCurrentProfile == null) {
             SyngApplication.changeProfile(mProfiles.get(0));
-            updateCurrentProfileName(mProfiles.get(0).getName());
         }
+        updateCurrentProfileName(SyngApplication.sCurrentProfile.getName());
     }
 
 
@@ -199,7 +201,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     protected void changeProfile(Profile profile) {
-
         updateCurrentProfileName(profile.getName());
         SyngApplication.changeProfile(profile);
         initDApps();
@@ -207,9 +208,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected void updateCurrentProfileName(String name) {
         TextView textView = (TextView) findViewById(R.id.tv_name);
-        if (textView != null) {
-            textView.setText(name);
-        }
+        textView.setText(name);
     }
 
     protected void requestChangeProfile(final Profile profile) {
@@ -359,7 +358,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         profile.setName(input.toString());
                         mProfiles.add(profile);
                         PrefsUtil.saveProfile(profile);
-                        mAccountDrawerAdapter.notifyDataSetChanged();
+                        mProfileDrawerAdapter.notifyDataSetChanged();
                     }
                 }).show();
         dialog.getInputEditText().setSingleLine();
@@ -530,7 +529,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                                 break;
                             }
                         }
-                        mAccountDrawerAdapter.notifyDataSetChanged();
+                        mProfileDrawerAdapter.notifyDataSetChanged();
                         if (SyngApplication.sCurrentProfile.getId().equals(profile.getId())) {
                             updateCurrentProfileName(profile.getName());
                         }

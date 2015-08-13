@@ -29,7 +29,6 @@
             android:layout_marginStart="20dp"
             android:layout_toEndOf="@+id/nv_email"
             android:layout_toRightOf="@+id/nv_email"
-            android:text="Jarrad Hope"
             android:textColor="#ffffff"/>
 
         <Spinner

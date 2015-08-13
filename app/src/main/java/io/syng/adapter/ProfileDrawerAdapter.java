@@ -16,7 +16,7 @@ import java.util.List;
 import io.syng.R;
 import io.syng.entity.Profile;
 
-public class AccountDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private static final int TYPE_HEADER = 10;
     private static final int TYPE_SIMPLE_ITEM = 20;
@@ -35,7 +35,7 @@ public class AccountDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
     private final Context mContext;
     private List<Profile> mDataSet;
 
-    public AccountDrawerAdapter(Context context, List<Profile> data, OnProfileClickListener listener) {
+    public ProfileDrawerAdapter(Context context, List<Profile> data, OnProfileClickListener listener) {
         this.mDataSet = data;
         mContext = context;
         mListener = listener;
@@ -45,11 +45,11 @@ public class AccountDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view;
         if (viewType == TYPE_SIMPLE_ITEM) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.account_drawer_list_item, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_drawer_list_item, parent, false);
             return new SimpleViewHolder(view);
         }
         if (viewType == TYPE_HEADER) {
-            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.account_drawer_list_add, parent, false);
+            view = LayoutInflater.from(parent.getContext()).inflate(R.layout.profile_drawer_list_add, parent, false);
             return new HeaderViewHolder(view);
         }
         throw new RuntimeException("there is no type that matches the type " + viewType + " + make sure your using types correctly");
