@@ -1,7 +1,6 @@
 package io.syng.activity;
 
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -23,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -30,7 +30,6 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.afollestad.materialdialogs.AlertDialogWrapper;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
@@ -152,22 +151,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Glide.with(this).load(R.drawable.two).into(header);
 
         super.setContentView(mDrawerLayout);
-        showWarningDialogIfNeed();
-    }
-
-    private void showWarningDialogIfNeed() {
-        if (PrefsUtil.isFirstLaunch()) {
-            PrefsUtil.setFirstLaunch(false);
-            new AlertDialogWrapper.Builder(this)
-                    .setTitle(R.string.warning_title)
-                    .setMessage(R.string.warning_message)
-                    .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    }).show();
-        }
+        GeneralUtil.showWarningDialogIfNeed(this);
     }
 
 
@@ -202,13 +186,16 @@ public abstract class BaseActivity extends AppCompatActivity implements
         if (SyngApplication.sCurrentProfile != null) {
             mDApps = SyngApplication.sCurrentProfile.getDapps();
         }
-
         updateAppList(mSearchTextView.getText().toString());
     }
 
 
     private void closeDrawer(int delayMills) {
         mHandler.postDelayed(mRunnable, delayMills);
+    }
+
+    protected void closeDrawer() {
+        mHandler.postDelayed(mRunnable, DRAWER_CLOSE_DELAY_SHORT);
     }
 
     protected void changeProfile(Profile profile) {
@@ -334,7 +321,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mHandler.removeCallbacksAndMessages(null);
     }
 
-
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -409,7 +395,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     public void onDAppItemClick(Dapp dapp) {
         onDAppClick(dapp);
-        closeDrawer(DRAWER_CLOSE_DELAY_SHORT);
+        closeDrawer();
     }
 
     @Override
@@ -493,13 +479,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     public void onPositive(MaterialDialog dialog) {
                         EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
                         EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
+                        CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.dapp_home_icon);
+                        boolean homeScreenIcon = checkBox.isChecked();
                         String url = dappUrlEdit.getText().toString();
+                        String name = dappNameEdit.getText().toString();
                         if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
-                            dapp.setName(dappNameEdit.getText().toString());
+                            dapp.setName(name);
                             dapp.setUrl(url);
                             System.out.println(url);
                             SyngApplication.updateDapp(dapp);
                             initDApps();
+                            if (homeScreenIcon) {
+                                GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
+                            }
                             dialog.hide();
                         } else {
                             Toast.makeText(BaseActivity.this, R.string.invalid_url, Toast.LENGTH_SHORT).show();
@@ -548,6 +540,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         dialog.getInputEditText().setText(profile.getName());
     }
 
+
     @Override
     public void onDAppAdd() {
         new MaterialDialog.Builder(this)
@@ -561,12 +554,18 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     public void onPositive(MaterialDialog dialog) {
                         EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
                         EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
+                        CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.dapp_home_icon);
+                        boolean homeScreenIcon = checkBox.isChecked();
                         String url = dappUrlEdit.getText().toString();
+                        String name = dappNameEdit.getText().toString();
                         if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
-                            Dapp dapp = new Dapp(dappNameEdit.getText().toString());
-                            dapp.setUrl(dappUrlEdit.getText().toString());
+                            Dapp dapp = new Dapp(name);
+                            dapp.setUrl(url);
                             SyngApplication.addDapp(dapp);
                             initDApps();
+                            if (homeScreenIcon) {
+                                GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
+                            }
                             dialog.hide();
                         } else {
                             Toast.makeText(BaseActivity.this, R.string.invalid_url, Toast.LENGTH_SHORT).show();
@@ -590,7 +589,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         intent.setData(Uri.parse(url));
         if (intent.resolveActivity(getPackageManager()) != null) {
             startActivity(intent);
-            closeDrawer(DRAWER_CLOSE_DELAY_SHORT);
+            closeDrawer();
             mSearchTextView.getText().clear();
         }
     }
@@ -599,4 +598,5 @@ public abstract class BaseActivity extends AppCompatActivity implements
     public void onNewProfile() {
         showAccountCreateDialog();
     }
+
 }

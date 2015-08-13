@@ -33,6 +33,7 @@ public class MainActivity extends BaseActivity {
             args.putString("url", intent.getDataString());
             wvF.setArguments(args);
             replaceFragment(wvF);
+            closeDrawer();
         }
     }
 
