@@ -24,12 +24,10 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
     private final OnProfileClickListener mListener;
 
     public interface OnProfileClickListener {
-
         void onProfileClick(Profile profile);
         void onProfilePress(Profile profile);
         void onProfileImport();
         void onNewProfile();
-
     }
 
     private final Context mContext;
@@ -93,7 +91,6 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         }
     }
-
 
     @Override
     public int getItemViewType(int position) {

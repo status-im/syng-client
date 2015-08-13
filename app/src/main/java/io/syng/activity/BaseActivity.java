@@ -153,7 +153,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         initDApps();
 
         mHeaderImageView = (ImageView) findViewById(R.id.iv_header);
-        Glide.with(this).load(R.drawable.bg0).into(mHeaderImageView);
+        String currentProfileId = SyngApplication.sCurrentProfile.getId();
+        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(currentProfileId)).into(mHeaderImageView);
 
         GeneralUtil.showWarningDialogIfNeed(this);
     }
@@ -206,6 +207,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         updateCurrentProfileName(profile.getName());
         SyngApplication.changeProfile(profile);
         initDApps();
+        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(profile.getId())).into(mHeaderImageView);
     }
 
     protected void updateCurrentProfileName(String name) {
@@ -348,6 +350,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     }
 
+    @SuppressWarnings("ConstantConditions")
     private void showAccountCreateDialog() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title("New account")
@@ -513,6 +516,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         dialog.show();
     }
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public void onProfilePress(final Profile profile) {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
@@ -610,7 +614,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
                                 @Override
                                 public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
                                     BackgroundArrayAdapter adapter = (BackgroundArrayAdapter) dialog.getListView().getAdapter();
-                                    Glide.with(BaseActivity.this).load(adapter.getImageResourceIdByPosition(which)).into(mHeaderImageView);
+                                    int imageResourceId = adapter.getImageResourceIdByPosition(which);
+                                    Glide.with(BaseActivity.this).load(imageResourceId).into(mHeaderImageView);
+                                    PrefsUtil.setBackgroundResourceId(SyngApplication.sCurrentProfile.getId(), imageResourceId);
                                     dialog.dismiss();
                                 }
                             })

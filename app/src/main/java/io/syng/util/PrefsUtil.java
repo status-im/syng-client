@@ -3,9 +3,11 @@ package io.syng.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.support.annotation.DrawableRes;
 
 import java.util.ArrayList;
 
+import io.syng.R;
 import io.syng.entity.ObjectSerializer;
 import io.syng.entity.Profile;
 
@@ -56,10 +58,12 @@ public final class PrefsUtil {
         }
     }
 
+    @SuppressWarnings("unchecked")
     public static ArrayList<Profile> getProfiles() {
         ArrayList<Profile> profiles = new ArrayList<>();
         try {
-            profiles = (ArrayList<Profile>) ObjectSerializer.deserialize(getPrefs().getString(PROFILES_KEY, ObjectSerializer.serialize(profiles)));
+            profiles = (ArrayList<Profile>) ObjectSerializer.deserialize(
+                    getPrefs().getString(PROFILES_KEY, ObjectSerializer.serialize(profiles)));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -69,7 +73,7 @@ public final class PrefsUtil {
     public static void updateProfile(Profile profile) {
 
         ArrayList<Profile> profiles = getProfiles();
-        for (Profile item: profiles) {
+        for (Profile item : profiles) {
             if (item.getId().equals(profile.getId())) {
                 int index = profiles.indexOf(item);
                 profiles.set(index, profile);
@@ -82,7 +86,7 @@ public final class PrefsUtil {
     public static boolean saveProfile(Profile profile) {
 
         ArrayList<Profile> profiles = PrefsUtil.getProfiles();
-        for (Profile item: profiles) {
+        for (Profile item : profiles) {
             if (item.getName().equals(profile.getName())) {
                 return false;
             }
@@ -99,6 +103,15 @@ public final class PrefsUtil {
 
     public static boolean isFirstLaunch() {
         return getPrefs().getBoolean(FIRST_LAUNCH_KEY, true);
+    }
+
+
+    public static void setBackgroundResourceId(String profileId, @DrawableRes int resourceId) {
+        getEditor().putInt(profileId, resourceId).commit();
+    }
+
+    public static int getBackgroundResourceId(String profileId) {
+        return getPrefs().getInt(profileId, R.drawable.bg0_resized);
     }
 
 }

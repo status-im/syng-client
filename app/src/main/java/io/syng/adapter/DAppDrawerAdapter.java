@@ -22,11 +22,8 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     public interface OnDAppClickListener {
         void onDAppItemClick(Dapp dapp);
-
         void onDAppPress(Dapp dapp);
-
         void onDAppAdd();
-
         void onDAppContinueSearch();
     }
 
@@ -129,7 +126,6 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private boolean isPositionContinueItem(int position) {
         return continueSearch && position == mDataSet.size();
     }
-
 
     public void clear() {
         mDataSet.clear();
