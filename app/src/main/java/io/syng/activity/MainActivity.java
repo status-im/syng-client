@@ -17,16 +17,19 @@ public class MainActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-
         if (savedInstanceState == null) {
             replaceFragment(new ConsoleFragment());
         }
-
+        processIntent(getIntent());
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        processIntent(intent);
+    }
+
+    private void processIntent(Intent intent) {
         if (intent.getDataString() != null && intent.getDataString().indexOf("dapp://") == 0) {
             WebViewFragment wvF = new WebViewFragment();
             Bundle args = new Bundle();

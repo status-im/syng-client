@@ -1,37 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
     <RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
-        <RadioButton android:id="@+id/radio_import_json"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/radio_import_json"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/accent"
             android:checked="true"
-            android:text="@string/json_wallet"/>
-        <RadioButton android:id="@+id/radio_import_hex"
+            android:text="@string/json_wallet"
+            android:textColor="@color/accent"/>
+
+        <RadioButton
+            android:id="@+id/radio_import_hex"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/accent"
-            android:text="@string/hex_private_key"/>
+            android:text="@string/hex_private_key"
+            android:textColor="@color/accent"/>
+
     </RadioGroup>
 
     <EditText
         android:id="@+id/wallet_import_path"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/accent"
+        android:hint="File Path"
         android:singleLine="true"
-        android:hint="File Path"/>
+        android:textColor="@color/accent"/>
 
     <EditText
         android:id="@+id/wallet_password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:textColor="@color/accent"
+        android:hint="Password"
         android:singleLine="true"
-        android:hint="Password"/>
+        android:textColor="@color/accent"/>
 </LinearLayout>
