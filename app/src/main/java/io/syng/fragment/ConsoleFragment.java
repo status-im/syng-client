@@ -80,7 +80,7 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
         mConsoleText.setMovementMethod(new ScrollingMovementMethod());
 
         ImageView background = (ImageView) view.findViewById(R.id.iv_background);
-        Glide.with(this).load(R.drawable.bg1).into(background);
+        Glide.with(this).load(R.drawable.console_bg).into(background);
 
         ImageView syngLogo = (ImageView) view.findViewById(R.id.iv_syng_logo);
         ImageView syngText = (ImageView) view.findViewById(R.id.iv_syng_text);

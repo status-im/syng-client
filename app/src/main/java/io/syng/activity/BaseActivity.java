@@ -47,6 +47,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import io.syng.R;
+import io.syng.adapter.BackgroundArrayAdapter;
 import io.syng.adapter.DAppDrawerAdapter;
 import io.syng.adapter.DAppDrawerAdapter.OnDAppClickListener;
 import io.syng.adapter.ProfileDrawerAdapter;
@@ -61,7 +62,7 @@ import static android.view.View.VISIBLE;
 import static org.ethereum.config.SystemProperties.CONFIG;
 
 public abstract class BaseActivity extends AppCompatActivity implements
-        OnClickListener, OnDAppClickListener, OnProfileClickListener {
+        OnClickListener, OnDAppClickListener, OnProfileClickListener, View.OnLongClickListener {
 
     private static final Logger logger = LoggerFactory.getLogger("SyngApplication");
 
@@ -94,6 +95,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     };
     private List<Profile> mProfiles;
     private List<Dapp> mDApps;
+    private ImageView mHeaderImageView;
 
     protected abstract void onDAppClick(Dapp dapp);
 
@@ -134,8 +136,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         findViewById(R.id.ll_import_wallet).setOnClickListener(this);
         findViewById(R.id.ll_settings).setOnClickListener(this);
         findViewById(R.id.ll_contribute).setOnClickListener(this);
-        findViewById(R.id.drawer_header).setOnClickListener(this);
-
+        findViewById(R.id.drawer_header_item).setOnClickListener(this);
+        findViewById(R.id.drawer_header_item).setOnLongClickListener(this);
         mFrontView = findViewById(R.id.ll_front_view);
         mBackView = findViewById(R.id.ll_back_view);
 
@@ -150,8 +152,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mDAppsRecyclerView.setLayoutManager(layoutManager1);
         initDApps();
 
-        ImageView header = (ImageView) findViewById(R.id.iv_header);
-        Glide.with(this).load(R.drawable.drawer).into(header);
+        mHeaderImageView = (ImageView) findViewById(R.id.iv_header);
+        Glide.with(this).load(R.drawable.bg0).into(mHeaderImageView);
 
         GeneralUtil.showWarningDialogIfNeed(this);
     }
@@ -339,7 +341,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 startActivity(new Intent(BaseActivity.this, SettingsActivity.class));
                 closeDrawer(DRAWER_CLOSE_DELAY_LONG);
                 break;
-            case R.id.drawer_header:
+            case R.id.drawer_header_item:
                 flipDrawer();
                 break;
         }
@@ -598,4 +600,22 @@ public abstract class BaseActivity extends AppCompatActivity implements
         showAccountCreateDialog();
     }
 
+    @Override
+    public boolean onLongClick(View v) {
+        if (v.getId() == R.id.drawer_header_item) {
+            new MaterialDialog.Builder(this)
+                    .adapter(new BackgroundArrayAdapter(this),
+                            new MaterialDialog.ListCallback() {
+                                @SuppressWarnings("ConstantConditions")
+                                @Override
+                                public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
+                                    BackgroundArrayAdapter adapter = (BackgroundArrayAdapter) dialog.getListView().getAdapter();
+                                    Glide.with(BaseActivity.this).load(adapter.getImageResourceIdByPosition(which)).into(mHeaderImageView);
+                                    dialog.dismiss();
+                                }
+                            })
+                    .show();
+        }
+        return true;
+    }
 }
