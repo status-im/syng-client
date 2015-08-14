@@ -17,6 +17,7 @@ public final class PrefsUtil {
 
     private static final String PROFILES_KEY = "pref_profile_key";
     private static final String FIRST_LAUNCH_KEY = "first_launch_key";
+    private static final String CURRENT_PROFILE_KEY = "current_profile";
 
     private static PrefsUtil sInstance;
 
@@ -48,11 +49,9 @@ public final class PrefsUtil {
         return getInstance().mPreferences;
     }
 
-    public static void saveProfiles(ArrayList<Profile> profiles) {
+    private static void saveProfiles(ArrayList<Profile> profiles) {
         try {
-            SharedPreferences.Editor editor = getEditor();
-            editor.putString(PROFILES_KEY, ObjectSerializer.serialize(profiles));
-            editor.apply();
+            getEditor().putString(PROFILES_KEY, ObjectSerializer.serialize(profiles)).commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -83,8 +82,7 @@ public final class PrefsUtil {
         }
     }
 
-    public static boolean saveProfile(Profile profile) {
-
+    public static boolean addProfile(Profile profile) {
         ArrayList<Profile> profiles = PrefsUtil.getProfiles();
         for (Profile item : profiles) {
             if (item.getName().equals(profile.getName())) {
@@ -96,6 +94,13 @@ public final class PrefsUtil {
         return true;
     }
 
+    public static void setCurrentProfileId(String profileId) {
+        getEditor().putString(CURRENT_PROFILE_KEY, profileId).commit();
+    }
+
+    public static String getCurrentProfileId() {
+        return getPrefs().getString(CURRENT_PROFILE_KEY, "");
+    }
 
     public static void setFirstLaunch(boolean isFirstLaunch) {
         getEditor().putBoolean(FIRST_LAUNCH_KEY, isFirstLaunch).apply();

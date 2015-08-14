@@ -9,12 +9,9 @@ import com.squareup.leakcanary.RefWatcher;
 import org.ethereum.android.service.ConnectorHandler;
 import org.ethereum.android.service.EthereumConnector;
 
-import java.util.List;
-
-import io.syng.entity.Dapp;
-import io.syng.entity.Profile;
 import io.syng.service.EthereumService;
 import io.syng.util.PrefsUtil;
+import io.syng.util.ProfileManager;
 
 
 public class SyngApplication extends MultiDexApplication implements ConnectorHandler {
@@ -23,35 +20,20 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     private RefWatcher refWatcher;
 
-    public static Profile sCurrentProfile;
-
-    public static void changeProfile(Profile profile) {
-        List<String> privateKeys = profile.getPrivateKeys();
-        sEthereumConnector.init(privateKeys);
-        sCurrentProfile = profile;
-    }
-
-    public static void addDapp(Dapp dapp) {
-        sCurrentProfile.addDapp(dapp);
-        PrefsUtil.updateProfile(sCurrentProfile);
-    }
-
-    public static void updateDapp(Dapp dapp) {
-        sCurrentProfile.updateDapp(dapp);
-        PrefsUtil.updateProfile(sCurrentProfile);
-    }
-
     @Override
     public void onCreate() {
         super.onCreate();
         PrefsUtil.initialize(this);
+        ProfileManager.initialize();
 //        refWatcher = LeakCanary.install(this);
+        refWatcher = RefWatcher.DISABLED;
+
         if (sEthereumConnector == null) {
             sEthereumConnector = new EthereumConnector(this, EthereumService.class);
             sEthereumConnector.registerHandler(this);
             sEthereumConnector.bindService();
         }
-        refWatcher = RefWatcher.DISABLED;
+        sEthereumConnector.init(ProfileManager.getCurrentProfile().getPrivateKeys());
     }
 
     @Override
@@ -70,9 +52,7 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     @Override
     public void onConnectorConnected() {
-        if (sCurrentProfile != null) {
-            sEthereumConnector.init(sCurrentProfile.getPrivateKeys());
-        }
+        sEthereumConnector.init(ProfileManager.getCurrentProfile().getPrivateKeys());
         sEthereumConnector.startJsonRpc();
     }
 

@@ -22,6 +22,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
@@ -33,10 +34,8 @@ import android.widget.Toast;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
-import org.ethereum.crypto.HashUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.spongycastle.util.encoders.Hex;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -52,14 +51,13 @@ import io.syng.adapter.DAppDrawerAdapter;
 import io.syng.adapter.DAppDrawerAdapter.OnDAppClickListener;
 import io.syng.adapter.ProfileDrawerAdapter;
 import io.syng.adapter.ProfileDrawerAdapter.OnProfileClickListener;
-import io.syng.app.SyngApplication;
 import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
 import io.syng.util.GeneralUtil;
 import io.syng.util.PrefsUtil;
+import io.syng.util.ProfileManager;
 
 import static android.view.View.VISIBLE;
-import static org.ethereum.config.SystemProperties.CONFIG;
 
 public abstract class BaseActivity extends AppCompatActivity implements
         OnClickListener, OnDAppClickListener, OnProfileClickListener, View.OnLongClickListener {
@@ -79,7 +77,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private RecyclerView mProfilesRecyclerView;
     private DrawerLayout mDrawerLayout;
 
-    private DAppDrawerAdapter mDAppsDrawerAdapter;
     private ProfileDrawerAdapter mProfileDrawerAdapter;
 
     private View mFrontView;
@@ -93,8 +90,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             mDrawerLayout.closeDrawer(GravityCompat.START);
         }
     };
-    private List<Profile> mProfiles;
-    private List<Dapp> mDApps;
     private ImageView mHeaderImageView;
 
     protected abstract void onDAppClick(Dapp dapp);
@@ -108,8 +103,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         super.setContentView(mDrawerLayout);
 
         FrameLayout content = (FrameLayout) findViewById(R.id.content);
+        ViewGroup inflated = (ViewGroup) inflater.inflate(layoutResID, content, true);
+        Toolbar toolbar = (Toolbar) inflated.findViewById(R.id.myToolbar);
 
-        Toolbar toolbar = (Toolbar) inflater.inflate(layoutResID, content, true).findViewById(R.id.myToolbar);
         if (toolbar != null) {
             setSupportActionBar(toolbar);
             mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(android.R.color.black));
@@ -143,56 +139,30 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mProfilesRecyclerView = (RecyclerView) findViewById(R.id.accounts_drawer_recycler_view);
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this);
         mProfilesRecyclerView.setLayoutManager(layoutManager2);
-        initProfiles();
+        populateProfiles();
 
         mDAppsRecyclerView = (RecyclerView) findViewById(R.id.dapd_drawer_recycler_view);
         mDAppsRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         mDAppsRecyclerView.setLayoutManager(layoutManager1);
-        initDApps();
+        populateDApps();
 
         mHeaderImageView = (ImageView) findViewById(R.id.iv_header);
-        String currentProfileId = SyngApplication.sCurrentProfile.getId();
+        String currentProfileId = ProfileManager.getCurrentProfile().getId();
         Glide.with(this).load(PrefsUtil.getBackgroundResourceId(currentProfileId)).into(mHeaderImageView);
 
         GeneralUtil.showWarningDialogIfNeed(this);
     }
 
-
-    private void initProfiles() {
-        mProfiles = PrefsUtil.getProfiles();
-        // Add default cow account if not present
-        if (mProfiles.isEmpty()) {
-            Profile profile = new Profile();
-            profile.setName("Cow");
-            // Add default cow and monkey addresses
-            List<String> addresses = new ArrayList<>();
-            byte[] cowAddr = HashUtil.sha3("cow".getBytes());
-            addresses.add(Hex.toHexString(cowAddr));
-            String secret = CONFIG.coinbaseSecret();
-            byte[] cbAddr = HashUtil.sha3(secret.getBytes());
-            addresses.add(Hex.toHexString(cbAddr));
-            profile.setPrivateKeys(addresses);
-            PrefsUtil.saveProfile(profile);
-            mProfiles.add(profile);
-        }
-        mProfileDrawerAdapter = new ProfileDrawerAdapter(this, mProfiles, this);
+    private void populateProfiles() {
+        mProfileDrawerAdapter = new ProfileDrawerAdapter(this, ProfileManager.getProfiles(), this);
         mProfilesRecyclerView.setAdapter(mProfileDrawerAdapter);
-        if (SyngApplication.sCurrentProfile == null) {
-            SyngApplication.changeProfile(mProfiles.get(0));
-        }
-        updateCurrentProfileName(SyngApplication.sCurrentProfile.getName());
+        updateCurrentProfileName();
     }
 
-
-    private void initDApps() {
-        mDApps = new ArrayList<>();
-        if (SyngApplication.sCurrentProfile != null) {
-            mDApps = SyngApplication.sCurrentProfile.getDapps();
-        }
-        updateAppList(mSearchTextView.getText().toString());
+    private void populateDApps() {
+        updateDAppList(mSearchTextView.getText().toString());
     }
-
 
     private void closeDrawer(int delayMills) {
         mHandler.postDelayed(mRunnable, delayMills);
@@ -203,56 +173,56 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     protected void changeProfile(Profile profile) {
-        updateCurrentProfileName(profile.getName());
-        SyngApplication.changeProfile(profile);
-        initDApps();
+        ProfileManager.setCurrentProfile(profile);
+        updateCurrentProfileName();
         Glide.with(this).load(PrefsUtil.getBackgroundResourceId(profile.getId())).into(mHeaderImageView);
+        populateDApps();
     }
 
-    protected void updateCurrentProfileName(String name) {
+    protected void updateCurrentProfileName() {
         TextView textView = (TextView) findViewById(R.id.tv_name);
-        textView.setText(name);
+        textView.setText(ProfileManager.getCurrentProfile().getName());
     }
 
-    protected void requestChangeProfile(final Profile profile) {
-
-        new MaterialDialog.Builder(BaseActivity.this)
-                .title(R.string.request_profile_password)
-                .customView(R.layout.profile_password, true)
-                .positiveText(R.string.ok)
-                .negativeText(R.string.cancel)
-                .contentColor(getResources().getColor(R.color.accent))
-                .dividerColorRes(R.color.accent)
-                .backgroundColorRes(R.color.primary_dark)
-                .positiveColorRes(R.color.accent)
-                .negativeColorRes(R.color.accent)
-                .widgetColorRes(R.color.accent)
-                .callback(new MaterialDialog.ButtonCallback() {
-
-                    @SuppressWarnings("ConstantConditions")
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-
-                        View view = dialog.getCustomView();
-                        EditText passwordInput = (EditText) view.findViewById(R.id.passwordInput);
-                        if (profile.decrypt(passwordInput.getText().toString())) {
-                            changeProfile(profile);
-                        } else {
-//                            dialog.hide();
-//                            mAccountSpinner.setSelection(currentPosition, false);
-                        }
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-
-//                        dialog.hide();
-//                        mAccountSpinner.setSelection(currentPosition, false);
-                    }
-                })
-                .build()
-                .show();
-    }
+//    protected void requestChangeProfile(final Profile profile) {
+//
+//        new MaterialDialog.Builder(BaseActivity.this)
+//                .title(R.string.request_profile_password)
+//                .customView(R.layout.profile_password, true)
+//                .positiveText(R.string.ok)
+//                .negativeText(R.string.cancel)
+//                .contentColor(getResources().getColor(R.color.accent))
+//                .dividerColorRes(R.color.accent)
+//                .backgroundColorRes(R.color.primary_dark)
+//                .positiveColorRes(R.color.accent)
+//                .negativeColorRes(R.color.accent)
+//                .widgetColorRes(R.color.accent)
+//                .callback(new MaterialDialog.ButtonCallback() {
+//
+//                    @SuppressWarnings("ConstantConditions")
+//                    @Override
+//                    public void onPositive(MaterialDialog dialog) {
+//
+//                        View view = dialog.getCustomView();
+//                        EditText passwordInput = (EditText) view.findViewById(R.id.passwordInput);
+//                        if (profile.decrypt(passwordInput.getText().toString())) {
+//                            changeProfile(profile);
+//                        } else {
+////                            dialog.hide();
+////                            mAccountSpinner.setSelection(currentPosition, false);
+//                        }
+//                    }
+//
+//                    @Override
+//                    public void onNegative(MaterialDialog dialog) {
+//
+////                        dialog.hide();
+////                        mAccountSpinner.setSelection(currentPosition, false);
+//                    }
+//                })
+//                .build()
+//                .show();
+//    }
 
     private void initSearch() {
 
@@ -269,7 +239,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             @Override
             public void afterTextChanged(Editable editable) {
                 String searchValue = editable.toString();
-                updateAppList(searchValue);
+                updateDAppList(searchValue);
             }
         });
 
@@ -287,7 +257,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
         });
     }
 
-    protected void updateAppList(String filter) {
+    protected void updateDAppList(String filter) {
+        List<Dapp> mDApps = ProfileManager.getCurrentProfile().getDapps();
         ArrayList<Dapp> dapps = new ArrayList<>(mDApps.size());
         int length = mDApps.size();
         for (int i = 0; i < length; i++) {
@@ -296,7 +267,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 dapps.add(item);
             }
         }
-        mDAppsDrawerAdapter = new DAppDrawerAdapter(dapps, this);
+        DAppDrawerAdapter mDAppsDrawerAdapter = new DAppDrawerAdapter(dapps, this);
         mDAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
     }
 
@@ -360,9 +331,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     public void onInput(MaterialDialog dialog, CharSequence input) {
                         Profile profile = new Profile();
                         profile.setName(input.toString());
-                        mProfiles.add(profile);
-                        PrefsUtil.saveProfile(profile);
-                        mProfileDrawerAdapter.notifyDataSetChanged();
+                        ProfileManager.addProfile(profile);
+                        mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
                     }
                 }).show();
         dialog.getInputEditText().setSingleLine();
@@ -446,18 +416,17 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         }
 
                         if (importJsonRadio.isChecked()) {
-                            if (SyngApplication.sCurrentProfile != null) {
-                                if (SyngApplication.sCurrentProfile.importWallet(fileContents, password)) {
-                                    PrefsUtil.updateProfile(SyngApplication.sCurrentProfile);
-                                    SyngApplication.changeProfile(SyngApplication.sCurrentProfile);
-                                } else {
-                                    Toast.makeText(BaseActivity.this, R.string.invalid_wallet_password, Toast.LENGTH_SHORT).show();
-                                }
+                            Profile profile = ProfileManager.getCurrentProfile();
+                            if (profile.importWallet(fileContents, password)) {
+                                ProfileManager.updateProfile(profile);
+                                ProfileManager.setCurrentProfile(profile);
                             } else {
-                                logger.warn("SyngApplication.sCurrentProfile is null ...?!");
+                                Toast.makeText(BaseActivity.this, R.string.invalid_wallet_password, Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            SyngApplication.sCurrentProfile.importPrivateKey(fileContents, password);
+                            Profile profile = ProfileManager.getCurrentProfile();
+                            profile.importPrivateKey(fileContents, password);
+                            ProfileManager.updateProfile(profile);
                         }
                     }
 
@@ -490,8 +459,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
                             dapp.setName(name);
                             dapp.setUrl(url);
                             System.out.println(url);
-                            SyngApplication.updateDapp(dapp);
-                            initDApps();
+                            ProfileManager.updateDAppInProfile(ProfileManager.getCurrentProfile(), dapp);
+                            populateDApps();
                             if (homeScreenIcon) {
                                 GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
                             }
@@ -526,18 +495,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     @Override
                     public void onInput(MaterialDialog dialog, CharSequence input) {
                         profile.setName(input.toString());
-                        PrefsUtil.updateProfile(profile);
-                        for (Profile item : mProfiles) {
-                            if (item.getId().equals(profile.getId())) {
-                                int index = mProfiles.indexOf(item);
-                                mProfiles.set(index, profile);
-                                break;
-                            }
-                        }
-                        mProfileDrawerAdapter.notifyDataSetChanged();
-                        if (SyngApplication.sCurrentProfile.getId().equals(profile.getId())) {
-                            updateCurrentProfileName(profile.getName());
-                        }
+                        ProfileManager.updateProfile(profile);
+                        mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
+                        updateCurrentProfileName();
                     }
                 }).show();
         dialog.getInputEditText().setSingleLine();
@@ -565,8 +525,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
                             Dapp dapp = new Dapp(name);
                             dapp.setUrl(url);
-                            SyngApplication.addDapp(dapp);
-                            initDApps();
+                            ProfileManager.addDAppToProfile(ProfileManager.getCurrentProfile(), dapp);
+                            populateDApps();
                             if (homeScreenIcon) {
                                 GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
                             }
@@ -615,7 +575,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                                     BackgroundArrayAdapter adapter = (BackgroundArrayAdapter) dialog.getListView().getAdapter();
                                     int imageResourceId = adapter.getImageResourceIdByPosition(which);
                                     Glide.with(BaseActivity.this).load(imageResourceId).into(mHeaderImageView);
-                                    PrefsUtil.setBackgroundResourceId(SyngApplication.sCurrentProfile.getId(), imageResourceId);
+                                    PrefsUtil.setBackgroundResourceId(ProfileManager.getCurrentProfile().getId(), imageResourceId);
                                     dialog.dismiss();
                                 }
                             })
