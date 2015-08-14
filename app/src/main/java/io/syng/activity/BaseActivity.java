@@ -99,7 +99,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected abstract void onDAppClick(Dapp dapp);
 
-
     @SuppressLint("InflateParams")
     @Override
     public void setContentView(final int layoutResID) {

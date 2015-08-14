@@ -40,7 +40,7 @@ public final class GeneralUtil {
     public static void showWarningDialogIfNeed(final Context context) {
         if (PrefsUtil.isFirstLaunch()) {
             PrefsUtil.setFirstLaunch(false);
-            new AlertDialogWrapper.Builder(context.getApplicationContext())
+            new AlertDialogWrapper.Builder(context)
                     .setTitle(R.string.warning_title)
                     .setMessage(R.string.warning_message)
                     .setNegativeButton(android.R.string.ok, new DialogInterface.OnClickListener() {
