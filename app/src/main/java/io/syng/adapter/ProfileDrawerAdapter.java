@@ -25,8 +25,11 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     public interface OnProfileClickListener {
         void onProfileClick(Profile profile);
+
         void onProfilePress(Profile profile);
+
         void onProfileImport();
+
         void onNewProfile();
     }
 
@@ -102,7 +105,7 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
     @Override
     public int getItemCount() {
-        return mDataSet.size()+1;
+        return mDataSet.size() + 1;
     }
 
     private boolean isPositionHeader(int position) {
@@ -133,6 +136,11 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
             view = v.findViewById(R.id.ll_add_account);
         }
 
+    }
+
+    public void swapData(List<Profile> profiles) {
+        mDataSet = profiles;
+        notifyDataSetChanged();
     }
 
 }
