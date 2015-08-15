@@ -22,6 +22,13 @@ public final class GeneralUtil {
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
+    public static void showKeyBoard(View view, Context context) {
+        if (view == null)
+            return;
+        InputMethodManager imm = (InputMethodManager) context.getApplicationContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
+        imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+    }
+
     public static void createHomeScreenIcon(final Context context, final String name, final String url) {
         Intent shortcutIntent = new Intent(Intent.ACTION_VIEW);
         shortcutIntent.setData(Uri.parse(url));

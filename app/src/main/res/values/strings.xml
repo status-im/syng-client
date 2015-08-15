@@ -30,5 +30,10 @@
     <string name="request_profile_password">Profile Password</string>
     <string name="warning.message">This is PRE-ALPHA software and most likely contains numerous bugs. The layout, design, and functionality may change frequently. This also lacks numerous features that will be included in later versions. Using this software you agree that you hold yourself personally accountable for interacting with this software.</string>
     <string name="warning.title">WARNING</string>
+    <string name="hint.profile.name">Profile name</string>
+    <string name="hint.profile.pass">Password</string>
+    <string name="hitn.profile.repeat.pass">Repeat password</string>
+    <string name="dialog.button.create">Create</string>
+    <string name="dialog.button.cancel">Cancel</string>
 
 </resources>

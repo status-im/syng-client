@@ -56,6 +56,7 @@ public final class ProfileManager {
             byte[] cbAddr = HashUtil.sha3(secret.getBytes());
             addresses.add(Hex.toHexString(cbAddr));
             profile.setPrivateKeys(addresses);
+            profile.setPassword("qw");
             ProfileManager.addProfile(profile);
             ProfileManager.setCurrentProfile(profile);
             return profile;

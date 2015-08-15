@@ -24,7 +24,7 @@ public class Profile implements Serializable {
     protected List<String> privateKeys = new ArrayList<>();
 
     /* "password protect profile" (encrypt the private keys) */
-    protected boolean passwordProtectedProfile = false;
+    protected boolean passwordProtectedProfile;
 
     protected List<Dapp> dapps = new ArrayList<>();
 
@@ -32,22 +32,19 @@ public class Profile implements Serializable {
 
     protected String passwordHash;
 
-    protected transient boolean isEncrypted = false;
+    protected transient boolean isEncrypted;
 
     public Profile() {
-
         this.privateKeys.add(createPrivateKey());
         addDefaultApps();
     }
 
     public Profile(String privateKey) {
-
         this.privateKeys.add(privateKey);
         addDefaultApps();
     }
 
     public Profile(List<String> privateKeys) {
-
         this.privateKeys = privateKeys;
         addDefaultApps();
     }
@@ -70,49 +67,40 @@ public class Profile implements Serializable {
     }
 
     protected String createPrivateKey() {
-
         byte[] privateKey = HashUtil.sha3(HashUtil.randomPeerId());
         return Hex.toHexString(privateKey);
     }
 
     public List<String> getPrivateKeys() {
-
         return privateKeys;
     }
 
     public void setPrivateKeys(List<String> privateKeys) {
-
         this.privateKeys = privateKeys;
     }
 
     public void addPrivateKey(String privateKey) {
-
         this.privateKeys.add(privateKey);
     }
 
     public void removePrivateKey(String privateKey) {
-
         this.privateKeys.remove(privateKey);
     }
 
     public List<Dapp> getDapps() {
-
         return dapps;
     }
 
     public void setDapps(List<Dapp> dapps) {
-
         this.dapps = dapps;
     }
 
     public void addDapp(Dapp dapp) {
-
         this.dapps.add(dapp);
     }
 
     public void updateDapp(Dapp dapp) {
-
-        for (Dapp item: dapps) {
+        for (Dapp item : dapps) {
             if (item.getId().equals(dapp.getId())) {
                 int index = dapps.indexOf(item);
                 dapps.set(index, dapp);
@@ -121,47 +109,42 @@ public class Profile implements Serializable {
     }
 
     public void removeDapp(Dapp dapp) {
-
         this.dapps.remove(dapp);
     }
 
     public boolean getPasswordProtectedProfile() {
-
         return passwordProtectedProfile;
     }
 
     public void setPasswordProtectedProfile(boolean passwordProtectedProfile) {
-
         this.passwordProtectedProfile = passwordProtectedProfile;
     }
 
     public String getName() {
-
         return name;
     }
 
     public void setName(String name) {
-
         this.name = name;
     }
 
     public void setId(String id) {
-
         this.id = id;
     }
 
     public String getId() {
-
         return id;
     }
 
-    protected void setPassword(String password) {
-
+    public void setPassword(String password) {
         this.passwordHash = Hex.toHexString(HashUtil.sha3(password.getBytes()));
     }
 
-    public void encrypt(String password) {
+    public boolean checkPassword(String password) {
+        return passwordHash.equals(Hex.toHexString(HashUtil.sha3(password.getBytes())));
+    }
 
+    public void encrypt(String password) {
         if (!passwordProtectedProfile) {
             setPassword(password);
             List<String> encrypted = new ArrayList<>();
@@ -174,9 +157,8 @@ public class Profile implements Serializable {
     }
 
     public boolean decrypt(String password) {
-
         if (passwordProtectedProfile) {
-            if (passwordHash != Hex.toHexString(HashUtil.sha3(password.getBytes()))) {
+            if (!passwordHash.equals(Hex.toHexString(HashUtil.sha3(password.getBytes())))) {
                 return false;
             }
             List<String> decrypted = new ArrayList<>();
@@ -190,19 +172,16 @@ public class Profile implements Serializable {
     }
 
     protected String encryptPrivateKey(String privateKey, String password) {
-
         // TODO: Encrypt private key
         return privateKey;
     }
 
     protected String decryptPrivateKey(String privateKey, String password) {
-
         // TODO: Decrypt private key
         return privateKey;
     }
 
     public boolean importWallet(String jsonWallet, String password) {
-
         try {
             JSONObject json = new JSONObject(jsonWallet);
             byte[] privateKey = null;
@@ -241,9 +220,7 @@ public class Profile implements Serializable {
     }
 
     public void importPrivateKey(String privateKey, String password) {
-
         privateKeys.add(decryptPrivateKey(privateKey, password));
     }
-
 
 }

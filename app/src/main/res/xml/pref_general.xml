@@ -8,7 +8,6 @@
         android:singleLine="true"
         android:title="@string/pref_json_rpc_server_title"/>
 
-
     <ListPreference
         android:defaultValue="3"
         android:entries="@array/pref_running_modes_titles"

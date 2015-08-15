@@ -1,6 +1,7 @@
 package io.syng.activity;
 
 import android.annotation.SuppressLint;
+import android.app.Dialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -15,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
 import android.view.KeyEvent;
@@ -172,62 +174,45 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mHandler.postDelayed(mRunnable, DRAWER_CLOSE_DELAY_SHORT);
     }
 
-    protected void changeProfile(Profile profile) {
+    private void changeProfile(Profile profile) {
         ProfileManager.setCurrentProfile(profile);
         updateCurrentProfileName();
         Glide.with(this).load(PrefsUtil.getBackgroundResourceId(profile.getId())).into(mHeaderImageView);
         populateDApps();
+        flipDrawer();
     }
 
-    protected void updateCurrentProfileName() {
+    private void updateCurrentProfileName() {
         TextView textView = (TextView) findViewById(R.id.tv_name);
         textView.setText(ProfileManager.getCurrentProfile().getName());
     }
 
-//    protected void requestChangeProfile(final Profile profile) {
-//
-//        new MaterialDialog.Builder(BaseActivity.this)
-//                .title(R.string.request_profile_password)
-//                .customView(R.layout.profile_password, true)
-//                .positiveText(R.string.ok)
-//                .negativeText(R.string.cancel)
-//                .contentColor(getResources().getColor(R.color.accent))
-//                .dividerColorRes(R.color.accent)
-//                .backgroundColorRes(R.color.primary_dark)
-//                .positiveColorRes(R.color.accent)
-//                .negativeColorRes(R.color.accent)
-//                .widgetColorRes(R.color.accent)
-//                .callback(new MaterialDialog.ButtonCallback() {
-//
-//                    @SuppressWarnings("ConstantConditions")
-//                    @Override
-//                    public void onPositive(MaterialDialog dialog) {
-//
-//                        View view = dialog.getCustomView();
-//                        EditText passwordInput = (EditText) view.findViewById(R.id.passwordInput);
-//                        if (profile.decrypt(passwordInput.getText().toString())) {
-//                            changeProfile(profile);
-//                        } else {
-////                            dialog.hide();
-////                            mAccountSpinner.setSelection(currentPosition, false);
-//                        }
-//                    }
-//
-//                    @Override
-//                    public void onNegative(MaterialDialog dialog) {
-//
-////                        dialog.hide();
-////                        mAccountSpinner.setSelection(currentPosition, false);
-//                    }
-//                })
-//                .build()
-//                .show();
-//    }
+    private void requestChangeProfile(final Profile profile) {
+        Dialog dialog = new MaterialDialog.Builder(BaseActivity.this)
+                .title(R.string.request_profile_password)
+                .customView(R.layout.profile_password, true)
+                .positiveText(R.string.ok)
+                .negativeText(R.string.cancel)
+                .callback(new MaterialDialog.ButtonCallback() {
+                    @SuppressWarnings("ConstantConditions")
+                    @Override
+                    public void onPositive(MaterialDialog dialog) {
+                        View view = dialog.getCustomView();
+                        EditText password = (EditText) view.findViewById(R.id.et_pass);
+                        if (profile.checkPassword(password.getText().toString())) {
+                            changeProfile(profile);
+                        } else {
+                            Toast.makeText(BaseActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                })
+                .show();
+        EditText name = (EditText) dialog.findViewById(R.id.et_pass);
+        GeneralUtil.showKeyBoard(name, this);
+    }
 
     private void initSearch() {
-
         mSearchTextView.addTextChangedListener(new TextWatcher() {
-
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
             }
@@ -242,12 +227,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 updateDAppList(searchValue);
             }
         });
-
         mSearchTextView.setOnKeyListener(new View.OnKeyListener() {
-
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
-
                 if (keyEvent.getAction() == KeyEvent.ACTION_DOWN && keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
                     GeneralUtil.hideKeyBoard(mSearchTextView, BaseActivity.this);
                     return true;
@@ -257,7 +239,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         });
     }
 
-    protected void updateDAppList(String filter) {
+    private void updateDAppList(String filter) {
         List<Dapp> mDApps = ProfileManager.getCurrentProfile().getDapps();
         ArrayList<Dapp> dapps = new ArrayList<>(mDApps.size());
         int length = mDApps.size();
@@ -317,27 +299,59 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 flipDrawer();
                 break;
         }
-
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void showAccountCreateDialog() {
+    private void showProfileCreateDialog() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
                 .title("New account")
-                .content("Put your name to create new account")
-                .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("Name", "", new MaterialDialog.InputCallback() {
+                .positiveText(R.string.dialog_button_create)
+                .negativeText(R.string.dialog_button_cancel)
+                .customView(R.layout.profile_create_dialog, true)
+                .autoDismiss(false)
+                .callback(new MaterialDialog.ButtonCallback() {
                     @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                        Profile profile = new Profile();
-                        profile.setName(input.toString());
-                        ProfileManager.addProfile(profile);
-                        mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
+                    public void onPositive(MaterialDialog dialog) {
+                        EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
+                        EditText pass1 = (EditText) dialog.findViewById(R.id.et_profile_pass_1);
+                        EditText pass2 = (EditText) dialog.findViewById(R.id.et_profile_pass_2);
+
+                        String nameString = name.getText().toString();
+                        String pass1String = pass1.getText().toString();
+                        String pass2String = pass2.getText().toString();
+
+                        if (TextUtils.isEmpty(nameString)) {
+                            Toast.makeText(BaseActivity.this, "Profile name can't be empty", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+                        if (TextUtils.isEmpty(pass1String) || TextUtils.isEmpty(pass2String)) {
+                            Toast.makeText(BaseActivity.this, "Password name can't be empty", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+                        if (!pass1.getText().toString().equals(pass2.getText().toString())) {
+                            Toast.makeText(BaseActivity.this, "Passwords should be the same!", Toast.LENGTH_SHORT).show();
+                        } else {
+                            Profile profile = new Profile();
+                            profile.setName(name.getText().toString());
+                            profile.setPassword(pass1String);
+                            ProfileManager.addProfile(profile);
+                            mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
+                            GeneralUtil.hideKeyBoard(name, BaseActivity.this);
+                            GeneralUtil.hideKeyBoard(pass1, BaseActivity.this);
+                            GeneralUtil.hideKeyBoard(pass2, BaseActivity.this);
+                            dialog.dismiss();
+                        }
+                    }
+
+                    @Override
+                    public void onNegative(MaterialDialog dialog) {
+                        dialog.dismiss();
                     }
                 }).show();
-        dialog.getInputEditText().setSingleLine();
+        EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
+        GeneralUtil.showKeyBoard(name, this);
     }
-
 
     private void flipDrawer() {
         ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
@@ -373,8 +387,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onProfileClick(Profile profile) {
-        changeProfile(profile);
-        flipDrawer();
+        if (ProfileManager.getCurrentProfile().getId().equals(profile.getId())) {
+            return;
+        }
+        requestChangeProfile(profile);
     }
 
     @Override
@@ -385,7 +401,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .positiveText(R.string.sImport)
                 .negativeText(R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
-
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         RadioButton importJsonRadio = (RadioButton) dialog.findViewById(R.id.radio_import_json);
@@ -414,7 +429,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                             Toast.makeText(BaseActivity.this, R.string.error_reading_file, Toast.LENGTH_SHORT).show();
                             logger.error("Error reading wallet file", e);
                         }
-
                         if (importJsonRadio.isChecked()) {
                             Profile profile = ProfileManager.getCurrentProfile();
                             if (profile.importWallet(fileContents, password)) {
@@ -446,7 +460,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .positiveText(R.string.save)
                 .negativeText(R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
-
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
@@ -504,7 +517,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         dialog.getInputEditText().setText(profile.getName());
     }
 
-
     @Override
     public void onDAppAdd() {
         new MaterialDialog.Builder(this)
@@ -513,7 +525,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .positiveText(R.string.save)
                 .negativeText(R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
-
                     @Override
                     public void onPositive(MaterialDialog dialog) {
                         EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
@@ -534,7 +545,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         } else {
                             Toast.makeText(BaseActivity.this, R.string.invalid_url, Toast.LENGTH_SHORT).show();
                         }
-
                     }
 
                     @Override
@@ -560,7 +570,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onNewProfile() {
-        showAccountCreateDialog();
+        showProfileCreateDialog();
     }
 
     @Override
