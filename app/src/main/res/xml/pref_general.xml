@@ -1,24 +1,33 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
+
+    <EditTextPreference
+        android:defaultValue="@string/pref_json_rpc_server_default"
+        android:inputType="text"
+        android:key="@string/pref_json_rpc_server_key"
+        android:singleLine="true"
+        android:title="@string/pref_json_rpc_server_title"/>
+
+
     <ListPreference
-        android:key="runningMode"
-        android:title="@string/pref_title_running_mode"
         android:defaultValue="3"
         android:entries="@array/pref_running_modes_titles"
         android:entryValues="@array/pref_running_modes_values"
+        android:key="@string/pref_running_mode_key"
         android:negativeButtonText="@null"
-        android:positiveButtonText="@null" />
+        android:positiveButtonText="@null"
+        android:title="@string/pref_title_running_mode"/>
 
     <CheckBoxPreference
+        android:defaultValue="true"
         android:key="syncInBackground"
-        android:title="@string/pref_title_sync_in_background"
         android:summary="@string/pref_description_sync_in_background"
-        android:defaultValue="true" />
+        android:title="@string/pref_title_sync_in_background"/>
 
     <CheckBoxPreference
+        android:defaultValue="true"
         android:key="syncOnlyWhenWifi"
-        android:title="@string/pref_title_sync_only_on_wifi"
         android:summary="@string/pref_description_sync_only_on_wifi"
-        android:defaultValue="true" />
+        android:title="@string/pref_title_sync_only_on_wifi"/>
 
 </PreferenceScreen>

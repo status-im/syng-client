@@ -3,7 +3,9 @@ package io.syng.util;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.preference.PreferenceManager;
 import android.support.annotation.DrawableRes;
+import android.support.annotation.StringRes;
 
 import java.util.ArrayList;
 
@@ -13,18 +15,18 @@ import io.syng.entity.Profile;
 
 public final class PrefsUtil {
 
-    private final static String SHARED_PREFERENCES_FILE = "test";
-
     private static final String PROFILES_KEY = "pref_profile_key";
     private static final String FIRST_LAUNCH_KEY = "first_launch_key";
     private static final String CURRENT_PROFILE_KEY = "current_profile";
 
     private static PrefsUtil sInstance;
+    private final Context mContext;
 
     private SharedPreferences mPreferences;
 
     private PrefsUtil(Context context) {
-        mPreferences = context.getSharedPreferences(SHARED_PREFERENCES_FILE, Context.MODE_PRIVATE);
+        mPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        mContext = context;
     }
 
     public static void initialize(Context context) {
@@ -47,6 +49,10 @@ public final class PrefsUtil {
 
     private static SharedPreferences getPrefs() {
         return getInstance().mPreferences;
+    }
+
+    private static String getString(@StringRes int resourceId) {
+        return getInstance().mContext.getString(resourceId);
     }
 
     private static void saveProfiles(ArrayList<Profile> profiles) {
@@ -117,6 +123,10 @@ public final class PrefsUtil {
 
     public static int getBackgroundResourceId(String profileId) {
         return getPrefs().getInt(profileId, R.drawable.bg0_resized);
+    }
+
+    public static String getJsonRPCServerAddress() {
+        return getPrefs().getString(getString(R.string.pref_json_rpc_server_key), getString(R.string.pref_json_rpc_server_default));
     }
 
 }

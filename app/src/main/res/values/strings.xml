@@ -1,9 +1,9 @@
 <resources>
-    <string name="app_name">Syng</string>
 
+
+    <string name="app_name">Syng</string>
     <string name="drawer_open">Open Navigation Drawer</string>
     <string name="drawer_close">Close Navigation Drawer</string>
-    <string name="title_activity_profile_manager">ProfileManagerActivity</string>
 
     <string name="add_profile">Add Profile</string>
     <string name="profile_manager_title">Profiles</string>
@@ -16,17 +16,14 @@
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
     <string name="sImport">Import</string>
-    <string name="manage_profiles">Manage Profiles</string>
-
-    <string name="title_activity_spash_screen">Syng</string>
 
     <string name="wallet_title">Import Wallet</string>
     <string name="ok">OK</string>
     <string name="json_wallet">Import json wallet</string>
     <string name="hex_private_key">Import hex encoded private key</string>
-    <string name="file_not_found">The specified file was not found.</string>
-    <string name="error_reading_file">Error reading specified file.</string>
-    <string name="invalid_wallet_password">Invalid wallet or password.</string>
+    <string name="file_not_found">The specified file was not found</string>
+    <string name="error_reading_file">Error reading specified file</string>
+    <string name="invalid_wallet_password">Invalid wallet or password</string>
 
     <string name="invalid_url">Invalid url</string>
 
