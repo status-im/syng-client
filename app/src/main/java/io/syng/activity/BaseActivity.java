@@ -93,6 +93,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     };
     private ImageView mHeaderImageView;
+    private DAppDrawerAdapter mDAppsDrawerAdapter;
 
     protected abstract void onDAppClick(Dapp dapp);
 
@@ -138,15 +139,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mFrontView = findViewById(R.id.ll_front_view);
         mBackView = findViewById(R.id.ll_back_view);
 
-        mProfilesRecyclerView = (RecyclerView) findViewById(R.id.accounts_drawer_recycler_view);
+        mProfilesRecyclerView = (RecyclerView) findViewById(R.id.profile_drawer_recycler_view);
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this);
         mProfilesRecyclerView.setLayoutManager(layoutManager2);
+        mProfileDrawerAdapter = new ProfileDrawerAdapter(this, new ArrayList<Profile>(), this);
+        mProfilesRecyclerView.setAdapter(mProfileDrawerAdapter);
         populateProfiles();
 
-        mDAppsRecyclerView = (RecyclerView) findViewById(R.id.dapd_drawer_recycler_view);
+        mDAppsRecyclerView = (RecyclerView) findViewById(R.id.dapp_drawer_recycler_view);
         mDAppsRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
         mDAppsRecyclerView.setLayoutManager(layoutManager1);
+        mDAppsDrawerAdapter = new DAppDrawerAdapter(new ArrayList<Dapp>(), this);
+        mDAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
         populateDApps();
 
         mHeaderImageView = (ImageView) findViewById(R.id.iv_header);
@@ -157,8 +162,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     private void populateProfiles() {
-        mProfileDrawerAdapter = new ProfileDrawerAdapter(this, ProfileManager.getProfiles(), this);
-        mProfilesRecyclerView.setAdapter(mProfileDrawerAdapter);
+        mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
         updateCurrentProfileName();
     }
 
@@ -249,8 +253,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 dapps.add(item);
             }
         }
-        DAppDrawerAdapter mDAppsDrawerAdapter = new DAppDrawerAdapter(dapps, this);
-        mDAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
+        mDAppsDrawerAdapter.swapData(dapps);
     }
 
     @Override

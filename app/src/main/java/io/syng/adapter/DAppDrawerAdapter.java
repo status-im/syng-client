@@ -99,7 +99,6 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                     }
                 }
             });
-
         }
     }
 
@@ -137,6 +136,12 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyDataSetChanged();
     }
 
+    public void swapData(List<Dapp> items) {
+        mDataSet.clear();
+        mDataSet.addAll(items);
+        notifyDataSetChanged();
+    }
+
     static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nameTextView;
@@ -171,4 +176,5 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         }
 
     }
+
 }
