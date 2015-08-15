@@ -522,7 +522,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onDAppAdd() {
-        new MaterialDialog.Builder(this)
+        Dialog dialog = new MaterialDialog.Builder(this)
                 .title("Add new one")
                 .customView(R.layout.dapp_form, true)
                 .positiveText(R.string.save)
@@ -556,7 +556,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     }
                 })
                 .autoDismiss(false)
-                .build().show();
+                .show();
+        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
+        GeneralUtil.showKeyBoard(dappNameEdit, this);
     }
 
     @Override

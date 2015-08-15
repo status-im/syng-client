@@ -139,6 +139,7 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void swapData(List<Dapp> items) {
         mDataSet.clear();
         mDataSet.addAll(items);
+        continueSearch = mDataSet.isEmpty();
         notifyDataSetChanged();
     }
 
