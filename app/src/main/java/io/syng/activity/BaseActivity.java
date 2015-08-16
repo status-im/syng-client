@@ -15,7 +15,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.text.InputType;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.Patterns;
@@ -55,6 +54,7 @@ import io.syng.adapter.ProfileDrawerAdapter;
 import io.syng.adapter.ProfileDrawerAdapter.OnProfileClickListener;
 import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
+import io.syng.fragment.ProfileDialogFragment;
 import io.syng.util.GeneralUtil;
 import io.syng.util.PrefsUtil;
 import io.syng.util.ProfileManager;
@@ -107,7 +107,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         FrameLayout content = (FrameLayout) findViewById(R.id.content);
         ViewGroup inflated = (ViewGroup) inflater.inflate(layoutResID, content, true);
-        Toolbar toolbar = (Toolbar) inflated.findViewById(R.id.myToolbar);
+        Toolbar toolbar = (Toolbar) inflated.findViewById(R.id.profile_toolbar);
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
@@ -178,19 +178,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mHandler.postDelayed(mRunnable, DRAWER_CLOSE_DELAY_SHORT);
     }
 
-    private void changeProfile(Profile profile) {
-        ProfileManager.setCurrentProfile(profile);
-        updateCurrentProfileName();
-        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(profile.getId())).into(mHeaderImageView);
-        populateDApps();
-        flipDrawer();
-    }
-
-    private void updateCurrentProfileName() {
-        TextView textView = (TextView) findViewById(R.id.tv_name);
-        textView.setText(ProfileManager.getCurrentProfile().getName());
-    }
-
     private void requestChangeProfile(final Profile profile) {
         Dialog dialog = new MaterialDialog.Builder(BaseActivity.this)
                 .title(R.string.request_profile_password)
@@ -213,6 +200,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .show();
         EditText name = (EditText) dialog.findViewById(R.id.et_pass);
         GeneralUtil.showKeyBoard(name, this);
+    }
+
+    private void changeProfile(Profile profile) {
+        ProfileManager.setCurrentProfile(profile);
+        updateCurrentProfileName();
+        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(profile.getId())).into(mHeaderImageView);
+        populateDApps();
+        flipDrawer();
+    }
+
+    private void updateCurrentProfileName() {
+        TextView textView = (TextView) findViewById(R.id.tv_name);
+        textView.setText(ProfileManager.getCurrentProfile().getName());
     }
 
     private void initSearch() {
@@ -503,21 +503,24 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onProfilePress(final Profile profile) {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("Edit account")
-                .content("Put your name to create new account")
-                .inputType(InputType.TYPE_CLASS_TEXT)
-                .input("Name", "", new MaterialDialog.InputCallback() {
-                    @Override
-                    public void onInput(MaterialDialog dialog, CharSequence input) {
-                        profile.setName(input.toString());
-                        ProfileManager.updateProfile(profile);
-                        mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
-                        updateCurrentProfileName();
-                    }
-                }).show();
-        dialog.getInputEditText().setSingleLine();
-        dialog.getInputEditText().setText(profile.getName());
+//        MaterialDialog dialog = new MaterialDialog.Builder(this)
+//                .title("Edit account")
+//                .content("Put your name to create new account")
+//                .inputType(InputType.TYPE_CLASS_TEXT)
+//                .input("Name", "", new MaterialDialog.InputCallback() {
+//                    @Override
+//                    public void onInput(MaterialDialog dialog, CharSequence input) {
+//                        profile.setName(input.toString());
+//                        ProfileManager.updateProfile(profile);
+//                        mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
+//                        updateCurrentProfileName();
+//                    }
+//                }).show();
+//        dialog.getInputEditText().setSingleLine();
+//        dialog.getInputEditText().setText(profile.getName());
+
+        ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance();
+        dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
     }
 
     @Override

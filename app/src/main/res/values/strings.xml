@@ -35,5 +35,7 @@
     <string name="hitn.profile.repeat.pass">Repeat password</string>
     <string name="dialog.button.create">Create</string>
     <string name="dialog.button.cancel">Cancel</string>
+    <string name="menu.profile.key.import">Import</string>
+    <string name="menu.profile.key.export">Export</string>
 
 </resources>
