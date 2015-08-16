@@ -307,7 +307,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @SuppressWarnings("ConstantConditions")
     private void showProfileCreateDialog() {
         MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("New account")
+                .title("New profile")
                 .positiveText(R.string.dialog_button_create)
                 .negativeText(R.string.dialog_button_cancel)
                 .customView(R.layout.profile_create_dialog, true)
@@ -526,7 +526,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     public void onDAppAdd() {
         Dialog dialog = new MaterialDialog.Builder(this)
-                .title("Add new one")
+                .title("Add new DApp")
                 .customView(R.layout.dapp_form, true)
                 .positiveText(R.string.save)
                 .negativeText(R.string.cancel)
