@@ -107,7 +107,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         FrameLayout content = (FrameLayout) findViewById(R.id.content);
         ViewGroup inflated = (ViewGroup) inflater.inflate(layoutResID, content, true);
-        Toolbar toolbar = (Toolbar) inflated.findViewById(R.id.profile_toolbar);
+        Toolbar toolbar = (Toolbar) inflated.findViewById(R.id.app_toolbar);
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
