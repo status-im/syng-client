@@ -588,4 +588,5 @@ public abstract class BaseActivity extends AppCompatActivity implements
         populateProfiles();
         Glide.with(this).load(PrefsUtil.getBackgroundResourceId(ProfileManager.getCurrentProfile().getId())).into(mHeaderImageView);
     }
+
 }

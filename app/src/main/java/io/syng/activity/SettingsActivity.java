@@ -109,10 +109,11 @@ public class SettingsActivity extends PreferenceActivity {
                         int index = listPreference.findIndexOfValue(stringValue);
 
                         // Set the summary to reflect the new value.
-                        preference.setSummary(
-                                index >= 0
-                                        ? listPreference.getEntries()[index]
-                                        : null);
+                        preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
+
+                        Preference jsonRPC = findPreference(getString(R.string.pref_json_rpc_server_key));
+                        jsonRPC.setEnabled(!stringValue.equals(getString(R.string.pref_running_mode_full_value)));
+
                     } else if (key.equals(getString(R.string.pref_json_rpc_server_key))) {
                         preference.setSummary("Current server address is " + stringValue);
                     } else {
