@@ -1,5 +1,7 @@
 package io.syng.util;
 
+import android.support.annotation.Nullable;
+
 import org.ethereum.crypto.HashUtil;
 import org.spongycastle.util.encoders.Hex;
 
@@ -14,7 +16,13 @@ import static org.ethereum.config.SystemProperties.CONFIG;
 
 public final class ProfileManager {
 
+    public interface ProfilesChangeListener {
+        void onProfilesChange();
+    }
+
     private static ProfileManager sInstance;
+
+    private ProfilesChangeListener mProfilesChangeListener;
 
     public static void initialize() {
         if (sInstance != null) {
@@ -35,12 +43,14 @@ public final class ProfileManager {
         return PrefsUtil.getProfiles();
     }
 
-    public static boolean addProfile(Profile profile) {
-        return PrefsUtil.addProfile(profile);
+    public static void addProfile(Profile profile) {
+        PrefsUtil.addProfile(profile);
+        notifyListener();
     }
 
     public static void updateProfile(Profile profile) {
         PrefsUtil.updateProfile(profile);
+        notifyListener();
     }
 
     public static Profile getCurrentProfile() {
@@ -78,17 +88,44 @@ public final class ProfileManager {
         List<String> privateKeys = profile.getPrivateKeys();
         SyngApplication.sEthereumConnector.init(privateKeys);
         PrefsUtil.setCurrentProfileId(profile.getId());
+        notifyListener();
     }
 
     public static void addDAppToProfile(Profile profile, Dapp dapp) {
         profile.addDapp(dapp);
         ProfileManager.updateProfile(profile);
+        notifyListener();
     }
 
 
     public static void updateDAppInProfile(Profile profile, Dapp dapp) {
         profile.updateDapp(dapp);
         ProfileManager.updateProfile(profile);
+        notifyListener();
     }
 
+    @Nullable
+    public static Profile getProfileById(String profileId) {
+        List<Profile> profiles = ProfileManager.getProfiles();
+        for (Profile profile : profiles) {
+            if (profile.getId().equals(profileId)) {
+                return profile;
+            }
+        }
+        return null;
+    }
+
+    public static void setProfilesChangeListener(ProfilesChangeListener listener) {
+        getInstance().mProfilesChangeListener = listener;
+    }
+
+    public static void removeProfilesChangeListener(ProfilesChangeListener listener) {
+        getInstance().mProfilesChangeListener = null;
+    }
+
+    private static void notifyListener() {
+        if (getInstance().mProfilesChangeListener != null) {
+            getInstance().mProfilesChangeListener.onProfilesChange();
+        }
+    }
 }

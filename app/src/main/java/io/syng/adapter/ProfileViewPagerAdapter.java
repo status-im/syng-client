@@ -7,7 +7,8 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.app.FragmentTransaction;
 import android.view.ViewGroup;
 
-import io.syng.fragment.ConsoleFragment;
+import io.syng.fragment.profile.ProfileGeneralFragment;
+import io.syng.fragment.profile.ProfileKeysFragment;
 
 public final class ProfileViewPagerAdapter extends FragmentPagerAdapter {
 
@@ -16,15 +17,24 @@ public final class ProfileViewPagerAdapter extends FragmentPagerAdapter {
 
     public static final String[] LABELS = new String[]{"General", "Keys"};
     private final Context mContext;
+    private final String mProfileId;
 
-    public ProfileViewPagerAdapter(FragmentManager fragmentManager, Context context) {
+    public ProfileViewPagerAdapter(FragmentManager fragmentManager, Context context, String profileId) {
         super(fragmentManager);
         this.mContext = context;
+        mProfileId = profileId;
     }
 
     @Override
     public Fragment getItem(int position) {
-        return new ConsoleFragment();
+        switch (position) {
+            case GENERAL_POSITION:
+                return ProfileGeneralFragment.newInstance(mProfileId);
+            case KEYS_POSITION:
+                return ProfileKeysFragment.newInstance(mProfileId);
+            default:
+                throw new UnsupportedOperationException();
+        }
     }
 
     @Override

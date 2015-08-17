@@ -90,11 +90,6 @@ public final class PrefsUtil {
 
     public static boolean addProfile(Profile profile) {
         ArrayList<Profile> profiles = PrefsUtil.getProfiles();
-        for (Profile item : profiles) {
-            if (item.getName().equals(profile.getName())) {
-                return false;
-            }
-        }
         profiles.add(profile);
         saveProfiles(profiles);
         return true;

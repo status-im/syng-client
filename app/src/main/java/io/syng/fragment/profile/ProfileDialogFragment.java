@@ -1,4 +1,4 @@
-package io.syng.fragment;
+package io.syng.fragment.profile;
 
 import android.app.Dialog;
 import android.graphics.drawable.Drawable;
@@ -13,26 +13,37 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.Window;
 
 import io.syng.R;
 import io.syng.adapter.ProfileViewPagerAdapter;
+import io.syng.entity.Profile;
 
-public class ProfileDialogFragment extends DialogFragment implements OnPageChangeListener {
+public class ProfileDialogFragment extends DialogFragment implements OnPageChangeListener,
+        OnClickListener {
+
+    private static final String ARG_PROFILE_ID = "profile";
 
     private ViewPager mViewPager;
     private TabLayout mTabLayout;
     private Toolbar mToolbar;
+    private String mProfileId;
 
-    public static ProfileDialogFragment newInstance() {
-        return new ProfileDialogFragment();
+    public static ProfileDialogFragment newInstance(final Profile profile) {
+        Bundle bundle = new Bundle();
+        bundle.putString(ARG_PROFILE_ID, profile.getId());
+        ProfileDialogFragment dialogFragment = new ProfileDialogFragment();
+        dialogFragment.setArguments(bundle);
+        return dialogFragment;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
+        mProfileId = getArguments().getString(ARG_PROFILE_ID);
     }
 
     @Override
@@ -55,9 +66,11 @@ public class ProfileDialogFragment extends DialogFragment implements OnPageChang
         mToolbar.inflateMenu(R.menu.profile_menu);
         mToolbar.getMenu().findItem(R.id.action_key_export).setVisible(false);
         mToolbar.getMenu().findItem(R.id.action_key_import).setVisible(false);
+        mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
+        mToolbar.setNavigationOnClickListener(this);
         tintMenuItem();
 
-        mViewPager.setAdapter(new ProfileViewPagerAdapter(getChildFragmentManager(), getActivity()));
+        mViewPager.setAdapter(new ProfileViewPagerAdapter(getChildFragmentManager(), getActivity(), mProfileId));
         mTabLayout.setupWithViewPager(mViewPager);
 
         return view;
@@ -94,5 +107,10 @@ public class ProfileDialogFragment extends DialogFragment implements OnPageChang
         boolean showExport = mViewPager.getCurrentItem() == ProfileViewPagerAdapter.KEYS_POSITION;
         exp.setVisible(showExport);
         imp.setVisible(showExport);
+    }
+
+    @Override
+    public void onClick(View v) {
+        dismiss();
     }
 }

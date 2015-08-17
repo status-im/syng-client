@@ -23,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -54,15 +55,16 @@ import io.syng.adapter.ProfileDrawerAdapter;
 import io.syng.adapter.ProfileDrawerAdapter.OnProfileClickListener;
 import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
-import io.syng.fragment.ProfileDialogFragment;
+import io.syng.fragment.profile.ProfileDialogFragment;
 import io.syng.util.GeneralUtil;
 import io.syng.util.PrefsUtil;
 import io.syng.util.ProfileManager;
+import io.syng.util.ProfileManager.ProfilesChangeListener;
 
 import static android.view.View.VISIBLE;
 
 public abstract class BaseActivity extends AppCompatActivity implements
-        OnClickListener, OnDAppClickListener, OnProfileClickListener, View.OnLongClickListener {
+        OnClickListener, OnDAppClickListener, OnProfileClickListener, OnLongClickListener, ProfilesChangeListener {
 
     private static final Logger logger = LoggerFactory.getLogger("SyngApplication");
 
@@ -144,6 +146,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mProfilesRecyclerView.setLayoutManager(layoutManager2);
         mProfileDrawerAdapter = new ProfileDrawerAdapter(this, new ArrayList<Profile>(), this);
         mProfilesRecyclerView.setAdapter(mProfileDrawerAdapter);
+        updateCurrentProfileName();
         populateProfiles();
 
         mDAppsRecyclerView = (RecyclerView) findViewById(R.id.dapp_drawer_recycler_view);
@@ -159,11 +162,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
         Glide.with(this).load(PrefsUtil.getBackgroundResourceId(currentProfileId)).into(mHeaderImageView);
 
         GeneralUtil.showWarningDialogIfNeed(this);
+        ProfileManager.setProfilesChangeListener(this);
     }
+
 
     private void populateProfiles() {
         mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
-        updateCurrentProfileName();
     }
 
     private void populateDApps() {
@@ -191,7 +195,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
                         View view = dialog.getCustomView();
                         EditText password = (EditText) view.findViewById(R.id.et_pass);
                         if (profile.checkPassword(password.getText().toString())) {
-                            changeProfile(profile);
+                            ProfileManager.setCurrentProfile(profile);
+                            flipDrawer();
                         } else {
                             Toast.makeText(BaseActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
                         }
@@ -200,14 +205,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 .show();
         EditText name = (EditText) dialog.findViewById(R.id.et_pass);
         GeneralUtil.showKeyBoard(name, this);
-    }
-
-    private void changeProfile(Profile profile) {
-        ProfileManager.setCurrentProfile(profile);
-        updateCurrentProfileName();
-        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(profile.getId())).into(mHeaderImageView);
-        populateDApps();
-        flipDrawer();
     }
 
     private void updateCurrentProfileName() {
@@ -277,6 +274,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
         mHandler.removeCallbacksAndMessages(null);
+        ProfileManager.removeProfilesChangeListener(this);
     }
 
     @Override
@@ -339,7 +337,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                             profile.setName(name.getText().toString());
                             profile.setPassword(pass1String);
                             ProfileManager.addProfile(profile);
-                            mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
                             GeneralUtil.hideKeyBoard(name, BaseActivity.this);
                             GeneralUtil.hideKeyBoard(pass1, BaseActivity.this);
                             GeneralUtil.hideKeyBoard(pass2, BaseActivity.this);
@@ -476,7 +473,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                             dapp.setUrl(url);
                             System.out.println(url);
                             ProfileManager.updateDAppInProfile(ProfileManager.getCurrentProfile(), dapp);
-                            populateDApps();
                             if (homeScreenIcon) {
                                 GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
                             }
@@ -503,23 +499,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onProfilePress(final Profile profile) {
-//        MaterialDialog dialog = new MaterialDialog.Builder(this)
-//                .title("Edit account")
-//                .content("Put your name to create new account")
-//                .inputType(InputType.TYPE_CLASS_TEXT)
-//                .input("Name", "", new MaterialDialog.InputCallback() {
-//                    @Override
-//                    public void onInput(MaterialDialog dialog, CharSequence input) {
-//                        profile.setName(input.toString());
-//                        ProfileManager.updateProfile(profile);
-//                        mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
-//                        updateCurrentProfileName();
-//                    }
-//                }).show();
-//        dialog.getInputEditText().setSingleLine();
-//        dialog.getInputEditText().setText(profile.getName());
-
-        ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance();
+        ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
         dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
     }
 
@@ -543,7 +523,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
                             Dapp dapp = new Dapp(name);
                             dapp.setUrl(url);
                             ProfileManager.addDAppToProfile(ProfileManager.getCurrentProfile(), dapp);
-                            populateDApps();
                             if (homeScreenIcon) {
                                 GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
                             }
@@ -600,5 +579,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
                     .show();
         }
         return true;
+    }
+
+    @Override
+    public void onProfilesChange() {
+        updateCurrentProfileName();
+        populateDApps();
+        populateProfiles();
+        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(ProfileManager.getCurrentProfile().getId())).into(mHeaderImageView);
     }
 }
