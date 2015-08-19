@@ -15,9 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
-import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Patterns;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -25,30 +23,19 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.nio.MappedByteBuffer;
-import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
 
 import io.syng.R;
-import io.syng.adapter.BackgroundArrayAdapter;
 import io.syng.adapter.DAppDrawerAdapter;
 import io.syng.adapter.DAppDrawerAdapter.OnDAppClickListener;
 import io.syng.adapter.ProfileDrawerAdapter;
@@ -57,7 +44,6 @@ import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
 import io.syng.fragment.profile.ProfileDialogFragment;
 import io.syng.util.GeneralUtil;
-import io.syng.util.PrefsUtil;
 import io.syng.util.ProfileManager;
 import io.syng.util.ProfileManager.ProfilesChangeListener;
 
@@ -66,7 +52,7 @@ import static android.view.View.VISIBLE;
 public abstract class BaseActivity extends AppCompatActivity implements
         OnClickListener, OnDAppClickListener, OnProfileClickListener, OnLongClickListener, ProfilesChangeListener {
 
-    private static final Logger logger = LoggerFactory.getLogger("SyngApplication");
+//    private static final Logger logger = LoggerFactory.getLogger("SyngApplication");
 
     private static final int DRAWER_CLOSE_DELAY_SHORT = 200;
     private static final int DRAWER_CLOSE_DELAY_LONG = 400;
@@ -156,8 +142,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         populateDApps();
 
         mHeaderImageView = (ImageView) findViewById(R.id.iv_header);
-        String currentProfileId = ProfileManager.getCurrentProfile().getId();
-        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(currentProfileId)).into(mHeaderImageView);
+        Glide.with(this).load(ProfileManager.getCurrentProfileBackgroundResourceId()).into(mHeaderImageView);
 
         GeneralUtil.showWarningDialogIfNeed(this);
         ProfileManager.setProfilesChangeListener(this);
@@ -301,55 +286,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @SuppressWarnings("ConstantConditions")
-    private void showProfileCreateDialog() {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("New profile")
-                .positiveText(R.string.dialog_button_create)
-                .negativeText(R.string.dialog_button_cancel)
-                .customView(R.layout.profile_create_dialog, true)
-                .autoDismiss(false)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
-                        EditText pass1 = (EditText) dialog.findViewById(R.id.et_profile_pass_1);
-                        EditText pass2 = (EditText) dialog.findViewById(R.id.et_profile_pass_2);
 
-                        String nameString = name.getText().toString();
-                        String pass1String = pass1.getText().toString();
-                        String pass2String = pass2.getText().toString();
-
-                        if (TextUtils.isEmpty(nameString)) {
-                            Toast.makeText(BaseActivity.this, "Profile name can't be empty", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if (TextUtils.isEmpty(pass1String) || TextUtils.isEmpty(pass2String)) {
-                            Toast.makeText(BaseActivity.this, "Password name can't be empty", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        if (!pass1.getText().toString().equals(pass2.getText().toString())) {
-                            Toast.makeText(BaseActivity.this, "Passwords should be the same!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Profile profile = new Profile();
-                            profile.setName(name.getText().toString());
-                            profile.setPassword(pass1String);
-                            ProfileManager.addProfile(profile);
-                            GeneralUtil.hideKeyBoard(name, BaseActivity.this);
-                            GeneralUtil.hideKeyBoard(pass1, BaseActivity.this);
-                            GeneralUtil.hideKeyBoard(pass2, BaseActivity.this);
-                            dialog.dismiss();
-                        }
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        dialog.dismiss();
-                    }
-                }).show();
-        EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
-        GeneralUtil.showKeyBoard(name, this);
-    }
 
     private void flipDrawer() {
         ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
@@ -393,105 +330,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onProfileImport() {
-        new MaterialDialog.Builder(this)
-                .title(R.string.wallet_title)
-                .customView(R.layout.wallet_import, true)
-                .positiveText(R.string.sImport)
-                .negativeText(R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        RadioButton importJsonRadio = (RadioButton) dialog.findViewById(R.id.radio_import_json);
-                        EditText importPathEdit = (EditText) dialog.findViewById(R.id.wallet_import_path);
-                        EditText walletPasswordEdit = (EditText) dialog.findViewById(R.id.wallet_password);
-                        String importPath = importPathEdit.getText().toString();
-                        String password = walletPasswordEdit.getText().toString();
-                        String fileContents = null;
-                        try {
-                            File walletFile = new File(importPath);
-                            if (walletFile.exists()) {
-                                FileInputStream stream = new FileInputStream(walletFile);
-                                try {
-                                    FileChannel fileChannel = stream.getChannel();
-                                    MappedByteBuffer buffer = fileChannel.map(FileChannel.MapMode.READ_ONLY, 0, fileChannel.size());
-                                    fileContents = Charset.defaultCharset().decode(buffer).toString();
-                                } finally {
-                                    stream.close();
-                                }
-                            } else {
-                                Toast.makeText(BaseActivity.this, R.string.file_not_found, Toast.LENGTH_SHORT).show();
-                                logger.warn("Wallet file not found: " + importPath);
-                                return;
-                            }
-                        } catch (Exception e) {
-                            Toast.makeText(BaseActivity.this, R.string.error_reading_file, Toast.LENGTH_SHORT).show();
-                            logger.error("Error reading wallet file", e);
-                        }
-                        if (importJsonRadio.isChecked()) {
-                            Profile profile = ProfileManager.getCurrentProfile();
-                            if (profile.importWallet(fileContents, password)) {
-                                ProfileManager.updateProfile(profile);
-                                ProfileManager.setCurrentProfile(profile);
-                            } else {
-                                Toast.makeText(BaseActivity.this, R.string.invalid_wallet_password, Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Profile profile = ProfileManager.getCurrentProfile();
-                            profile.importPrivateKey(fileContents, password);
-                            ProfileManager.updateProfile(profile);
-                        }
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        dialog.hide();
-                    }
-                })
-                .build().show();
+        GeneralUtil.showProfileImportDialog(this);
     }
 
     @Override
     public void onDAppPress(final Dapp dapp) {
-        MaterialDialog dialog = new MaterialDialog.Builder(this)
-                .title("Edit")
-                .customView(R.layout.dapp_form, true)
-                .positiveText(R.string.save)
-                .negativeText(R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
-                        EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
-                        CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.dapp_home_icon);
-                        boolean homeScreenIcon = checkBox.isChecked();
-                        String url = dappUrlEdit.getText().toString();
-                        String name = dappNameEdit.getText().toString();
-                        if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
-                            dapp.setName(name);
-                            dapp.setUrl(url);
-                            System.out.println(url);
-                            ProfileManager.updateDAppInProfile(ProfileManager.getCurrentProfile(), dapp);
-                            if (homeScreenIcon) {
-                                GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
-                            }
-                            dialog.hide();
-                        } else {
-                            Toast.makeText(BaseActivity.this, R.string.invalid_url, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        dialog.hide();
-                    }
-                })
-                .autoDismiss(false)
-                .build();
-        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
-        dappNameEdit.setText(dapp.getName());
-        EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
-        dappUrlEdit.setText(dapp.getUrl());
-        dialog.show();
+        GeneralUtil.showDAppEditDialog(dapp, this);
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -503,42 +347,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onDAppAdd() {
-        Dialog dialog = new MaterialDialog.Builder(this)
-                .title("Add new DApp")
-                .customView(R.layout.dapp_form, true)
-                .positiveText(R.string.save)
-                .negativeText(R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
-                        EditText dappUrlEdit = (EditText) dialog.findViewById(R.id.dapp_url);
-                        CheckBox checkBox = (CheckBox) dialog.findViewById(R.id.dapp_home_icon);
-                        boolean homeScreenIcon = checkBox.isChecked();
-                        String url = dappUrlEdit.getText().toString();
-                        String name = dappNameEdit.getText().toString();
-                        if (Patterns.WEB_URL.matcher(url.replace("dapp://", "http://")).matches()) {
-                            Dapp dapp = new Dapp(name);
-                            dapp.setUrl(url);
-                            ProfileManager.addDAppToProfile(ProfileManager.getCurrentProfile(), dapp);
-                            if (homeScreenIcon) {
-                                GeneralUtil.createHomeScreenIcon(BaseActivity.this, name, url);
-                            }
-                            dialog.hide();
-                        } else {
-                            Toast.makeText(BaseActivity.this, R.string.invalid_url, Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        dialog.hide();
-                    }
-                })
-                .autoDismiss(false)
-                .show();
-        EditText dappNameEdit = (EditText) dialog.findViewById(R.id.dapp_name);
-        GeneralUtil.showKeyBoard(dappNameEdit, this);
+        GeneralUtil.showDAppCreateDialog(this);
     }
 
     @Override
@@ -555,26 +364,13 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onNewProfile() {
-        showProfileCreateDialog();
+        GeneralUtil.showProfileCreateDialog(this);
     }
 
     @Override
     public boolean onLongClick(View v) {
         if (v.getId() == R.id.drawer_header_item) {
-            new MaterialDialog.Builder(this)
-                    .adapter(new BackgroundArrayAdapter(this),
-                            new MaterialDialog.ListCallback() {
-                                @SuppressWarnings("ConstantConditions")
-                                @Override
-                                public void onSelection(MaterialDialog dialog, View itemView, int which, CharSequence text) {
-                                    BackgroundArrayAdapter adapter = (BackgroundArrayAdapter) dialog.getListView().getAdapter();
-                                    int imageResourceId = adapter.getImageResourceIdByPosition(which);
-                                    Glide.with(BaseActivity.this).load(imageResourceId).into(mHeaderImageView);
-                                    PrefsUtil.setBackgroundResourceId(ProfileManager.getCurrentProfile().getId(), imageResourceId);
-                                    dialog.dismiss();
-                                }
-                            })
-                    .show();
+            GeneralUtil.showHeaderBackgroundDialog(this);
         }
         return true;
     }
@@ -584,7 +380,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
         updateCurrentProfileName();
         populateDApps();
         populateProfiles();
-        Glide.with(this).load(PrefsUtil.getBackgroundResourceId(ProfileManager.getCurrentProfile().getId())).into(mHeaderImageView);
+        Glide.with(this).load(ProfileManager.getCurrentProfileBackgroundResourceId()).into(mHeaderImageView);
     }
 
 }

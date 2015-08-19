@@ -1,5 +1,6 @@
 package io.syng.util;
 
+import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 
 import org.ethereum.crypto.HashUtil;
@@ -81,6 +82,7 @@ public final class ProfileManager {
             }
         }
 
+
         return new Profile();
     }
 
@@ -115,6 +117,15 @@ public final class ProfileManager {
         return null;
     }
 
+    public static void setCurrentProfileBackgroundResourceId(@DrawableRes int resourceId) {
+        PrefsUtil.setBackgroundResourceId(ProfileManager.getCurrentProfile().getId(), resourceId);
+        notifyListener();
+    }
+
+    public static int getCurrentProfileBackgroundResourceId() {
+        return PrefsUtil.getBackgroundResourceId(ProfileManager.getCurrentProfile().getId());
+    }
+
     public static void setProfilesChangeListener(ProfilesChangeListener listener) {
         getInstance().mProfilesChangeListener = listener;
     }
@@ -128,4 +139,5 @@ public final class ProfileManager {
             getInstance().mProfilesChangeListener.onProfilesChange();
         }
     }
+
 }
