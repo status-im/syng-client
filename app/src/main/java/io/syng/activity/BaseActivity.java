@@ -77,8 +77,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private ActionBarDrawerToggle mDrawerToggle;
 
     private EditText mSearchTextView;
-    private RecyclerView mDAppsRecyclerView;
-    private RecyclerView mProfilesRecyclerView;
     private DrawerLayout mDrawerLayout;
 
     private ProfileDrawerAdapter mProfileDrawerAdapter;
@@ -141,20 +139,20 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mFrontView = findViewById(R.id.ll_front_view);
         mBackView = findViewById(R.id.ll_back_view);
 
-        mProfilesRecyclerView = (RecyclerView) findViewById(R.id.profile_drawer_recycler_view);
+        RecyclerView profilesRecyclerView = (RecyclerView) findViewById(R.id.profile_drawer_recycler_view);
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this);
-        mProfilesRecyclerView.setLayoutManager(layoutManager2);
+        profilesRecyclerView.setLayoutManager(layoutManager2);
         mProfileDrawerAdapter = new ProfileDrawerAdapter(this, new ArrayList<Profile>(), this);
-        mProfilesRecyclerView.setAdapter(mProfileDrawerAdapter);
+        profilesRecyclerView.setAdapter(mProfileDrawerAdapter);
         updateCurrentProfileName();
         populateProfiles();
 
-        mDAppsRecyclerView = (RecyclerView) findViewById(R.id.dapp_drawer_recycler_view);
-        mDAppsRecyclerView.setHasFixedSize(true);
+        RecyclerView DAppsRecyclerView = (RecyclerView) findViewById(R.id.dapp_drawer_recycler_view);
+        DAppsRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
-        mDAppsRecyclerView.setLayoutManager(layoutManager1);
+        DAppsRecyclerView.setLayoutManager(layoutManager1);
         mDAppsDrawerAdapter = new DAppDrawerAdapter(new ArrayList<Dapp>(), this);
-        mDAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
+        DAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
         populateDApps();
 
         mHeaderImageView = (ImageView) findViewById(R.id.iv_header);
