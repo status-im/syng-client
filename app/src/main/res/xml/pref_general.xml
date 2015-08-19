@@ -2,6 +2,7 @@
 
 
     <ListPreference
+        android:defaultValue="@string/pref_running_mode_light_value"
         android:entries="@array/pref_running_modes_titles"
         android:entryValues="@array/pref_running_modes_values"
         android:key="@string/pref_running_mode_key"
