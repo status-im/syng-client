@@ -7,6 +7,11 @@
 
     </style>
 
+
+    <style name="AppTheme.Login" parent="AppTheme">
+        <item name="android:windowBackground">@color/login_background_color</item>
+    </style>
+
     <style name="SettingsTheme" parent="Theme.AppCompat.Light">
     </style>
 

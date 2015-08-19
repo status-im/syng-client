@@ -3,17 +3,12 @@ package io.syng.util;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 
-import org.ethereum.crypto.HashUtil;
-import org.spongycastle.util.encoders.Hex;
-
 import java.util.ArrayList;
 import java.util.List;
 
 import io.syng.app.SyngApplication;
 import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
-
-import static org.ethereum.config.SystemProperties.CONFIG;
 
 public final class ProfileManager {
 
@@ -56,22 +51,22 @@ public final class ProfileManager {
 
     public static Profile getCurrentProfile() {
         // Add default cow account if not present
-        if (ProfileManager.getProfiles().isEmpty()) {
-            Profile profile = new Profile();
-            profile.setName("Cow");
-            // Add default cow and monkey addresses
-            List<String> addresses = new ArrayList<>();
-            byte[] cowAddr = HashUtil.sha3("cow".getBytes());
-            addresses.add(Hex.toHexString(cowAddr));
-            String secret = CONFIG.coinbaseSecret();
-            byte[] cbAddr = HashUtil.sha3(secret.getBytes());
-            addresses.add(Hex.toHexString(cbAddr));
-            profile.setPrivateKeys(addresses);
-            profile.setPassword("qw");
-            ProfileManager.addProfile(profile);
-            ProfileManager.setCurrentProfile(profile);
-            return profile;
-        }
+//        if (ProfileManager.getProfiles().isEmpty()) {
+//            Profile profile = new Profile();
+//            profile.setName("Cow");
+//            // Add default cow and monkey addresses
+//            List<String> addresses = new ArrayList<>();
+//            byte[] cowAddr = HashUtil.sha3("cow".getBytes());
+//            addresses.add(Hex.toHexString(cowAddr));
+//            String secret = CONFIG.coinbaseSecret();
+//            byte[] cbAddr = HashUtil.sha3(secret.getBytes());
+//            addresses.add(Hex.toHexString(cbAddr));
+//            profile.setPrivateKeys(addresses);
+//            profile.setPassword("qw");
+//            ProfileManager.addProfile(profile);
+//            ProfileManager.setCurrentProfile(profile);
+//            return profile;
+//        }
 
         List<Profile> profiles = ProfileManager.getProfiles();
         String currentProfileId = PrefsUtil.getCurrentProfileId();
