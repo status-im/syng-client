@@ -68,15 +68,53 @@
         android:textColor="#ffffff"
         android:textSize="12sp"/>
 
-    <com.getbase.floatingactionbutton.FloatingActionButton
-        android:id="@+id/pink_icon"
+    <!--<com.getbase.floatingactionbutton.FloatingActionButton-->
+    <!--android:id="@+id/pink_icon"-->
+    <!--xmlns:fab="http://schemas.android.com/apk/res-auto"-->
+    <!--android:layout_width="56dp"-->
+    <!--android:layout_height="56dp"-->
+    <!--android:layout_gravity="bottom|right"-->
+    <!--android:layout_margin="8dp"-->
+    <!--fab:fab_colorNormal="?colorPrimary"-->
+    <!--fab:fab_colorPressed="@color/fab_dark_color"-->
+    <!--fab:fab_icon="@drawable/ic_add_black_24dp"/>-->
+
+    <com.getbase.floatingactionbutton.FloatingActionsMenu
+        android:id="@+id/multiple_actions"
         xmlns:fab="http://schemas.android.com/apk/res-auto"
-        android:layout_width="56dp"
-        android:layout_height="56dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_gravity="bottom|right"
-        android:layout_margin="8dp"
-        fab:fab_colorNormal="?colorPrimary"
-        fab:fab_colorPressed="@color/fab_dark_color"
-        fab:fab_icon="@drawable/ic_add_black_24dp"/>
+        android:layout_margin="16dp"
+        fab:fab_labelStyle="@style/menu_labels_style"
+        fab:fab_addButtonColorNormal="?colorPrimary"
+        fab:fab_addButtonColorPressed="@color/fab_dark_color"
+        fab:fab_addButtonPlusIconColor="@android:color/black"
+        fab:fab_addButtonSize="normal"
+        fab:fab_addButtonStrokeVisible="false"
+        fab:fab_expandDirection="up">
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?colorPrimary"
+            fab:fab_colorPressed="@color/fab_dark_color"
+            fab:fab_icon="@drawable/ic_send_black_24dp"
+            fab:fab_title="Send"
+            fab:fab_size="normal"/>
+
+
+        <com.getbase.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_receive"
+            fab:fab_title="Receive"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            fab:fab_colorNormal="?colorPrimary"
+            fab:fab_colorPressed="@color/fab_dark_color"
+            fab:fab_icon="@drawable/ic_send_black_24dp"
+            fab:fab_size="normal"/>
+
+    </com.getbase.floatingactionbutton.FloatingActionsMenu>
 
 </FrameLayout>

@@ -2,6 +2,8 @@ package io.syng.fragment;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -14,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.squareup.leakcanary.RefWatcher;
 
 import org.ethereum.android.service.ConnectorHandler;
@@ -39,7 +42,10 @@ import io.syng.app.SyngApplication;
 import io.syng.entity.LogEntry;
 
 
-public class ConsoleFragment extends Fragment implements ConnectorHandler {
+public class ConsoleFragment extends Fragment implements ConnectorHandler, View.OnClickListener {
+
+    private static final String ACTION_RECEIVE = "dapp://syng.io/dapps/wallet/#/tab/receive";
+    private static final String ACTION_SEND = "dapp://syng.io/dapps/wallet/#/tab/send/";
 
     private final static int CONSOLE_LENGTH = 10000;
     private final static int CONSOLE_REFRESH_MILLS = 1000 * 5; //5 sec
@@ -87,6 +93,14 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
         Glide.with(this).load(R.drawable.syng_text).into(syngText);
         Glide.with(this).load(R.drawable.syng_logo).into(syngLogo);
 
+        FloatingActionButton fabSend = (FloatingActionButton)view.findViewById(R.id.fab_send);
+//        fabSend.setTitle("Send");
+        fabSend.setOnClickListener(this);
+
+        FloatingActionButton fabReceive = (FloatingActionButton)view.findViewById(R.id.fab_receive);
+//        fabReceive.setTitle("Receive");
+        fabReceive.setOnClickListener(this);
+
         return view;
     }
 
@@ -108,6 +122,7 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
     }
 
 
+    @SuppressWarnings("ConstantConditions")
     @Override
     public boolean handleMessage(Message message) {
 
@@ -195,4 +210,23 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler {
         refWatcher.watch(this);
     }
 
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.fab_send:
+                Intent intent1 = new Intent(Intent.ACTION_VIEW);
+                intent1.setData(Uri.parse(ACTION_SEND));
+                if (intent1.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent1);
+                }
+                break;
+            case R.id.fab_receive:
+                Intent intent2 = new Intent(Intent.ACTION_VIEW);
+                intent2.setData(Uri.parse(ACTION_RECEIVE));
+                if (intent2.resolveActivity(getActivity().getPackageManager()) != null) {
+                    startActivity(intent2);
+                }
+                break;
+        }
+    }
 }
