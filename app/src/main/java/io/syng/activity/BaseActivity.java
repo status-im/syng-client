@@ -51,7 +51,7 @@ import static android.view.View.VISIBLE;
 
 public abstract class BaseActivity extends AppCompatActivity implements
         OnClickListener, OnDAppClickListener, OnProfileClickListener, OnLongClickListener, ProfilesChangeListener {
-    
+
     private static final int DRAWER_CLOSE_DELAY_SHORT = 200;
     private static final int DRAWER_CLOSE_DELAY_LONG = 400;
 
@@ -283,9 +283,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         }
     }
 
-    @SuppressWarnings("ConstantConditions")
-
-
     private void flipDrawer() {
         ImageView imageView = (ImageView) findViewById(R.id.drawer_indicator);
         if (isDrawerFrontViewActive()) {
@@ -320,10 +317,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onProfileClick(Profile profile) {
-        if (ProfileManager.getCurrentProfile().getId().equals(profile.getId())) {
-            return;
+        if (!ProfileManager.getCurrentProfile().getId().equals(profile.getId())) {
+            requestChangeProfile(profile);
         }
-        requestChangeProfile(profile);
     }
 
     @Override
@@ -339,8 +335,34 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @SuppressWarnings("ConstantConditions")
     @Override
     public void onProfilePress(final Profile profile) {
-        ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
-        dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
+        if (ProfileManager.getCurrentProfile().getId().equals(profile.getId())) {
+            ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
+            dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
+        } else {
+            Dialog dialog = new MaterialDialog.Builder(BaseActivity.this)
+                    .title(R.string.request_profile_password)
+                    .customView(R.layout.profile_password, true)
+                    .positiveText(R.string.ok)
+                    .negativeText(R.string.cancel)
+                    .callback(new MaterialDialog.ButtonCallback() {
+                        @SuppressWarnings("ConstantConditions")
+                        @Override
+                        public void onPositive(MaterialDialog dialog) {
+                            View view = dialog.getCustomView();
+                            EditText password = (EditText) view.findViewById(R.id.et_pass);
+                            if (profile.checkPassword(password.getText().toString())) {
+                                ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
+                                dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
+                            } else {
+                                Toast.makeText(BaseActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    })
+                    .show();
+            EditText name = (EditText) dialog.findViewById(R.id.et_pass);
+            GeneralUtil.showKeyBoard(name, this);
+        }
+
     }
 
     @Override
