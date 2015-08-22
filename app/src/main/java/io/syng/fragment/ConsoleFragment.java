@@ -11,12 +11,12 @@ import android.support.v4.app.Fragment;
 import android.text.method.ScrollingMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.squareup.leakcanary.RefWatcher;
 
 import org.ethereum.android.service.ConnectorHandler;
@@ -42,7 +42,7 @@ import io.syng.app.SyngApplication;
 import io.syng.entity.LogEntry;
 
 
-public class ConsoleFragment extends Fragment implements ConnectorHandler, View.OnClickListener {
+public class ConsoleFragment extends Fragment implements ConnectorHandler, OnClickListener {
 
     private static final String ACTION_RECEIVE = "dapp://syng.io/dapps/wallet/#/tab/receive";
     private static final String ACTION_SEND = "dapp://syng.io/dapps/wallet/#/tab/send/";
@@ -93,13 +93,8 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler, View.
         Glide.with(this).load(R.drawable.syng_text).into(syngText);
         Glide.with(this).load(R.drawable.syng_logo).into(syngLogo);
 
-        FloatingActionButton fabSend = (FloatingActionButton)view.findViewById(R.id.fab_send);
-//        fabSend.setTitle("Send");
-        fabSend.setOnClickListener(this);
-
-        FloatingActionButton fabReceive = (FloatingActionButton)view.findViewById(R.id.fab_receive);
-//        fabReceive.setTitle("Receive");
-        fabReceive.setOnClickListener(this);
+        view.findViewById(R.id.fab_send).setOnClickListener(this);
+        view.findViewById(R.id.fab_receive).setOnClickListener(this);
 
         return view;
     }

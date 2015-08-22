@@ -51,9 +51,7 @@ import static android.view.View.VISIBLE;
 
 public abstract class BaseActivity extends AppCompatActivity implements
         OnClickListener, OnDAppClickListener, OnProfileClickListener, OnLongClickListener, ProfilesChangeListener {
-
-//    private static final Logger logger = LoggerFactory.getLogger("SyngApplication");
-
+    
     private static final int DRAWER_CLOSE_DELAY_SHORT = 200;
     private static final int DRAWER_CLOSE_DELAY_LONG = 400;
 
