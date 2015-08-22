@@ -95,7 +95,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            mDrawerLayout.setStatusBarBackgroundColor(getResources().getColor(android.R.color.black));
+            mDrawerLayout.setStatusBarBackgroundColor(getColor(android.R.color.black));
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
