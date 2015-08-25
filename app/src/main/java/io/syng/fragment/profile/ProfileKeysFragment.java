@@ -50,7 +50,7 @@ public class ProfileKeysFragment extends Fragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_profile_keys);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);
-        mProfileDrawerAdapter = new ProfileKeyAdapter(profile.getPrivateKeys());
+        mProfileDrawerAdapter = new ProfileKeyAdapter(profile.getAddresses());
         mRecyclerView.setAdapter(mProfileDrawerAdapter);
 
         return view;

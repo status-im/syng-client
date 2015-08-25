@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -95,7 +96,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         if (toolbar != null) {
             setSupportActionBar(toolbar);
-            mDrawerLayout.setStatusBarBackgroundColor(getColor(android.R.color.black));
+            mDrawerLayout.setStatusBarBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
         }
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
