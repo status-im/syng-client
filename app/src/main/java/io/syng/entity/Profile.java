@@ -75,6 +75,16 @@ public class Profile implements Serializable {
         return privateKeys;
     }
 
+    public List<String> getAddresses() {
+
+        List<String> addresses = new ArrayList<>();
+        for (String privateKey: privateKeys) {
+            ECKey key = ECKey.fromPrivate(Hex.decode(privateKey));
+            addresses.add(Hex.toHexString(key.getAddress()));
+        }
+        return addresses;
+    }
+
     public void setPrivateKeys(List<String> privateKeys) {
         this.privateKeys = privateKeys;
     }

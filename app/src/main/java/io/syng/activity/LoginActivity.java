@@ -19,9 +19,7 @@ import java.util.List;
 
 import io.syng.R;
 import io.syng.entity.Profile;
-import io.syng.util.GeneralUtil;
-import io.syng.util.PrefsUtil;
-import io.syng.util.ProfileManager;
+import io.syng.util.*;
 
 import static org.ethereum.config.SystemProperties.CONFIG;
 
