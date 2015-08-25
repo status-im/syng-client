@@ -289,6 +289,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             mFrontView.setVisibility(View.GONE);
             mBackView.setVisibility(VISIBLE);
             imageView.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
+            GeneralUtil.hideKeyBoard(mSearchTextView, BaseActivity.this);
         } else {
             mBackView.setVisibility(View.GONE);
             mFrontView.setVisibility(VISIBLE);
