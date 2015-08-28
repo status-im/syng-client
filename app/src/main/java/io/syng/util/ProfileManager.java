@@ -128,6 +128,12 @@ public final class ProfileManager {
         }
     }
 
+    public static void reorderProfiles(int fromPosition, int toPosition) {
+        List<Profile> profiles = ProfileManager.getProfiles();
+        Collections.swap(profiles, fromPosition, toPosition);
+        PrefsUtil.saveProfiles(new ArrayList<>(profiles));
+    }
+
     @Nullable
     public static Profile getProfileById(String profileId) {
         List<Profile> profiles = ProfileManager.getProfiles();

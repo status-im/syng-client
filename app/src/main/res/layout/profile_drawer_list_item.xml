@@ -9,11 +9,11 @@
 
     <ImageView
         android:id="@+id/iv_profile_icon"
-        android:tint="@color/accent"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:layout_marginLeft="16dp"
-        android:layout_marginStart="16dp"/>
+        android:layout_marginStart="16dp"
+        android:tint="@color/accent"/>
 
     <TextView
         android:id="@+id/tv_account_name"
@@ -22,7 +22,35 @@
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
         android:layout_marginStart="16dp"
-        android:textColor="@android:color/black"
-        android:text="Add account"/>
+        android:text="Add account"
+        android:textColor="@android:color/black"/>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical|end"
+        >
+
+        <ImageView
+            android:id="@+id/iv_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_settings_black_24dp"
+            android:tint="@color/drawer_icon_color"/>
+
+        <ImageView
+            android:id="@+id/iv_reorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_reorder_black_24dp"
+            android:tint="@color/drawer_icon_color"/>
+    </LinearLayout>
 
 </LinearLayout>

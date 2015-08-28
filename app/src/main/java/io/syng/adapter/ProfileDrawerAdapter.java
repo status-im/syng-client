@@ -2,8 +2,10 @@ package io.syng.adapter;
 
 
 import android.content.Context;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -11,35 +13,46 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.syng.R;
+import io.syng.adapter.helper.ItemTouchHelperAdapter;
 import io.syng.entity.Profile;
+import io.syng.util.ProfileManager;
 
-public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
 
     private static final int TYPE_HEADER = 10;
     private static final int TYPE_SIMPLE_ITEM = 20;
 
-    private final OnProfileClickListener mListener;
+    private final OnProfileClickListener mProfileClickListener;
+    private final OnStartDragListener mDragListener;
 
     public interface OnProfileClickListener {
         void onProfileClick(Profile profile);
 
-        void onProfilePress(Profile profile);
+        void onProfileEdit(Profile profile);
 
         void onProfileImport();
 
-        void onNewProfile();
+        void onProfileAdd();
+    }
+
+    public interface OnStartDragListener {
+        void onStartDrag(RecyclerView.ViewHolder viewHolder);
     }
 
     private final Context mContext;
     private List<Profile> mDataSet;
+    private boolean mEditModeEnabled;
 
-    public ProfileDrawerAdapter(Context context, List<Profile> data, OnProfileClickListener listener) {
-        this.mDataSet = data;
+    public ProfileDrawerAdapter(Context context, OnProfileClickListener profileClickListener, OnStartDragListener dragListener) {
+        this.mDataSet = new ArrayList<>();
         mContext = context;
-        mListener = listener;
+        mProfileClickListener = profileClickListener;
+        mDragListener = dragListener;
     }
 
     @Override
@@ -59,25 +72,52 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SimpleViewHolder) {
+
             final Profile profile = mDataSet.get(position - 1);// -1 because of the header
-            SimpleViewHolder myHolder = (SimpleViewHolder) holder;
+            final SimpleViewHolder myHolder = (SimpleViewHolder) holder;
+
+            myHolder.setting.setVisibility(mEditModeEnabled ? View.VISIBLE : View.GONE);
+            myHolder.reorder.setVisibility(mEditModeEnabled ? View.VISIBLE : View.GONE);
+
             Glide.with(mContext).load(R.drawable.profile).into(myHolder.profileIcon);
             myHolder.nameTextView.setText(profile.getName());
             myHolder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null) {
-                        mListener.onProfileClick(profile);
+                    if (!mEditModeEnabled) {
+                        if (mProfileClickListener != null) {
+                            mProfileClickListener.onProfileClick(profile);
+                        }
+                    } else {
+                        setEditModeEnabled(false);
                     }
+
                 }
             });
             myHolder.view.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mListener != null) {
-                        mListener.onProfilePress(profile);
-                    }
+                    mEditModeEnabled = !mEditModeEnabled;
+                    notifyDataSetChanged();
                     return true;
+                }
+            });
+            myHolder.setting.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mProfileClickListener != null) {
+                        mProfileClickListener.onProfileEdit(profile);
+                    }
+                }
+            });
+
+            myHolder.reorder.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                        mDragListener.onStartDrag(myHolder);
+                    }
+                    return false;
                 }
             });
         }
@@ -86,12 +126,19 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
             myHolder.view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null) {
-                        mListener.onNewProfile();
+                    if (mProfileClickListener != null) {
+                        mProfileClickListener.onProfileAdd();
                     }
                 }
             });
 
+        }
+    }
+
+    public void setEditModeEnabled(boolean editModeEnabled) {
+        if (editModeEnabled != mEditModeEnabled) {
+            mEditModeEnabled = editModeEnabled;
+            notifyDataSetChanged();
         }
     }
 
@@ -117,12 +164,16 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
         private TextView nameTextView;
         private ImageView profileIcon;
         private View view;
+        private ImageView reorder;
+        private ImageView setting;
 
         public SimpleViewHolder(View v) {
             super(v);
             nameTextView = (TextView) v.findViewById(R.id.tv_account_name);
             profileIcon = (ImageView) v.findViewById(R.id.iv_profile_icon);
             view = v.findViewById(R.id.ll_account);
+            reorder = (ImageView) v.findViewById(R.id.iv_reorder);
+            setting = (ImageView) v.findViewById(R.id.iv_settings);
         }
 
     }
@@ -141,6 +192,17 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
     public void swapData(List<Profile> profiles) {
         mDataSet = profiles;
         notifyDataSetChanged();
+    }
+
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        int realFromPosition = fromPosition - 1;//-1 because of the header
+        int realToPosition = toPosition - 1;
+
+        Collections.swap(mDataSet, realFromPosition, realToPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        ProfileManager.reorderProfiles(realFromPosition, realToPosition);
+        return true;
     }
 
 }

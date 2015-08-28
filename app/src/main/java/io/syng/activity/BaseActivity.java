@@ -66,7 +66,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private EditText mSearchTextView;
     private DrawerLayout mDrawerLayout;
 
-    private ProfileDrawerAdapter mProfileDrawerAdapter;
 
     private View mFrontView;
     private View mBackView;
@@ -81,10 +80,12 @@ public abstract class BaseActivity extends AppCompatActivity implements
     };
     private ImageView mHeaderImageView;
     private DAppDrawerAdapter mDAppsDrawerAdapter;
+    private ProfileDrawerAdapter mProfileDrawerAdapter;
 
     protected abstract void onDAppClick(Dapp dapp);
 
-    private ItemTouchHelper mItemTouchHelper;
+    private ItemTouchHelper mDAppsTouchHelper;
+    private ItemTouchHelper mProfilesTouchHelper;
 
     @SuppressLint("InflateParams")
     @Override
@@ -110,6 +111,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 super.onDrawerClosed(drawerView);
                 GeneralUtil.hideKeyBoard(mSearchTextView, BaseActivity.this);
                 mDAppsDrawerAdapter.setEditModeEnabled(false);
+                mProfileDrawerAdapter.setEditModeEnabled(false);
                 if (!isDrawerFrontViewActive()) {
                     flipDrawer();
                 }
@@ -132,8 +134,17 @@ public abstract class BaseActivity extends AppCompatActivity implements
         RecyclerView profilesRecyclerView = (RecyclerView) findViewById(R.id.profile_drawer_recycler_view);
         RecyclerView.LayoutManager layoutManager2 = new LinearLayoutManager(this);
         profilesRecyclerView.setLayoutManager(layoutManager2);
-        mProfileDrawerAdapter = new ProfileDrawerAdapter(this, new ArrayList<Profile>(), this);
+        mProfileDrawerAdapter = new ProfileDrawerAdapter(this, this, new ProfileDrawerAdapter.OnStartDragListener() {
+            @Override
+            public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+                mProfilesTouchHelper.startDrag(viewHolder);
+            }
+        });
         profilesRecyclerView.setAdapter(mProfileDrawerAdapter);
+        ItemTouchHelper.Callback profilesCallback = new SimpleItemTouchHelperCallback(mProfileDrawerAdapter);
+        mProfilesTouchHelper = new ItemTouchHelper(profilesCallback);
+        mProfilesTouchHelper.attachToRecyclerView(profilesRecyclerView);
+
         updateCurrentProfileName();
         populateProfiles();
 
@@ -144,14 +155,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mDAppsDrawerAdapter = new DAppDrawerAdapter(this, this, new DAppDrawerAdapter.OnStartDragListener() {
             @Override
             public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-                mItemTouchHelper.startDrag(viewHolder);
+                mDAppsTouchHelper.startDrag(viewHolder);
             }
         });
         dAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
 
-        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mDAppsDrawerAdapter);
-        mItemTouchHelper = new ItemTouchHelper(callback);
-        mItemTouchHelper.attachToRecyclerView(dAppsRecyclerView);
+        ItemTouchHelper.Callback dAppsCallback = new SimpleItemTouchHelperCallback(mDAppsDrawerAdapter);
+        mDAppsTouchHelper = new ItemTouchHelper(dAppsCallback);
+        mDAppsTouchHelper.attachToRecyclerView(dAppsRecyclerView);
 
         populateDApps();
 
@@ -298,6 +309,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 if (isDrawerFrontViewActive()) {
                     mDAppsDrawerAdapter.setEditModeEnabled(false);
                     GeneralUtil.hideKeyBoard(mSearchTextView, BaseActivity.this);
+                }else{
+                    mProfileDrawerAdapter.setEditModeEnabled(false);
                 }
                 flipDrawer();
                 break;
@@ -356,7 +369,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @SuppressWarnings("ConstantConditions")
     @Override
-    public void onProfilePress(final Profile profile) {
+    public void onProfileEdit(final Profile profile) {
         if (ProfileManager.getCurrentProfile().getId().equals(profile.getId())) {
             ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
             dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
@@ -405,7 +418,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onNewProfile() {
+    public void onProfileAdd() {
         GeneralUtil.showProfileCreateDialog(this);
     }
 

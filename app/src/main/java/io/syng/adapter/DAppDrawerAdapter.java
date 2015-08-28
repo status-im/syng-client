@@ -158,7 +158,6 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             mEditModeEnabled = editModeEnabled;
             notifyDataSetChanged();
         }
-
     }
 
     @Override
