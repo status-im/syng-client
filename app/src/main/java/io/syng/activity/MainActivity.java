@@ -8,6 +8,7 @@ import io.syng.R;
 import io.syng.entity.Dapp;
 import io.syng.fragment.ConsoleFragment;
 import io.syng.fragment.WebViewFragment;
+import io.syng.util.ProfileManager;
 
 
 public class MainActivity extends BaseActivity {
@@ -18,9 +19,15 @@ public class MainActivity extends BaseActivity {
 
         setContentView(R.layout.activity_main);
         if (savedInstanceState == null) {
-            replaceFragment(new ConsoleFragment());
+            if (!ProfileManager.getCurrentProfile().getDapps().isEmpty()) {
+                Dapp dapp = ProfileManager.getCurrentProfile().getDapps().get(0);
+                onDAppItemClick(dapp);
+            }else{
+                replaceFragment(new ConsoleFragment());
+            }
         }
         processIntent(getIntent());
+
     }
 
     @Override

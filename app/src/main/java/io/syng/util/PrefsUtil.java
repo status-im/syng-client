@@ -55,7 +55,7 @@ public final class PrefsUtil {
         return getInstance().mContext.getString(resourceId);
     }
 
-    private static void saveProfiles(ArrayList<Profile> profiles) {
+    public static void saveProfiles(ArrayList<Profile> profiles) {
         try {
             getEditor().putString(PROFILES_KEY, ObjectSerializer.serialize(profiles)).commit();
         } catch (Exception e) {
@@ -73,26 +73,6 @@ public final class PrefsUtil {
             e.printStackTrace();
         }
         return profiles;
-    }
-
-    public static void updateProfile(Profile profile) {
-
-        ArrayList<Profile> profiles = getProfiles();
-        for (Profile item : profiles) {
-            if (item.getId().equals(profile.getId())) {
-                int index = profiles.indexOf(item);
-                profiles.set(index, profile);
-                saveProfiles(profiles);
-                break;
-            }
-        }
-    }
-
-    public static boolean addProfile(Profile profile) {
-        ArrayList<Profile> profiles = PrefsUtil.getProfiles();
-        profiles.add(profile);
-        saveProfiles(profiles);
-        return true;
     }
 
     public static void setCurrentProfileId(String profileId) {

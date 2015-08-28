@@ -1,39 +1,59 @@
 package io.syng.adapter;
 
 
+import android.content.Context;
+import android.support.v4.view.MotionEventCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.syng.R;
+import io.syng.adapter.helper.ItemTouchHelperAdapter;
 import io.syng.entity.Dapp;
+import io.syng.util.ProfileManager;
 
-public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> implements ItemTouchHelperAdapter {
 
     private static final int TYPE_FOOTER = 10;
     private static final int TYPE_SIMPLE_ITEM = 20;
     private static final int TYPE_CONTINUE_SEARCH = 30;
 
-    private final OnDAppClickListener mListener;
+    private final OnDAppClickListener mDAppClickListener;
+    private final OnStartDragListener mStartDragListener;
 
     public interface OnDAppClickListener {
         void onDAppItemClick(Dapp dapp);
-        void onDAppPress(Dapp dapp);
+        void onDAppEdit(Dapp dapp);
         void onDAppAdd();
         void onDAppContinueSearch();
     }
 
-    private List<Dapp> mDataSet;
-    private boolean continueSearch;
+    public interface OnStartDragListener {
+        void onStartDrag(RecyclerView.ViewHolder viewHolder);
+    }
 
-    public DAppDrawerAdapter(List<Dapp> data, OnDAppClickListener listener) {
-        this.mDataSet = data;
-        mListener = listener;
-        continueSearch = data.isEmpty();
+    private List<Dapp> mDataSet;
+    private boolean mContinueSearch;
+    private boolean mEditModeEnabled;
+//    private Animation mAnimFadeIn, mAnimFadeOut;
+
+    public DAppDrawerAdapter(Context context, OnDAppClickListener DAppClickListener, OnStartDragListener startDragListener) {
+        this.mDataSet = new ArrayList<>();
+        mDAppClickListener = DAppClickListener;
+        mStartDragListener = startDragListener;
+        mContinueSearch = mDataSet.isEmpty();
+//        mAnimFadeIn = AnimationUtils.loadAnimation(context,
+//                R.anim.fade_in);
+//        mAnimFadeOut = AnimationUtils.loadAnimation(context,
+//                R.anim.fade_out);
     }
 
     @Override
@@ -57,34 +77,64 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
         if (holder instanceof SimpleViewHolder) {
-            SimpleViewHolder myHolder = (SimpleViewHolder) holder;
+            final SimpleViewHolder myHolder = (SimpleViewHolder) holder;
             final Dapp dapp = mDataSet.get(position);
+
+            myHolder.setting.setVisibility(mEditModeEnabled ? View.VISIBLE : View.GONE);
+            myHolder.reorder.setVisibility(mEditModeEnabled ? View.VISIBLE : View.GONE);
+
+//            myHolder.setting.startAnimation(mEditModeEnabled ? mAnimFadeIn : mAnimFadeOut);
+//            myHolder.reorder.startAnimation(mEditModeEnabled ? mAnimFadeIn : mAnimFadeOut);
+
             myHolder.nameTextView.setText(dapp.getName());
             myHolder.item.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null) {
-                        mListener.onDAppItemClick(dapp);
+                    if (!mEditModeEnabled) {
+                        if (mDAppClickListener != null) {
+                            mDAppClickListener.onDAppItemClick(dapp);
+                        }
+                    }else{
+                        setEditModeEnabled(false);
                     }
                 }
             });
+            myHolder.setting.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                        if (mDAppClickListener != null) {
+                            mDAppClickListener.onDAppEdit(dapp);
+                        }
+                }
+            });
+
             myHolder.item.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
-                    if (mListener != null) {
-                        mListener.onDAppPress(dapp);
-                    }
+                    mEditModeEnabled = !mEditModeEnabled;
+                    notifyDataSetChanged();
                     return true;
                 }
             });
+
+            myHolder.reorder.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN) {
+                        mStartDragListener.onStartDrag(myHolder);
+                    }
+                    return false;
+                }
+            });
+
         }
         if (holder instanceof FooterViewHolder) {
             FooterViewHolder myHolder = (FooterViewHolder) holder;
             myHolder.addView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null) {
-                        mListener.onDAppAdd();
+                    if (mDAppClickListener != null) {
+                        mDAppClickListener.onDAppAdd();
                     }
                 }
             });
@@ -94,17 +144,26 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             myHolder.continueSearchView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (mListener != null) {
-                        mListener.onDAppContinueSearch();
+                    if (mDAppClickListener != null) {
+                        mDAppClickListener.onDAppContinueSearch();
                     }
                 }
             });
         }
     }
 
+
+    public void setEditModeEnabled(boolean editModeEnabled) {
+        if (editModeEnabled != mEditModeEnabled) {
+            mEditModeEnabled = editModeEnabled;
+            notifyDataSetChanged();
+        }
+
+    }
+
     @Override
     public int getItemCount() {
-        return continueSearch ? mDataSet.size() + 2 : mDataSet.size() + 1;
+        return mContinueSearch ? mDataSet.size() + 2 : mDataSet.size() + 1;
     }
 
     @Override
@@ -119,11 +178,11 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     private boolean isPositionFooter(int position) {
-        return continueSearch ? position == mDataSet.size() + 1 : position == mDataSet.size();
+        return mContinueSearch ? position == mDataSet.size() + 1 : position == mDataSet.size();
     }
 
     private boolean isPositionContinueItem(int position) {
-        return continueSearch && position == mDataSet.size();
+        return mContinueSearch && position == mDataSet.size();
     }
 
     public void clear() {
@@ -139,24 +198,36 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void swapData(List<Dapp> items) {
         mDataSet.clear();
         mDataSet.addAll(items);
-        continueSearch = mDataSet.isEmpty();
+        mContinueSearch = mDataSet.isEmpty();
         notifyDataSetChanged();
     }
 
-    static class SimpleViewHolder extends RecyclerView.ViewHolder {
+    @Override
+    public boolean onItemMove(int fromPosition, int toPosition) {
+        Collections.swap(mDataSet, fromPosition, toPosition);
+        notifyItemMoved(fromPosition, toPosition);
+        ProfileManager.reorderDAppsInProfile(ProfileManager.getCurrentProfile(), fromPosition, toPosition);
+        return true;
+    }
+
+    private static class SimpleViewHolder extends RecyclerView.ViewHolder {
 
         private TextView nameTextView;
         private View item;
+        private ImageView reorder;
+        private ImageView setting;
 
         public SimpleViewHolder(View v) {
             super(v);
             nameTextView = (TextView) v.findViewById(R.id.text);
             item = v.findViewById(R.id.ll_dapp_item);
+            reorder = (ImageView) v.findViewById(R.id.iv_reorder);
+            setting = (ImageView) v.findViewById(R.id.iv_settings);
         }
 
     }
 
-    static class FooterViewHolder extends RecyclerView.ViewHolder {
+    private static class FooterViewHolder extends RecyclerView.ViewHolder {
 
         private View addView;
 
@@ -167,7 +238,7 @@ public class DAppDrawerAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     }
 
-    static class ContinueSearchViewHolder extends RecyclerView.ViewHolder {
+    private static class ContinueSearchViewHolder extends RecyclerView.ViewHolder {
 
         private View continueSearchView;
 

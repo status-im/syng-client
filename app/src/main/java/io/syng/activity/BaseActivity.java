@@ -15,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -41,6 +42,7 @@ import io.syng.adapter.DAppDrawerAdapter;
 import io.syng.adapter.DAppDrawerAdapter.OnDAppClickListener;
 import io.syng.adapter.ProfileDrawerAdapter;
 import io.syng.adapter.ProfileDrawerAdapter.OnProfileClickListener;
+import io.syng.adapter.helper.SimpleItemTouchHelperCallback;
 import io.syng.entity.Dapp;
 import io.syng.entity.Profile;
 import io.syng.fragment.profile.ProfileDialogFragment;
@@ -82,6 +84,8 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     protected abstract void onDAppClick(Dapp dapp);
 
+    private ItemTouchHelper mItemTouchHelper;
+
     @SuppressLint("InflateParams")
     @Override
     public void setContentView(final int layoutResID) {
@@ -105,6 +109,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             public void onDrawerClosed(View drawerView) {
                 super.onDrawerClosed(drawerView);
                 GeneralUtil.hideKeyBoard(mSearchTextView, BaseActivity.this);
+                mDAppsDrawerAdapter.setEditModeEnabled(false);
                 if (!isDrawerFrontViewActive()) {
                     flipDrawer();
                 }
@@ -132,12 +137,22 @@ public abstract class BaseActivity extends AppCompatActivity implements
         updateCurrentProfileName();
         populateProfiles();
 
-        RecyclerView DAppsRecyclerView = (RecyclerView) findViewById(R.id.dapp_drawer_recycler_view);
-        DAppsRecyclerView.setHasFixedSize(true);
+        RecyclerView dAppsRecyclerView = (RecyclerView) findViewById(R.id.dapp_drawer_recycler_view);
+        dAppsRecyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager1 = new LinearLayoutManager(this);
-        DAppsRecyclerView.setLayoutManager(layoutManager1);
-        mDAppsDrawerAdapter = new DAppDrawerAdapter(new ArrayList<Dapp>(), this);
-        DAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
+        dAppsRecyclerView.setLayoutManager(layoutManager1);
+        mDAppsDrawerAdapter = new DAppDrawerAdapter(this, this, new DAppDrawerAdapter.OnStartDragListener() {
+            @Override
+            public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+                mItemTouchHelper.startDrag(viewHolder);
+            }
+        });
+        dAppsRecyclerView.setAdapter(mDAppsDrawerAdapter);
+
+        ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(mDAppsDrawerAdapter);
+        mItemTouchHelper = new ItemTouchHelper(callback);
+        mItemTouchHelper.attachToRecyclerView(dAppsRecyclerView);
+
         populateDApps();
 
         mHeaderImageView = (ImageView) findViewById(R.id.iv_header);
@@ -232,6 +247,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 dapps.add(item);
             }
         }
+        mDAppsDrawerAdapter.setEditModeEnabled(false);
         mDAppsDrawerAdapter.swapData(dapps);
     }
 
@@ -279,6 +295,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
                 closeDrawer(DRAWER_CLOSE_DELAY_LONG);
                 break;
             case R.id.drawer_header_item:
+                if (isDrawerFrontViewActive()) {
+                    mDAppsDrawerAdapter.setEditModeEnabled(false);
+                    GeneralUtil.hideKeyBoard(mSearchTextView, BaseActivity.this);
+                }
                 flipDrawer();
                 break;
         }
@@ -290,7 +310,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             mFrontView.setVisibility(View.GONE);
             mBackView.setVisibility(VISIBLE);
             imageView.setImageResource(R.drawable.ic_arrow_drop_up_black_24dp);
-            GeneralUtil.hideKeyBoard(mSearchTextView, BaseActivity.this);
         } else {
             mBackView.setVisibility(View.GONE);
             mFrontView.setVisibility(VISIBLE);
@@ -329,8 +348,9 @@ public abstract class BaseActivity extends AppCompatActivity implements
         GeneralUtil.showProfileImportDialog(this);
     }
 
+
     @Override
-    public void onDAppPress(final Dapp dapp) {
+    public void onDAppEdit(final Dapp dapp) {
         GeneralUtil.showDAppEditDialog(dapp, this);
     }
 

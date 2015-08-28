@@ -4,6 +4,7 @@ import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import io.syng.app.SyngApplication;
@@ -40,12 +41,22 @@ public final class ProfileManager {
     }
 
     public static void addProfile(Profile profile) {
-        PrefsUtil.addProfile(profile);
+        ArrayList<Profile> profiles = PrefsUtil.getProfiles();
+        profiles.add(profile);
+        PrefsUtil.saveProfiles(profiles);
         notifyListener();
     }
 
     public static void updateProfile(Profile profile) {
-        PrefsUtil.updateProfile(profile);
+        ArrayList<Profile> profiles = getProfiles();
+        for (Profile item : profiles) {
+            if (item.getId().equals(profile.getId())) {
+                int index = profiles.indexOf(item);
+                profiles.set(index, profile);
+                PrefsUtil.saveProfiles(profiles);
+                break;
+            }
+        }
         notifyListener();
     }
 
@@ -99,6 +110,22 @@ public final class ProfileManager {
         profile.updateDapp(dapp);
         ProfileManager.updateProfile(profile);
         notifyListener();
+    }
+
+    public static void reorderDAppsInProfile(Profile profile, int fromPosition, int toPosition) {
+        List<Dapp> dapps = profile.getDapps();
+        Collections.swap(dapps, fromPosition, toPosition);
+        profile.setDapps(dapps);
+
+        ArrayList<Profile> profiles = getProfiles();
+        for (Profile item : profiles) {
+            if (item.getId().equals(profile.getId())) {
+                int index = profiles.indexOf(item);
+                profiles.set(index, profile);
+                PrefsUtil.saveProfiles(profiles);
+                break;
+            }
+        }
     }
 
     @Nullable

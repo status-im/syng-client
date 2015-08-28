@@ -6,7 +6,8 @@
     android:layout_height="?attr/listPreferredItemHeightSmall"
     android:background="?attr/selectableItemBackground"
     android:gravity="center_vertical"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    >
 
     <ImageView
         android:layout_width="wrap_content"
@@ -26,6 +27,34 @@
         android:textColor="@android:color/black"
         tools:text="Test text"
         />
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_marginEnd="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_weight="1"
+        android:gravity="center_vertical|end"
+        >
+
+        <ImageView
+            android:id="@+id/iv_settings"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_settings_black_24dp"
+            android:tint="@color/drawer_icon_color"/>
+
+        <ImageView
+            android:id="@+id/iv_reorder"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            android:src="@drawable/ic_reorder_black_24dp"
+            android:tint="@color/drawer_icon_color"/>
+    </LinearLayout>
 
 
 </LinearLayout>
