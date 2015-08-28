@@ -29,4 +29,8 @@
         android:summary="@string/pref_description_sync_only_on_wifi"
         android:title="@string/pref_title_sync_only_on_wifi"/>
 
+    <Preference android:title="Clear Cache"
+        android:key="clearCache"
+        android:summary="Clears cordova webview cache"/>
+
 </PreferenceScreen>

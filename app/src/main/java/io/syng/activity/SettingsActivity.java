@@ -11,6 +11,11 @@ import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 
+import org.apache.cordova.ConfigXmlParser;
+import org.apache.cordova.CordovaPreferences;
+import org.apache.cordova.CordovaWebView;
+import org.apache.cordova.CordovaWebViewImpl;
+
 import java.util.List;
 
 import io.syng.R;
@@ -41,6 +46,21 @@ public class SettingsActivity extends PreferenceActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setupSimplePreferencesScreen();
+
+        Preference button = (Preference)findPreference("clearCache");
+        button.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(Preference preference) {
+
+                ConfigXmlParser parser = new ConfigXmlParser();
+                parser.parse(SettingsActivity.this);
+                CordovaPreferences preferences = parser.getPreferences();
+                preferences.setPreferencesBundle(SettingsActivity.this.getIntent().getExtras());
+                CordovaWebView webView = new CordovaWebViewImpl(CordovaWebViewImpl.createEngine(SettingsActivity.this, preferences));
+                webView.clearCache();
+                return true;
+            }
+        });
     }
 
     /**
