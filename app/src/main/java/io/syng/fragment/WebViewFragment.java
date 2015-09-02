@@ -15,7 +15,9 @@ import android.graphics.Color;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
@@ -35,10 +37,12 @@ import org.apache.cordova.PluginManager;
 import java.util.ArrayList;
 import java.util.Locale;
 
+import io.syng.activity.BaseActivity;
 import io.syng.app.SyngApplication;
+import io.syng.cordova.plugin.WebViewEngine;
 
 
-public class WebViewFragment extends Fragment {
+public class WebViewFragment extends Fragment implements View.OnTouchListener, GestureDetector.OnGestureListener {
 
     private static final  String DEFAULT_DAPP = "dapp://syng.io/dapps/wallet";
 
@@ -49,6 +53,8 @@ public class WebViewFragment extends Fragment {
 
     protected boolean keepRunning = true;
     protected boolean immersiveMode;
+
+    protected GestureDetector gestureDetector;
 
     protected String url;
 
@@ -159,6 +165,72 @@ public class WebViewFragment extends Fragment {
         if ("media".equals(volumePref.toLowerCase(Locale.ENGLISH))) {
             getActivity().setVolumeControlStream(AudioManager.STREAM_MUSIC);
         }
+        BaseActivity activity = (BaseActivity)getActivity();
+        activity.hideToolbar(2);
+        gestureDetector = new GestureDetector(webView.getContext(), this);
+        webView.getView().setOnTouchListener(this);
+    }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent motionEvent) {
+
+
+        return gestureDetector.onTouchEvent(motionEvent);
+    }
+
+    @Override
+    public boolean onFling(MotionEvent start, MotionEvent finish, float velocityX, float velocityY) {        float gapX = start.getRawX() - finish.getRawX();
+        float gapY = start.getRawY() - finish.getRawY();
+        float distanceX = Math.abs(gapX);
+        float distanceY = Math.abs(gapY);
+
+        if (distanceY > distanceX) { // up downs
+            if (gapY > 0) {
+                // up
+                System.out.println("Swipe up");
+            } else {
+                // down
+                System.out.println("Swipe down");
+                BaseActivity activity = (BaseActivity)getActivity();
+                activity.showToolbar(0);
+                activity.hideToolbar(2);
+            }
+        } else { // left right
+            if (gapX > 0) {
+                // left
+                System.out.println("Swipe left");
+            } else {
+                // rights
+                System.out.println("Swipe right");
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public boolean onDown(MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public boolean onSingleTapUp(MotionEvent motionEvent) {
+        return false;
+    }
+
+    @Override
+    public void onShowPress(MotionEvent motionEvent) {
+
+    }
+
+    @Override
+    public boolean onScroll(MotionEvent motionEvent, MotionEvent motionEvent1, float v, float v1) {
+        return false;
+    }
+
+    @Override
+    public void onLongPress(MotionEvent motionEvent) {
+
     }
 
     @SuppressWarnings("deprecation")
@@ -167,6 +239,7 @@ public class WebViewFragment extends Fragment {
         parser.parse(getActivity());
         preferences = parser.getPreferences();
         preferences.setPreferencesBundle(getActivity().getIntent().getExtras());
+        //preferences.set("webview", "io.syng.cordova.plugin.WebViewEngine");
         pluginEntries = parser.getPluginEntries();
         Config.init(getActivity());
     }
@@ -178,11 +251,7 @@ public class WebViewFragment extends Fragment {
         RelativeLayout.LayoutParams p = new RelativeLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT);
-//        p.addRule(RelativeLayout.BELOW, R.id.myToolbar);
         webView.getView().setLayoutParams(p);
-
-//        RelativeLayout rl = (RelativeLayout)view.findViewById(R.id.web_view_layout);
-//        rl.addView(webView.getView());
 
         if (preferences.contains("BackgroundColor")) {
             int backgroundColor = preferences.getInteger("BackgroundColor", Color.BLACK);
@@ -238,6 +307,8 @@ public class WebViewFragment extends Fragment {
             boolean keepRunning = this.keepRunning;// || this.cordovaInterface.activityResultCallback != null;
             this.webView.handlePause(keepRunning);
         }
+        BaseActivity activity = (BaseActivity)getActivity();
+        activity.showToolbar(0);
     }
 
 /*

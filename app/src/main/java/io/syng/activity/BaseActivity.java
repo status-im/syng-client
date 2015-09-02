@@ -33,6 +33,8 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -74,6 +76,23 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private EditText mSearchTextView;
     private DrawerLayout mDrawerLayout;
 
+    Toolbar topToolbar;
+    boolean isTopToolbarShown = true;
+    Runnable mShowToolbarRunnable = new Runnable() {
+        @Override
+        public void run() {
+            topToolbar.animate().translationY(0).setInterpolator(new DecelerateInterpolator()).start();
+            isTopToolbarShown = true;
+        }
+    };
+    Runnable mHideToolbarRunnable = new Runnable() {
+        @Override
+        public void run() {
+            topToolbar.animate().translationY(-topToolbar.getBottom()).setInterpolator(new AccelerateInterpolator()).start();
+            isTopToolbarShown = false;
+        }
+    };
+    Handler mTopToolbarHandler = new Handler();
 
     private View mFrontView;
     private View mBackView;
@@ -105,14 +124,14 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
         FrameLayout content = (FrameLayout) findViewById(R.id.content);
         ViewGroup inflated = (ViewGroup) inflater.inflate(layoutResID, content, true);
-        Toolbar toolbar = (Toolbar) inflated.findViewById(R.id.app_toolbar);
+        topToolbar = (Toolbar) inflated.findViewById(R.id.app_toolbar);
 
-        if (toolbar != null) {
-            setSupportActionBar(toolbar);
+        if (topToolbar != null) {
+            setSupportActionBar(topToolbar);
             mDrawerLayout.setStatusBarBackgroundColor(ContextCompat.getColor(this, android.R.color.black));
         }
 
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, topToolbar,
                 R.string.drawer_open, R.string.drawer_close) {
             @Override
             public void onDrawerClosed(View drawerView) {
@@ -180,6 +199,19 @@ public abstract class BaseActivity extends AppCompatActivity implements
         ProfileManager.setProfilesChangeListener(this);
     }
 
+    public void hideToolbar(int seconds) {
+        if (isTopToolbarShown) {
+            isTopToolbarShown = false;
+            mTopToolbarHandler.postDelayed(mHideToolbarRunnable, seconds * 1000);
+        }
+    }
+
+    public void showToolbar(int seconds) {
+        if (!isTopToolbarShown) {
+            isTopToolbarShown = true;
+            mTopToolbarHandler.postDelayed(mShowToolbarRunnable, seconds * 1000);
+        }
+    }
 
     private void populateProfiles() {
         mProfileDrawerAdapter.swapData(ProfileManager.getProfiles());
