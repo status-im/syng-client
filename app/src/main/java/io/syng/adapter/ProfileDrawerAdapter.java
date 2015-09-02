@@ -43,8 +43,6 @@ public class ProfileDrawerAdapter extends RecyclerView.Adapter<RecyclerView.View
 
         void onProfileEdit(Profile profile);
 
-        void onProfileImport();
-
         void onProfileAdd();
     }
 

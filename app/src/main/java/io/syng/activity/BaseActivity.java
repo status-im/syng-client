@@ -131,7 +131,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
         mSearchTextView = (EditText) findViewById(R.id.search);
         initSearch();
 
-        findViewById(R.id.ll_import_wallet).setOnClickListener(this);
         findViewById(R.id.ll_settings).setOnClickListener(this);
         findViewById(R.id.ll_contribute).setOnClickListener(this);
         findViewById(R.id.drawer_header_item).setOnClickListener(this);
@@ -297,9 +296,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.ll_import_wallet:
-                onProfileImport();
-                break;
             case R.id.ll_contribute:
                 String url = CONTRIBUTE_LINK;
                 Intent intent = new Intent(Intent.ACTION_VIEW);
@@ -363,12 +359,6 @@ public abstract class BaseActivity extends AppCompatActivity implements
             requestChangeProfile(profile);
         }
     }
-
-    @Override
-    public void onProfileImport() {
-        GeneralUtil.showProfileImportDialog(this);
-    }
-
 
     @Override
     public void onDAppEdit(final Dapp dapp) {

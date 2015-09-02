@@ -28,6 +28,7 @@ import android.view.Window;
 import io.syng.R;
 import io.syng.adapter.ProfileViewPagerAdapter;
 import io.syng.entity.Profile;
+import io.syng.util.GeneralUtil;
 
 public class ProfileDialogFragment extends DialogFragment implements OnPageChangeListener,
         OnClickListener {
@@ -38,6 +39,8 @@ public class ProfileDialogFragment extends DialogFragment implements OnPageChang
     private TabLayout mTabLayout;
     private Toolbar mToolbar;
     private String mProfileId;
+    private MenuItem importProfile;
+    private MenuItem exportProfile;
 
     public static ProfileDialogFragment newInstance(final Profile profile) {
         Bundle bundle = new Bundle();
@@ -72,8 +75,26 @@ public class ProfileDialogFragment extends DialogFragment implements OnPageChang
         mToolbar = (Toolbar) view.findViewById(R.id.profile_toolbar);
         mToolbar.setTitle("Edit Profile");
         mToolbar.inflateMenu(R.menu.profile_menu);
-        mToolbar.getMenu().findItem(R.id.action_key_export).setVisible(false);
-        mToolbar.getMenu().findItem(R.id.action_key_import).setVisible(false);
+
+        exportProfile = mToolbar.getMenu().findItem(R.id.action_key_export);
+        exportProfile.setVisible(false);
+        exportProfile.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+
+                return false;
+            }
+        });
+        importProfile = mToolbar.getMenu().findItem(R.id.action_key_import);
+        importProfile.setVisible(false);
+        importProfile.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem menuItem) {
+                GeneralUtil.showProfileImportDialog(getActivity());
+                return false;
+            }
+        });
+
         mToolbar.setNavigationIcon(R.drawable.ic_arrow_back_black_24dp);
         mToolbar.setNavigationOnClickListener(this);
         tintMenuItem();
