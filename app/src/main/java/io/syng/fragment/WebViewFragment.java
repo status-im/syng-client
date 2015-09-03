@@ -39,7 +39,7 @@ import java.util.Locale;
 
 import io.syng.activity.BaseActivity;
 import io.syng.app.SyngApplication;
-import io.syng.cordova.plugin.WebViewEngine;
+//import io.syng.cordova.plugin.WebViewEngine;
 
 
 public class WebViewFragment extends Fragment implements View.OnTouchListener, GestureDetector.OnGestureListener {
