@@ -449,7 +449,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     @Override
     public void onProfileAdd() {
-        GeneralUtil.showProfileCreateDialog(this);
+        GeneralUtil.showProfileCreateDialog(this, true, null);
     }
 
     @Override

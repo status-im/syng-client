@@ -87,52 +87,67 @@ public final class GeneralUtil {
         }
     }
 
-    public static void showProfileCreateDialog(final Context context) {
+    public static boolean processCreateDialog(Context context, MaterialDialog dialog) {
+
+        EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
+        EditText pass1 = (EditText) dialog.findViewById(R.id.et_profile_pass_1);
+        EditText pass2 = (EditText) dialog.findViewById(R.id.et_profile_pass_2);
+
+        String nameString = name.getText().toString();
+        String pass1String = pass1.getText().toString();
+        String pass2String = pass2.getText().toString();
+
+        if (TextUtils.isEmpty(nameString)) {
+            Toast.makeText(context, "Profile name can't be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        if (TextUtils.isEmpty(pass1String) || TextUtils.isEmpty(pass2String)) {
+            Toast.makeText(context, "Password name can't be empty", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+
+        if (!pass1.getText().toString().equals(pass2.getText().toString())) {
+            Toast.makeText(context, "Passwords should be the same!", Toast.LENGTH_SHORT).show();
+            return false;
+        } else {
+            Profile profile = new Profile();
+            profile.setName(name.getText().toString());
+            profile.setPassword(pass1String);
+            ProfileManager.addProfile(profile);
+            ProfileManager.setCurrentProfile(profile);
+            GeneralUtil.hideKeyBoard(name, context);
+            GeneralUtil.hideKeyBoard(pass1, context);
+            GeneralUtil.hideKeyBoard(pass2, context);
+            return true;
+        }
+    }
+
+    public static void showProfileCreateDialog(final Context context, boolean cancelable, MaterialDialog.ButtonCallback callback) {
+
+        if (callback == null) {
+            callback = new MaterialDialog.ButtonCallback() {
+                @Override
+                public void onPositive(MaterialDialog dialog) {
+                    if (processCreateDialog(context, dialog)) {
+                        dialog.dismiss();
+                    }
+                }
+
+                @Override
+                public void onNegative(MaterialDialog dialog) {
+                    dialog.dismiss();
+                }
+            };
+        }
         MaterialDialog dialog = new MaterialDialog.Builder(context)
                 .title("New profile")
                 .positiveText(R.string.dialog_button_create)
                 .negativeText(R.string.dialog_button_cancel)
                 .customView(R.layout.profile_create_dialog, true)
                 .autoDismiss(false)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
-                        EditText pass1 = (EditText) dialog.findViewById(R.id.et_profile_pass_1);
-                        EditText pass2 = (EditText) dialog.findViewById(R.id.et_profile_pass_2);
-
-                        String nameString = name.getText().toString();
-                        String pass1String = pass1.getText().toString();
-                        String pass2String = pass2.getText().toString();
-
-                        if (TextUtils.isEmpty(nameString)) {
-                            Toast.makeText(context, "Profile name can't be empty", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-                        if (TextUtils.isEmpty(pass1String) || TextUtils.isEmpty(pass2String)) {
-                            Toast.makeText(context, "Password name can't be empty", Toast.LENGTH_SHORT).show();
-                            return;
-                        }
-
-                        if (!pass1.getText().toString().equals(pass2.getText().toString())) {
-                            Toast.makeText(context, "Passwords should be the same!", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Profile profile = new Profile();
-                            profile.setName(name.getText().toString());
-                            profile.setPassword(pass1String);
-                            ProfileManager.addProfile(profile);
-                            GeneralUtil.hideKeyBoard(name, context);
-                            GeneralUtil.hideKeyBoard(pass1, context);
-                            GeneralUtil.hideKeyBoard(pass2, context);
-                            dialog.dismiss();
-                        }
-                    }
-
-                    @Override
-                    public void onNegative(MaterialDialog dialog) {
-                        dialog.dismiss();
-                    }
-                }).show();
+                .cancelable(cancelable)
+                .callback(callback)
+                .show();
         EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
         GeneralUtil.showKeyBoard(name, context);
     }
