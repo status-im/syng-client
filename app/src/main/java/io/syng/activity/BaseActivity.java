@@ -109,10 +109,10 @@ public abstract class BaseActivity extends AppCompatActivity implements
     private DAppDrawerAdapter mDAppsDrawerAdapter;
     private ProfileDrawerAdapter mProfileDrawerAdapter;
 
-    protected abstract void onDAppClick(Dapp dapp);
-
     private ItemTouchHelper mDAppsTouchHelper;
     private ItemTouchHelper mProfilesTouchHelper;
+
+    protected abstract void onDAppClick(Dapp dapp);
 
     @SuppressLint("InflateParams")
     @Override

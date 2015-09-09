@@ -43,16 +43,14 @@ import io.syng.entity.Profile;
 public final class GeneralUtil {
 
     public static void hideKeyBoard(View view, Context context) {
-        if (view == null)
-            return;
+        if (view == null) return;
         InputMethodManager imm = (InputMethodManager)
                 context.getApplicationContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
     }
 
     public static void showKeyBoard(View view, Context context) {
-        if (view == null)
-            return;
+        if (view == null) return;
         InputMethodManager imm = (InputMethodManager) context.getApplicationContext().getSystemService(Activity.INPUT_METHOD_SERVICE);
         imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
     }
@@ -158,6 +156,8 @@ public final class GeneralUtil {
                 .customView(R.layout.dapp_form, true)
                 .positiveText(R.string.save)
                 .negativeText(R.string.cancel)
+                .neutralText("Remove")
+                .neutralColorRes(android.R.color.holo_red_dark)
                 .callback(new MaterialDialog.ButtonCallback() {
                     @Override
                     public void onPositive(MaterialDialog dialog) {
@@ -183,6 +183,12 @@ public final class GeneralUtil {
 
                     @Override
                     public void onNegative(MaterialDialog dialog) {
+                        dialog.hide();
+                    }
+
+                    @Override
+                    public void onNeutral(MaterialDialog dialog) {
+                        ProfileManager.removeDAppInProfile(ProfileManager.getCurrentProfile(), dapp);
                         dialog.hide();
                     }
                 })
@@ -241,6 +247,7 @@ public final class GeneralUtil {
                 .positiveText(R.string.sImport)
                 .negativeText(R.string.cancel)
                 .callback(new MaterialDialog.ButtonCallback() {
+                    @SuppressWarnings("TryFinallyCanBeTryWithResources")
                     @Override
                     public void onPositive(MaterialDialog dialog) {
 

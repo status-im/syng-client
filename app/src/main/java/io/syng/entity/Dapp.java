@@ -77,4 +77,12 @@ public class Dapp implements Serializable {
         this.id = id;
     }
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Dapp)) return false;
+        Dapp object = (Dapp) o;
+        return object.getId().equalsIgnoreCase(id);
+    }
 }

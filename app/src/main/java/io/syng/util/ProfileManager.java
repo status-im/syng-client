@@ -96,7 +96,6 @@ public final class ProfileManager {
             }
         }
 
-
         return new Profile();
     }
 
@@ -113,6 +112,11 @@ public final class ProfileManager {
         notifyListener();
     }
 
+    public static void removeDAppInProfile(Profile profile, Dapp dapp) {
+        profile.removeDapp(dapp);
+        ProfileManager.updateProfile(profile);
+        notifyListener();
+    }
 
     public static void updateDAppInProfile(Profile profile, Dapp dapp) {
         profile.updateDapp(dapp);
