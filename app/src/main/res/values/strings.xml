@@ -41,5 +41,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="menu.profile.remove">Remove profile</string>
 
 </resources>

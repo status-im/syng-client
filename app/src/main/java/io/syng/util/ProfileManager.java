@@ -55,6 +55,17 @@ public final class ProfileManager {
         notifyListener();
     }
 
+    public static boolean removeProfile(Profile profile) {
+        boolean removed = !profile.equals(ProfileManager.getCurrentProfile());
+        if (removed) {
+            ArrayList<Profile> profiles = PrefsUtil.getProfiles();
+            profiles.remove(profile);
+            PrefsUtil.saveProfiles(profiles);
+            notifyListener();
+        }
+        return removed;
+    }
+
     public static void updateProfile(Profile profile) {
         ArrayList<Profile> profiles = getProfiles();
         for (Profile item : profiles) {

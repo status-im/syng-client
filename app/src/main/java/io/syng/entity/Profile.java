@@ -86,7 +86,7 @@ public class Profile implements Serializable {
     public List<String> getAddresses() {
 
         List<String> addresses = new ArrayList<>();
-        for (String privateKey: privateKeys) {
+        for (String privateKey : privateKeys) {
             ECKey key = ECKey.fromPrivate(Hex.decode(privateKey));
             addresses.add(Hex.toHexString(key.getAddress()));
         }
@@ -239,6 +239,14 @@ public class Profile implements Serializable {
 
     public void importPrivateKey(String privateKey, String password) {
         privateKeys.add(decryptPrivateKey(privateKey, password));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof Profile)) return false;
+        Profile object = (Profile) o;
+        return object.getId().equalsIgnoreCase(id);
     }
 
 }
