@@ -58,7 +58,9 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler, OnCli
     private final static int CONSOLE_LENGTH = 10000;
     private final static int CONSOLE_REFRESH_MILLS = 1000 * 5; //5 sec
 
-    private String mConsoleLog = "";
+    private String mConsoleLog = "Slaving to <rpc0.syng.io>";
+
+    private boolean isRpcConnection = true;
 
     private TextView mConsoleText;
 
@@ -148,7 +150,10 @@ public class ConsoleFragment extends Fragment implements ConnectorHandler, OnCli
                         break;
                     case EVENT_NO_CONNECTIONS:
                         eventData = data.getParcelable("data");
-                        addLogEntry(new LogEntry(eventData.registeredTime, "No connections"));
+                        //Disable no connections logging while we use rpc
+                        if (!isRpcConnection) {
+                            addLogEntry(new LogEntry(eventData.registeredTime, "No connections"));
+                        }
                         break;
                     case EVENT_PEER_DISCONNECT:
                         PeerDisconnectEventData peerDisconnectEventData = data.getParcelable("data");
