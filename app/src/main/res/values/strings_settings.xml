@@ -55,7 +55,7 @@
     </string-array>
 
 
-    <string name="pref_json_rpc_server_default" translate="false">rpc0.syng.io:8545</string>
+    <string name="pref_json_rpc_server_default" translate="false">http://rpc0.syng.io:8545</string>
     <string name="pref_json_rpc_server_key" translate="false">pref_json_rpc_server_key</string>
     <string name="pref_json_rpc_server_title" translate="false">JSON-RPC server address</string>
     <string name="pref_running_mode_key" translate="false">running_mode</string>

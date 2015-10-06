@@ -18,15 +18,18 @@ import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.widget.Toast;
 
 import org.apache.cordova.ConfigXmlParser;
 import org.apache.cordova.CordovaPreferences;
 import org.apache.cordova.CordovaWebView;
 import org.apache.cordova.CordovaWebViewImpl;
 
+import java.net.URL;
 import java.util.List;
 
 import io.syng.R;
+import io.syng.app.SyngApplication;
 
 /**
  * A {@link PreferenceActivity} that presents a set of application settings. On
@@ -143,7 +146,16 @@ public class SettingsActivity extends PreferenceActivity {
                         jsonRPC.setEnabled(!stringValue.equals(getString(R.string.pref_running_mode_full_value)));
 
                     } else if (key.equals(getString(R.string.pref_json_rpc_server_key))) {
-                        preference.setSummary("Current server address is " + stringValue);
+                        try {
+                            URL url = new URL(stringValue);
+                            preference.setSummary("Current server address is " + stringValue);
+                            SyngApplication.sEthereumConnector.changeJsonRpc(stringValue);
+                        } catch (Exception e) {
+                            Toast.makeText(SettingsActivity.this,
+                                    "Invalid url address...",
+                                    Toast.LENGTH_SHORT).show();
+                            return false;
+                        }
                     } else {
                         preference.setSummary(stringValue);
                     }
