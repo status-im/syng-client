@@ -125,6 +125,8 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
                 Bundle data = message.getData();
                 data.setClassLoader(EventFlag.class.getClassLoader());
                 EventFlag event = (EventFlag) data.getSerializable("event");
+                if (event == null)
+                    return false;
                 EventData eventData;
                 MessageEventData messageEventData;
                 switch (event) {
