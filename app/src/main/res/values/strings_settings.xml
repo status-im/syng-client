@@ -18,18 +18,22 @@
     <string name="pref_title_running_mode">Running Mode</string>
 
     <string name="pref_running_mode_full_name">Full Client</string>
+    <string name="pref_running_mode_json_name">JSON Proxy</string>
     <string name="pref_running_mode_light_name">Light Client</string>
     <string name="pref_running_mode_full_value">1</string>
-    <string name="pref_running_mode_light_value">2</string>
+    <string name="pref_running_mode_json_value">2</string>
+    <string name="pref_running_mode_light_value">3</string>
 
     <string-array name="pref_running_modes_titles">
         <item>@string/pref_running_mode_full_name</item>
-        <item>@string/pref_running_mode_light_name</item>
+        <item>@string/pref_running_mode_json_name</item>
+        <!--<item>@string/pref_running_mode_light_name</item>-->
     </string-array>
 
     <string-array name="pref_running_modes_values">
         <item>@string/pref_running_mode_full_value</item>
-        <item>@string/pref_running_mode_light_value</item>
+        <item>@string/pref_running_mode_json_value</item>
+        <!--<item>@string/pref_running_mode_light_value</item>-->
     </string-array>
 
     <!-- Example settings for Data & Sync -->
