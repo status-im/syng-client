@@ -78,11 +78,6 @@ public class ConsoleFragment extends Fragment implements OnClickListener {
         ImageView background = (ImageView) view.findViewById(R.id.iv_background);
         Glide.with(this).load(R.drawable.console_bg).into(background);
 
-        ImageView syngLogo = (ImageView) view.findViewById(R.id.iv_syng_logo);
-        ImageView syngText = (ImageView) view.findViewById(R.id.iv_syng_text);
-        Glide.with(this).load(R.drawable.syng_text).into(syngText);
-        Glide.with(this).load(R.drawable.syng_logo).into(syngLogo);
-
         view.findViewById(R.id.fab_send).setOnClickListener(this);
         view.findViewById(R.id.fab_receive).setOnClickListener(this);
 
