@@ -66,6 +66,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onPositive(MaterialDialog dialog) {
                 if (GeneralUtil.processCreateDialog(LoginActivity.this, dialog)) {
+                    dialog.dismiss();
                     startNextActivity();
                 }
             }
