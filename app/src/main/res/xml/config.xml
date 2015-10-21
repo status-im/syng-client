@@ -8,7 +8,7 @@
     	Syng Ethereum
     </description>
 
-    <author href="http://jarradhope.com" email="me@jarradhope.com">
+    <author href="http://syng.io" email="jarrad@syng.io">
         Jarrad Hope
     </author>
 
@@ -75,7 +75,7 @@
     </feature>
 
 <!--
-    After enable it block and freez requests to our JSON-RPC
+    After enable it block and freeze requests to our JSON-RPC
 -->
     <feature name="Whitelist" >
         <param name="android-package" value="org.apache.cordova.whitelist.WhitelistPlugin"/>
