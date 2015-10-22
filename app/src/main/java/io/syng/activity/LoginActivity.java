@@ -80,12 +80,12 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private void loginWallet() {
-        GeneralUtil.showProfilePasswordRequestDialog(LoginActivity.this, new MaterialDialog.ButtonCallback() {
+        final Profile profile = ProfileManager.getCurrentProfile();
+        GeneralUtil.showProfilePasswordRequestDialog(LoginActivity.this, profile.getName(), new MaterialDialog.ButtonCallback() {
             @Override
             public void onPositive(MaterialDialog dialog) {
                 View view = dialog.getCustomView();
                 EditText passwordText = (EditText) view.findViewById(R.id.et_pass);
-                Profile profile = ProfileManager.getCurrentProfile();
                 String password = passwordText.getText().toString();
                 if (profile.checkPassword(password)) {
                     dialog.dismiss();

@@ -150,7 +150,7 @@ public final class GeneralUtil {
         GeneralUtil.showKeyBoard(name, context);
     }
 
-    public static void showProfilePasswordRequestDialog(final Context context, MaterialDialog.ButtonCallback callback) {
+    public static void showProfilePasswordRequestDialog(final Context context, String profileName, MaterialDialog.ButtonCallback callback) {
 
         if (callback == null) {
             callback = new MaterialDialog.ButtonCallback() {
@@ -166,11 +166,12 @@ public final class GeneralUtil {
             };
         }
         MaterialDialog dialog = new MaterialDialog.Builder(context)
-                .title(R.string.request_profile_password)
+                .title((profileName != null ? profileName + " " : "") + context.getResources().getString(R.string.request_profile_password))
                 .positiveText(R.string.ok)
                 .negativeText(R.string.cancel)
                 .customView(R.layout.profile_password, true)
                 .callback(callback)
+                .autoDismiss(false)
                 .show();
         EditText name = (EditText) dialog.findViewById(R.id.et_pass);
         GeneralUtil.showKeyBoard(name, context);

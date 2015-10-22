@@ -231,7 +231,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
 
     private void requestChangeProfile(final Profile profile) {
 
-        GeneralUtil.showProfilePasswordRequestDialog(BaseActivity.this, new MaterialDialog.ButtonCallback() {
+        GeneralUtil.showProfilePasswordRequestDialog(BaseActivity.this, profile.getName(), new MaterialDialog.ButtonCallback() {
             @SuppressWarnings("ConstantConditions")
             @Override
             public void onPositive(MaterialDialog dialog) {
@@ -406,7 +406,7 @@ public abstract class BaseActivity extends AppCompatActivity implements
             ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
             dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
         } else {
-            GeneralUtil.showProfilePasswordRequestDialog(BaseActivity.this, new MaterialDialog.ButtonCallback() {
+            GeneralUtil.showProfilePasswordRequestDialog(BaseActivity.this, profile.getName(), new MaterialDialog.ButtonCallback() {
 
                 @Override
                 public void onPositive(MaterialDialog dialog) {
