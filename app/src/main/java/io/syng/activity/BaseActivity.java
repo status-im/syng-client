@@ -230,28 +230,30 @@ public abstract class BaseActivity extends AppCompatActivity implements
     }
 
     private void requestChangeProfile(final Profile profile) {
-        Dialog dialog = new MaterialDialog.Builder(BaseActivity.this)
-                .title(R.string.request_profile_password)
-                .customView(R.layout.profile_password, true)
-                .positiveText(R.string.ok)
-                .negativeText(R.string.cancel)
-                .callback(new MaterialDialog.ButtonCallback() {
-                    @SuppressWarnings("ConstantConditions")
-                    @Override
-                    public void onPositive(MaterialDialog dialog) {
-                        View view = dialog.getCustomView();
-                        EditText password = (EditText) view.findViewById(R.id.et_pass);
-                        if (profile.checkPassword(password.getText().toString())) {
-                            ProfileManager.setCurrentProfile(profile);
-                            flipDrawer();
-                        } else {
-                            Toast.makeText(BaseActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                })
-                .show();
-        EditText name = (EditText) dialog.findViewById(R.id.et_pass);
-        GeneralUtil.showKeyBoard(name, this);
+
+        GeneralUtil.showProfilePasswordRequestDialog(BaseActivity.this, new MaterialDialog.ButtonCallback() {
+            @SuppressWarnings("ConstantConditions")
+            @Override
+            public void onPositive(MaterialDialog dialog) {
+                View view = dialog.getCustomView();
+                EditText passwordText = (EditText) view.findViewById(R.id.et_pass);
+                String password = passwordText.getText().toString();
+                if (profile.checkPassword(password)) {
+                    ProfileManager.setCurrentProfile(profile, password);
+                    flipDrawer();
+                    dialog.dismiss();
+                } else {
+                    Toast.makeText(BaseActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+
+            @Override
+            public void onNegative(MaterialDialog dialog) {
+                dialog.dismiss();
+            }
+
+        });
     }
 
     private void updateCurrentProfileName() {
@@ -404,30 +406,27 @@ public abstract class BaseActivity extends AppCompatActivity implements
             ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
             dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
         } else {
-            Dialog dialog = new MaterialDialog.Builder(BaseActivity.this)
-                    .title(R.string.request_profile_password)
-                    .customView(R.layout.profile_password, true)
-                    .positiveText(R.string.ok)
-                    .negativeText(R.string.cancel)
-                    .callback(new MaterialDialog.ButtonCallback() {
-                        @SuppressWarnings("ConstantConditions")
-                        @Override
-                        public void onPositive(MaterialDialog dialog) {
-                            View view = dialog.getCustomView();
-                            EditText password = (EditText) view.findViewById(R.id.et_pass);
-                            if (profile.checkPassword(password.getText().toString())) {
-                                ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
-                                dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
-                            } else {
-                                Toast.makeText(BaseActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    })
-                    .show();
-            EditText name = (EditText) dialog.findViewById(R.id.et_pass);
-            GeneralUtil.showKeyBoard(name, this);
-        }
+            GeneralUtil.showProfilePasswordRequestDialog(BaseActivity.this, new MaterialDialog.ButtonCallback() {
 
+                @Override
+                public void onPositive(MaterialDialog dialog) {
+                    View view = dialog.getCustomView();
+                    EditText password = (EditText) view.findViewById(R.id.et_pass);
+                    if (profile.checkPassword(password.getText().toString())) {
+                        dialog.dismiss();
+                        ProfileDialogFragment dialogFragment = ProfileDialogFragment.newInstance(profile);
+                        dialogFragment.show(getSupportFragmentManager(), "profile_dialog");
+                    } else {
+                        Toast.makeText(BaseActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                @Override
+                public void onNegative(MaterialDialog dialog) {
+                    dialog.dismiss();
+                }
+            });
+        }
     }
 
     @Override

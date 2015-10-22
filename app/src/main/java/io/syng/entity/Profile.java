@@ -8,28 +8,32 @@
 
 package io.syng.entity;
 
+import android.util.Log;
+
 import org.ethereum.crypto.ECKey;
 import org.ethereum.crypto.HashUtil;
 import org.ethereum.wallet.EtherSaleWallet;
 import org.ethereum.wallet.EtherSaleWalletDecoder;
 import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.spongycastle.util.encoders.Hex;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import io.syng.util.Encryption;
+
 public class Profile implements Serializable {
 
-    private static final Logger logger = LoggerFactory.getLogger("Profile");
+    private static final String TAG = "Profile";
 
     protected String name;
 
     protected String id = createPrivateKey();
 
     protected List<String> privateKeys = new ArrayList<>();
+
+    protected List<String> publicKeys = new ArrayList<>();
 
     /* "password protect profile" (encrypt the private keys) */
     protected boolean passwordProtectedProfile;
@@ -42,18 +46,21 @@ public class Profile implements Serializable {
 
     protected transient boolean isEncrypted;
 
+
     public Profile() {
-        this.privateKeys.add(createPrivateKey());
+        addPrivateKey(createPrivateKey(), null);
         addDefaultApps();
     }
 
     public Profile(String privateKey) {
-        this.privateKeys.add(privateKey);
+        addPrivateKey(privateKey, null);
         addDefaultApps();
     }
 
     public Profile(List<String> privateKeys) {
-        this.privateKeys = privateKeys;
+        for (String privateKey: privateKeys) {
+            addPrivateKey(privateKey, null);
+        }
         addDefaultApps();
     }
 
@@ -79,30 +86,53 @@ public class Profile implements Serializable {
         return Hex.toHexString(privateKey);
     }
 
-    public List<String> getPrivateKeys() {
-        return privateKeys;
+    public List<String> getPrivateKeys(String password) {
+        List<String> keys = new ArrayList<>();
+
+        for (String privateKey: privateKeys) {
+            String key = passwordProtectedProfile ? decryptPrivateKey(privateKey, password) : privateKey;
+            keys.add(key);
+        }
+        return keys;
     }
 
     public List<String> getAddresses() {
+        return publicKeys;
+    }
 
-        List<String> addresses = new ArrayList<>();
-        for (String privateKey : privateKeys) {
-            ECKey key = ECKey.fromPrivate(Hex.decode(privateKey));
-            addresses.add(Hex.toHexString(key.getAddress()));
+    public void addPrivateKeys(List<String> privateKeys, String password) {
+        for (String privateKey: privateKeys) {
+            addPrivateKey(privateKey, password);
         }
-        return addresses;
     }
 
-    public void setPrivateKeys(List<String> privateKeys) {
-        this.privateKeys = privateKeys;
+    protected String getPublicKey(String privateKey) {
+        ECKey ecKey = ECKey.fromPrivate(Hex.decode(privateKey));
+        return Hex.toHexString(ecKey.getAddress());
     }
 
-    public void addPrivateKey(String privateKey) {
-        this.privateKeys.add(privateKey);
+    public boolean addPrivateKey(String privateKey, String password) {
+
+        if (password != null && passwordProtectedProfile) {
+            if (!checkPassword(password)) {
+                return false;
+            }
+            this.privateKeys.add(encryptPrivateKey(privateKey, password));
+        } else {
+            this.privateKeys.add(privateKey);
+        }
+        this.publicKeys.add(getPublicKey(privateKey));
+        return true;
+    }
+
+    private String hash(String text) {
+        return Hex.toHexString(HashUtil.sha3(text.getBytes()));
     }
 
     public void removePrivateKey(String privateKey) {
+
         this.privateKeys.remove(privateKey);
+        this.publicKeys.remove(getPublicKey(privateKey));
     }
 
     public List<Dapp> getDapps() {
@@ -155,20 +185,23 @@ public class Profile implements Serializable {
     }
 
     public void setPassword(String password) {
-        this.passwordHash = Hex.toHexString(HashUtil.sha3(password.getBytes()));
+        if (!passwordProtectedProfile) {
+            this.passwordHash = hash(password);
+            this.encrypt(password);
+        }
     }
 
     public boolean checkPassword(String password) {
-        return passwordHash.equals(Hex.toHexString(HashUtil.sha3(password.getBytes())));
+        return passwordHash.equals(hash(password));
     }
 
     public void encrypt(String password) {
         if (!passwordProtectedProfile) {
-            setPassword(password);
             List<String> encrypted = new ArrayList<>();
             for (String privateKey : this.privateKeys) {
                 encrypted.add(encryptPrivateKey(privateKey, password));
             }
+            this.privateKeys.clear();
             this.privateKeys = encrypted;
             passwordProtectedProfile = true;
         }
@@ -176,7 +209,7 @@ public class Profile implements Serializable {
 
     public boolean decrypt(String password) {
         if (passwordProtectedProfile) {
-            if (!passwordHash.equals(Hex.toHexString(HashUtil.sha3(password.getBytes())))) {
+            if (!checkPassword(password)) {
                 return false;
             }
             List<String> decrypted = new ArrayList<>();
@@ -190,16 +223,22 @@ public class Profile implements Serializable {
     }
 
     protected String encryptPrivateKey(String privateKey, String password) {
-        // TODO: Encrypt private key
-        return privateKey;
+        String encryptedKey = Encryption.encrypt(privateKey, password);
+        if (encryptedKey == null) {
+            Log.w(TAG, "Could not encrypt private key");
+        }
+        return encryptedKey;
     }
 
     protected String decryptPrivateKey(String privateKey, String password) {
-        // TODO: Decrypt private key
-        return privateKey;
+        String decryptedKey = Encryption.decrypt(privateKey, password);
+        if (decryptedKey == null) {
+            Log.w(TAG, "Could not decrypt private key");
+        }
+        return decryptedKey;
     }
 
-    public boolean importWallet(String jsonWallet, String password) {
+    public boolean importWallet(String jsonWallet, String importPassword, String currentPassword) {
         try {
             JSONObject json = new JSONObject(jsonWallet);
             byte[] privateKey = null;
@@ -210,35 +249,51 @@ public class Profile implements Serializable {
                 wallet.setEmail(json.getString("email"));
                 wallet.setBtcaddr(json.getString("btcaddr"));
                 EtherSaleWalletDecoder decoder = new EtherSaleWalletDecoder(wallet);
-                privateKey = decoder.getPrivateKey(password);
+                privateKey = decoder.getPrivateKey(importPassword);
             } else if (json.has("Crypto")) {
                 wallet.setEncseed(json.getJSONObject("Crypto").getJSONObject("cipherparams").getString("iv") + json.getJSONObject("Crypto").getString("ciphertext"));
                 wallet.setEthaddr(json.getString("address"));
                 EtherSaleWalletDecoder decoder = new EtherSaleWalletDecoder(wallet);
-                privateKey = decoder.getPrivateKey(password);
+                privateKey = decoder.getPrivateKey(importPassword);
             }
             if (privateKey == null) {
-                logger.warn("Invalid json wallet file.");
+                Log.w(TAG, "Invalid json wallet file.");
                 return false;
             }
             ECKey key = ECKey.fromPrivate(privateKey);
             String address = Hex.toHexString(key.getAddress());
             if (address.equals(wallet.getEthaddr())) {
-                privateKeys.add(Hex.toHexString(privateKey));
+                String keyToAdd = Hex.toHexString(privateKey);
+                if (passwordProtectedProfile) {
+                    addPrivateKey(keyToAdd, currentPassword);
+                } else {
+                    addPrivateKey(keyToAdd, null);
+                }
+                this.publicKeys.add(getPublicKey(keyToAdd));
             } else {
-                logger.warn("Invalid wallet password.");
+                Log.w(TAG, "Invalid wallet password.");
                 return false;
             }
         } catch (Exception e) {
-            logger.error("Error importing wallet.", e);
+            Log.e(TAG, "Error importing wallet: " + e.getMessage());
             return false;
         }
 
         return true;
     }
 
-    public void importPrivateKey(String privateKey, String password) {
-        privateKeys.add(decryptPrivateKey(privateKey, password));
+    public boolean importPrivateKey(String privateKey, String importedKeyPassword, String walletPassword) {
+        String decryptedKey = importedKeyPassword == null || importedKeyPassword == "" ? privateKey : decryptPrivateKey(privateKey, importedKeyPassword);
+        if (passwordProtectedProfile) {
+            if (checkPassword(walletPassword)) {
+                addPrivateKey(decryptedKey, walletPassword);
+            } else {
+                return false;
+            }
+        } else {
+            addPrivateKey(decryptedKey, null);
+        }
+        return true;
     }
 
     @Override

@@ -38,7 +38,15 @@
         android:id="@+id/wallet_password"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:hint="Password"
+        android:hint="Import Password"
+        android:singleLine="true"
+        android:textColor="@color/accent"/>
+
+    <EditText
+        android:id="@+id/current_wallet_password"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:hint="Current Wallet Password"
         android:singleLine="true"
         android:textColor="@color/accent"/>
 </LinearLayout>

@@ -110,8 +110,8 @@ public final class ProfileManager {
         return new Profile();
     }
 
-    public static void setCurrentProfile(Profile profile) {
-        List<String> privateKeys = profile.getPrivateKeys();
+    public static void setCurrentProfile(Profile profile, String password) {
+        List<String> privateKeys = profile.getPrivateKeys(password);
         SyngApplication.sEthereumConnector.init(privateKeys);
         PrefsUtil.setCurrentProfileId(profile.getId());
         notifyListener();
