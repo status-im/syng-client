@@ -51,10 +51,6 @@ public class ProfileKeysFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_profile_keys, container, false);
 
         Profile profile = ProfileManager.getProfileById(mProfileId);
-        if (profile != null) {
-            profile.getPrivateKeys();
-        }
-
         mRecyclerView = (RecyclerView) view.findViewById(R.id.rv_profile_keys);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.setLayoutManager(layoutManager);

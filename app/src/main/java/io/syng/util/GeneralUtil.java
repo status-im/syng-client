@@ -112,7 +112,7 @@ public final class GeneralUtil {
             profile.setName(name.getText().toString());
             profile.setPassword(pass1String);
             ProfileManager.addProfile(profile);
-            ProfileManager.setCurrentProfile(profile);
+            ProfileManager.setCurrentProfile(profile, pass1String);
             GeneralUtil.hideKeyBoard(name, context);
             GeneralUtil.hideKeyBoard(pass1, context);
             GeneralUtil.hideKeyBoard(pass2, context);
@@ -147,6 +147,33 @@ public final class GeneralUtil {
                 .callback(callback)
                 .show();
         EditText name = (EditText) dialog.findViewById(R.id.et_profile_name);
+        GeneralUtil.showKeyBoard(name, context);
+    }
+
+    public static void showProfilePasswordRequestDialog(final Context context, String profileName, MaterialDialog.ButtonCallback callback) {
+
+        if (callback == null) {
+            callback = new MaterialDialog.ButtonCallback() {
+                @Override
+                public void onPositive(MaterialDialog dialog) {
+                    dialog.dismiss();
+                }
+
+                @Override
+                public void onNegative(MaterialDialog dialog) {
+                    dialog.dismiss();
+                }
+            };
+        }
+        MaterialDialog dialog = new MaterialDialog.Builder(context)
+                .title((profileName != null ? profileName + " " : "") + context.getResources().getString(R.string.request_profile_password))
+                .positiveText(R.string.ok)
+                .negativeText(R.string.cancel)
+                .customView(R.layout.profile_password, true)
+                .callback(callback)
+                .autoDismiss(false)
+                .show();
+        EditText name = (EditText) dialog.findViewById(R.id.et_pass);
         GeneralUtil.showKeyBoard(name, context);
     }
 
@@ -256,8 +283,10 @@ public final class GeneralUtil {
                         RadioButton importJsonRadio = (RadioButton) dialog.findViewById(R.id.radio_import_json);
                         EditText importPathEdit = (EditText) dialog.findViewById(R.id.wallet_import_path);
                         EditText walletPasswordEdit = (EditText) dialog.findViewById(R.id.wallet_password);
+                        EditText currentWalletPasswordEdit = (EditText) dialog.findViewById(R.id.current_wallet_password);
                         String importPath = importPathEdit.getText().toString();
                         String password = walletPasswordEdit.getText().toString();
+                        String currentPassword = currentWalletPasswordEdit.getText().toString();
                         String fileContents = null;
                         try {
                             File walletFile = new File(importPath);
@@ -281,15 +310,15 @@ public final class GeneralUtil {
                         }
                         if (importJsonRadio.isChecked()) {
                             Profile profile = ProfileManager.getCurrentProfile();
-                            if (profile.importWallet(fileContents, password)) {
+                            if (profile.importWallet(fileContents, password, currentPassword)) {
                                 ProfileManager.updateProfile(profile);
-                                ProfileManager.setCurrentProfile(profile);
+                                ProfileManager.setCurrentProfile(profile, currentPassword);
                             } else {
                                 Toast.makeText(context, R.string.invalid_wallet_password, Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Profile profile = ProfileManager.getCurrentProfile();
-                            profile.importPrivateKey(fileContents, password);
+                            profile.importPrivateKey(fileContents, password, currentPassword);
                             ProfileManager.updateProfile(profile);
                         }
                     }

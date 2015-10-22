@@ -33,6 +33,7 @@ import org.ethereum.net.p2p.HelloMessage;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.UUID;
@@ -56,6 +57,8 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
     public static String mConsoleLog = "";
 
     private boolean isRpcConnection = true;
+
+    public boolean isEthereumConnected = false;
 
     private String mHandlerIdentifier = UUID.randomUUID().toString();
 
@@ -92,8 +95,9 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
     @Override
     public void onConnectorConnected() {
         System.out.println("Connector connected");
+        isEthereumConnected = true;
         SyngApplication.sEthereumConnector.addListener(mHandlerIdentifier, EnumSet.allOf(EventFlag.class));
-        sEthereumConnector.init(ProfileManager.getCurrentProfile().getPrivateKeys());
+        sEthereumConnector.init(new ArrayList<String>());
         sEthereumConnector.startJsonRpc();
         SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
         String rpcServer = sharedPref.getString(getString(R.string.pref_json_rpc_server_key), "http://rpc0.syng.io:8545/");
@@ -103,6 +107,7 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
     @Override
     public void onConnectorDisconnected() {
         System.out.println("Connector Disconnected");
+        isEthereumConnected = false;
     }
 
     @Override

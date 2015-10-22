@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -44,9 +45,8 @@ public class LoginActivity extends AppCompatActivity {
         if (PrefsUtil.isFirstLaunch()) {
             createAndSetProfile();
         } else {
-            startNextActivity();
+            loginWallet();
         }
-
     }
 
     private void startNextActivity() {
@@ -76,7 +76,31 @@ public class LoginActivity extends AppCompatActivity {
                 LoginActivity.this.finish();
                 dialog.dismiss();
             }
+        });
+    }
 
+    private void loginWallet() {
+        final Profile profile = ProfileManager.getCurrentProfile();
+        GeneralUtil.showProfilePasswordRequestDialog(LoginActivity.this, profile.getName(), new MaterialDialog.ButtonCallback() {
+            @Override
+            public void onPositive(MaterialDialog dialog) {
+                View view = dialog.getCustomView();
+                EditText passwordText = (EditText) view.findViewById(R.id.et_pass);
+                String password = passwordText.getText().toString();
+                if (profile.checkPassword(password)) {
+                    dialog.dismiss();
+                    ProfileManager.setCurrentProfile(profile, password);
+                    startNextActivity();
+                } else {
+                    Toast.makeText(LoginActivity.this, "Password is not correct", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onNegative(MaterialDialog dialog) {
+                LoginActivity.this.finish();
+                dialog.dismiss();
+            }
         });
     }
 
