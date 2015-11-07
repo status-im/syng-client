@@ -5,4 +5,4 @@
 [submodule "ethereumj"]
 	path = ethereumj
 	url = https://github.com/syng-io/ethereumj-android.git
-    branch = android-test-poc9-rlpx
+    branch = eth2_merge
