@@ -36,6 +36,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumSet;
+import java.util.List;
 import java.util.UUID;
 
 import io.syng.R;
@@ -49,6 +50,10 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     public static EthereumConnector sEthereumConnector;
 
+    public static int runningMode = 2;
+
+    private static SyngApplication instance;
+
     private RefWatcher refWatcher;
 
     @SuppressLint("SimpleDateFormat")
@@ -60,7 +65,19 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     public boolean isEthereumConnected = false;
 
-    private String mHandlerIdentifier = UUID.randomUUID().toString();
+    public static String mHandlerIdentifier = UUID.randomUUID().toString();
+
+    public SyngApplication() {
+        instance = this;
+    }
+
+    public static Context getContext() {
+        return instance;
+    }
+
+    public static void initEthereum(List<String> privateKeys) {
+        SyngApplication.sEthereumConnector.init(mHandlerIdentifier, privateKeys);
+    }
 
     @Override
     public void onCreate() {
@@ -70,8 +87,8 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 //        refWatcher = LeakCanary.install(this);
         refWatcher = RefWatcher.DISABLED;
 
-        if (sEthereumConnector == null) {
-            sEthereumConnector = new EthereumConnector(this, EthereumService.class);
+        if (SyngApplication.sEthereumConnector == null) {
+            SyngApplication.sEthereumConnector = new EthereumConnector(this, EthereumService.class);
             sEthereumConnector.registerHandler(this);
             sEthereumConnector.bindService();
         }
@@ -95,18 +112,17 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
     @Override
     public void onConnectorConnected() {
         System.out.println("Connector connected");
-        isEthereumConnected = true;
-        SyngApplication.sEthereumConnector.addListener(mHandlerIdentifier, EnumSet.allOf(EventFlag.class));
-        sEthereumConnector.init(new ArrayList<String>());
-        sEthereumConnector.startJsonRpc();
-        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
-        String rpcServer = sharedPref.getString(getString(R.string.pref_json_rpc_server_key), "http://rpc0.syng.io:8545/");
-        sEthereumConnector.changeJsonRpc(rpcServer);
+        if (!isEthereumConnected) {
+            isEthereumConnected = true;
+            SyngApplication.sEthereumConnector.addListener(mHandlerIdentifier, EnumSet.allOf(EventFlag.class));
+        }
+        //sEthereumConnector.init(new ArrayList<String>());
     }
 
     @Override
     public void onConnectorDisconnected() {
         System.out.println("Connector Disconnected");
+        SyngApplication.sEthereumConnector.removeListener(mHandlerIdentifier);
         isEthereumConnected = false;
     }
 
@@ -117,7 +133,8 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
 
     private void addLogEntry(LogEntry logEntry) {
         Date date = new Date(logEntry.getTimeStamp());
-        mConsoleLog += mDateFormatter.format(date) + " -> " + logEntry.getMessage() + "\n";
+        String message = logEntry.getMessage();
+        mConsoleLog += mDateFormatter.format(date) + " -> " + (message.length() > 200 ? message.substring(0, 200) : message) + "\n";
     }
 
     @SuppressWarnings("ConstantConditions")
@@ -177,8 +194,25 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
                         break;
                     case EVENT_TRACE:
                         TraceEventData traceEventData = data.getParcelable("data");
-                        System.out.println("We got a trace message: " + traceEventData.message);
+                        //System.out.println("We got a trace message: " + traceEventData.message);
                         addLogEntry(new LogEntry(traceEventData.registeredTime, traceEventData.message));
+                        isClaimed = false;
+                        break;
+                    case EVENT_ETHEREUM_CREATED:
+                        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
+                        String runningMode = sharedPref.getString(getString(R.string.pref_running_mode_key), "-1");
+                        if (runningMode.equals("1")) {
+                            this.runningMode = 1;
+                            isRpcConnection = false;
+                            sEthereumConnector.connect(null, -1, null);
+                            System.out.println("connecting: " + runningMode);
+                        } else {
+                            this.runningMode = 2;
+                            sEthereumConnector.startJsonRpc();
+                            String rpcServer = sharedPref.getString(getString(R.string.pref_json_rpc_server_key), "http://rpc0.syng.io:8545/");
+                            sEthereumConnector.changeJsonRpc(rpcServer);
+                        }
+                        System.out.println("Running mode: " + runningMode);
                         break;
                 }
                 break;
@@ -186,5 +220,11 @@ public class SyngApplication extends MultiDexApplication implements ConnectorHan
                 isClaimed = false;
         }
         return isClaimed;
+    }
+
+    public static void setJsonRpc() {
+        SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        String rpcServer = sharedPref.getString(getContext().getString(R.string.pref_json_rpc_server_key), "http://rpc0.syng.io:8545/");
+        sEthereumConnector.changeJsonRpc(rpcServer);
     }
 }

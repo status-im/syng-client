@@ -45,8 +45,6 @@ dependencies {
     compile(project(':ethereumj-core-android')) {
         exclude group: "org.hibernate", module: "hibernate-core"
         exclude group: "com.h2database", module: "h2"
-        exclude group: "org.codehaus.jackson", module: "jackson-mapper-asl"
-        exclude group: "org.mapdb", module: "mapdb"
     }
     compile 'com.android.support:multidex:1.0.1'
     compile 'com.android.support:appcompat-v7:23.0.0'

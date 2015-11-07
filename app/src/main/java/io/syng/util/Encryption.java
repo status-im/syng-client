@@ -34,7 +34,6 @@ public class Encryption {
 
     public static String encrypt(String text, String password) {
 
-        Log.d(TAG, "Encrypting: " + text);
         String encryptedText = "";
         byte[] salt = generateSalt(saltLength);
         SecretKey key = generateKey(password, salt);
@@ -50,7 +49,6 @@ public class Encryption {
                 encryptedText = Base64.encodeToString(salt, Base64.NO_WRAP);
                 encryptedText += delimiter + Base64.encodeToString(iv, Base64.NO_WRAP);
                 encryptedText += delimiter + Base64.encodeToString(encryptedKey, Base64.NO_WRAP);
-                Log.d(TAG, "Encrypted: " + encryptedText);
                 return encryptedText;
             } catch (Exception e) {
                 Log.e(TAG, "encrypt(): " + e.toString());
@@ -80,7 +78,6 @@ public class Encryption {
 
     public static String decrypt(String encryptedText, String password) {
 
-        Log.d(TAG, "Decrypting: " + encryptedText);
         String[] parts = encryptedText.split(Pattern.quote(delimiter));
         byte[] salt = Base64.decode(parts[0], Base64.NO_WRAP);
         byte[] iv =  Base64.decode(parts[1], Base64.NO_WRAP);
@@ -94,7 +91,6 @@ public class Encryption {
                 cipher.init(Cipher.DECRYPT_MODE, key, ivParams);
                 byte[] decrypted = cipher.doFinal(cipherBytes);
                 String decryptedText = new String(decrypted, "UTF-8");
-                Log.d(TAG, "Decrypted: " + decryptedText);
                 return decryptedText;
             } catch (Exception e) {
                 Log.e(TAG, "decrypt(): " + e.toString());

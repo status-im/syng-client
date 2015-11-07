@@ -112,9 +112,14 @@ public final class ProfileManager {
 
     public static void setCurrentProfile(Profile profile, String password) {
         List<String> privateKeys = profile.getPrivateKeys(password);
-        SyngApplication.sEthereumConnector.init(privateKeys);
+        SyngApplication.initEthereum(privateKeys);
         PrefsUtil.setCurrentProfileId(profile.getId());
         notifyListener();
+        if (SyngApplication.runningMode == 1) {
+            SyngApplication.sEthereumConnector.connect(null, -1, null);
+        } else {
+            //SyngApplication.setJsonRpc();
+        }
     }
 
     public static void addDAppToProfile(Profile profile, Dapp dapp) {

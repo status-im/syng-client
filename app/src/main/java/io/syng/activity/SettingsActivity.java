@@ -52,6 +52,8 @@ public class SettingsActivity extends PreferenceActivity {
      */
     private static final boolean ALWAYS_SIMPLE_PREFS = false;
 
+    private static boolean firstTrigger = true;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,11 +88,14 @@ public class SettingsActivity extends PreferenceActivity {
 
         // In the simplified UI, fragments are not used at all and we instead
         // use the older PreferenceActivity APIs.
+        firstTrigger = true;
 
         // Add 'general' preferences.
         addPreferencesFromResource(R.xml.pref_general);
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_json_rpc_server_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.pref_running_mode_key)));
+
+        firstTrigger = false;
         /*
         // Add 'notifications' preferences, and a corresponding header.
         PreferenceCategory fakeHeader = new PreferenceCategory(this);
@@ -143,18 +148,28 @@ public class SettingsActivity extends PreferenceActivity {
                         preference.setSummary(index >= 0 ? listPreference.getEntries()[index] : null);
 
                         Preference jsonRPC = findPreference(getString(R.string.pref_json_rpc_server_key));
-                        jsonRPC.setEnabled(!stringValue.equals(getString(R.string.pref_running_mode_full_value)));
+
+                        boolean isFull = stringValue.equals(getString(R.string.pref_running_mode_full_value));
+                        jsonRPC.setEnabled(!isFull);
+
+                        if (!firstTrigger) {
+                            if (isFull) {
+                                SyngApplication.sEthereumConnector.connect(null, -1, null);
+                            }
+                        }
 
                     } else if (key.equals(getString(R.string.pref_json_rpc_server_key))) {
-                        try {
-                            URL url = new URL(stringValue);
-                            preference.setSummary("Current server address is " + stringValue);
-                            SyngApplication.sEthereumConnector.changeJsonRpc(stringValue);
-                        } catch (Exception e) {
-                            Toast.makeText(SettingsActivity.this,
-                                    "Invalid url address...",
-                                    Toast.LENGTH_SHORT).show();
-                            return false;
+                        if (!firstTrigger) {
+                            try {
+                                URL url = new URL(stringValue);
+                                preference.setSummary("Current server address is " + stringValue);
+                                SyngApplication.sEthereumConnector.changeJsonRpc(stringValue);
+                            } catch (Exception e) {
+                                Toast.makeText(SettingsActivity.this,
+                                        "Invalid url address...",
+                                        Toast.LENGTH_SHORT).show();
+                                return false;
+                            }
                         }
                     } else {
                         preference.setSummary(stringValue);
