@@ -36,6 +36,7 @@ import org.apache.cordova.PluginManager;
 
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Properties;
 
 import io.syng.activity.BaseActivity;
 import io.syng.app.SyngApplication;
@@ -76,6 +77,9 @@ public class WebViewFragment extends Fragment implements View.OnTouchListener, G
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         url = getArguments() != null ? getArguments().getString("url") : null;
+        Properties properties = System.getProperties();
+        properties.setProperty("http.nonProxyHosts", "localhost|127.0.0.1");
+        properties.setProperty("https.nonProxyHosts", "localhost|127.0.0.1");
     }
 
     @Override
