@@ -30,7 +30,7 @@ public class Encryption {
     private static String delimiter = "}";
     private static int keyLength = 256;
     private static int saltLength = keyLength / 8;
-    private static int iterationCount = 20000;
+    private static int iterationCount = 1000;
 
     public static String encrypt(String text, String password) {
 
